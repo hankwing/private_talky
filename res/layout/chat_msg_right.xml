@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/chat_msg_right_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:layout_marginRight="7dp"
+            android:text="2013/11/20 9:48"
+            android:textSize="17dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/chat_msg_right_name"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="14dp"
+            android:background="@drawable/icon_temp_head" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="22dp"
+            android:layout_toLeftOf="@+id/chat_msg_right_name"
+            android:background="@drawable/chatto_bg_normal" >
+
+           <ImageView 
+               android:layout_width="140dp"
+               android:layout_height="170dp"
+               android:id="@+id/chat_msg_right_image"
+               android:visibility="gone"
+               style="@style/chat_image_style"/>
+            
+            <TextView
+                android:id="@+id/chat_msg_right_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:text="content"
+                android:textSize="21dp"
+                style="@style/chat_content_style" />
+            
+        </RelativeLayout>
+        
+    </RelativeLayout>
+
+</LinearLayout>

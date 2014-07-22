@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/activity_chat_top"
+        android:layout_width="fill_parent"
+        android:layout_height="49dp"
+        android:background="#454545" >
+
+        <TextView
+            android:id="@+id/chat_theme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="主 题"
+            android:textColor="#cccccc"
+            android:textSize="21dp" />
+
+        <ImageButton
+            android:id="@+id/ibtn_chat_back"
+            android:layout_width="42dp"
+            android:layout_height="37dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="17dp"
+            android:background="@drawable/icon_back" />
+
+        <ImageButton
+            android:id="@+id/ibtn_group_member"
+            android:layout_width="42dp"
+            android:layout_height="37dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="14dp"
+            android:background="@drawable/icon_theme_person" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/chat_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/activity_chat_curr"
+        android:layout_below="@+id/activity_chat_top"
+        android:background="#cccccc"
+        android:cacheColorHint="#0000"
+        android:divider="@null"
+        android:dividerHeight="5dp"
+        android:listSelector="@android:color/transparent"
+        android:scrollbarStyle="outsideOverlay" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/page_select"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/chat_list"
+        android:layout_alignParentLeft="true"
+        android:background="#ddd"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/page0_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="matrix"
+            android:src="@drawable/page_focused" />
+
+        <ImageView
+            android:id="@+id/page1_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/page_unfocused" />
+
+        <ImageView
+            android:id="@+id/page2_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:scaleType="matrix"
+            android:src="@drawable/page_unfocused" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vip_face"
+        android:layout_width="wrap_content"
+        android:layout_height="140dip"
+        android:layout_above="@+id/activity_chat_curr"
+        android:layout_gravity="center"
+        android:visibility="gone" >
+    </android.support.v4.view.ViewPager>
+
+    <RelativeLayout
+        android:id="@+id/activity_chat_curr"
+        android:layout_width="fill_parent"
+        android:layout_height="42dp"
+        android:layout_above="@+id/activity_chat_bottom"
+        android:layout_alignParentRight="true"
+        android:background="#cccccc" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@drawable/icon_chat_curr" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="32dp"
+            android:layout_toLeftOf="@+id/imageView1"
+            android:background="@drawable/icon_like" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="35dp"
+            android:background="@drawable/icon_shit" />
+
+        <ImageButton
+            android:id="@+id/ibt_ranks"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="4dp"
+            android:layout_toLeftOf="@+id/imageView2"
+            android:background="@drawable/icon_ranks" />
+
+        <ImageButton
+            android:id="@+id/btn_add_image"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="7dp"
+            android:background="@drawable/icon_chat_pic" />
+
+        <ImageButton
+            android:id="@+id/btn_add_face"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/btn_add_image"
+            android:layout_marginLeft="7dp"
+            android:background="@drawable/icon_chat_face" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_chat_bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="#999999" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="7dp"
+            android:layout_toLeftOf="@+id/btn_send"
+            android:background="@drawable/login_edit"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/chat_message"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:focusable="true"
+                android:ems="10" >
+            </EditText>
+
+            <ImageButton
+                android:id="@+id/btn_add_record"
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                android:background="@drawable/icon_record" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="7dp"
+            android:layout_marginRight="7dp"
+            android:background="#666666"
+            android:text="发 送" />
+    </RelativeLayout>
+
+</RelativeLayout>

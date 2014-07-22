@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="49dp"
+        android:background="#454545" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="49dp"
+            android:layout_height="42dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/icon_main_top"/>
+
+        <TextView
+            android:layout_width="42dp"
+            android:layout_height="37dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="17dp"
+            android:background="@drawable/icon_main_menu"/>
+
+        <TextView
+            android:id="@+id/tv_main_self"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="17dp"
+            android:text="个人"
+            android:textColor="#D9D9D9"
+            android:textSize="17dp" />
+        
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="#949494"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/theme_comic"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="动漫"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/theme_science"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="科学"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/theme_enviro"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="环境"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/theme_women"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="女人"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+     <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="5dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/tab_under_img"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="3.0"
+                android:scaleType="matrix"
+                android:src="@drawable/tab_under_img" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0" />
+    </LinearLayout>
+    
+    <android.support.v4.view.ViewPager
+        android:id="@+id/theme_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:background="#D9D9D9"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation" />
+
+</LinearLayout>
