@@ -32,7 +32,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 
 	private EditText edt_username;
 	private EditText edt_password;
-	private Button btn_login;			//登录按钮
+	private Button btn_login;			//登录按钮 
 	private Button btn_regist;			//注册按钮
 	private String username;			//用户名
 	private String password;			//密码
