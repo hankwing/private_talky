@@ -43,14 +43,11 @@ public class LoginActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		idAddressString = "121.229.27.9";
+		idAddressString = "121.229.26.119";
 		btn_login = (Button) this.findViewById(R.id.loginBtn);
 		btn_regist = (Button) this.findViewById(R.id.registBtn);
 		edt_password = (EditText) this.findViewById(R.id.passwordEt);
 		edt_username = (EditText) this.findViewById(R.id.userNameEt);
-		
-		ConnectionConfiguration configuration = new ConnectionConfiguration("121.229.27.9", 5222);
-		mXmppConnection = new XMPPConnection(configuration);
 
 		btn_login.setOnClickListener(this);
 		btn_regist.setOnClickListener(this);
@@ -107,19 +104,28 @@ public class LoginActivity extends Activity implements OnClickListener{
 			try
 			{
 				//Log.i("Login", accountText.getText().toString());
-				mXmppConnection.login(edt_username.getText().toString(), edt_password.getText().toString());
-				configure(ProviderManager.getInstance());
-				Looper.prepare();
-				Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-				Intent mainActivity = new Intent( LoginActivity.this, MainActivity.class);
-				startActivity(mainActivity);
-				LoginActivity.this.finish();
-				Looper.loop();
+				if(mXmppConnection.isConnected()) {
+					mXmppConnection.login(edt_username.getText().toString(), edt_password.getText().toString());
+					configure(ProviderManager.getInstance());
+					Looper.prepare();
+					Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+					Intent mainActivity = new Intent( LoginActivity.this, MainActivity.class);
+					startActivity(mainActivity);
+					LoginActivity.this.finish();
+					Looper.loop();
+				}
+				else {
+					Looper.prepare();
+					Toast.makeText(LoginActivity.this, "请检查网络", Toast.LENGTH_SHORT).show();
+					Looper.loop();
+				}
 				
 			} catch (XMPPException e)
 			{
 				// TODO Auto-generated catch block
+				Looper.prepare();
 				Toast.makeText(LoginActivity.this, "账号或密码错误", Toast.LENGTH_SHORT).show();
+				Looper.loop();
 				e.printStackTrace();
 			}
 		}
