@@ -2,26 +2,24 @@ package com.domen.adapter;
 
 import java.util.List;
 
-import com.domen.entity.ThemeEntity;
-import com.domen.start.LoginActivity;
-import com.wxl.lettalk.R;
-
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.domen.entity.ThemeEntity;
+import com.wxl.lettalk.R;
+
+/**
+ * 定义了单个话题的界面适配器
+ * @author hankwing
+ *
+ */
 public class ThemeListAdapter extends BaseAdapter {
 
 	private LayoutInflater theme_inflater;
@@ -60,29 +58,28 @@ public class ThemeListAdapter extends BaseAdapter {
 		public Button btJoin;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		ThemeEntity themeEnitiy = themelist.get(position);
 		convertView = theme_inflater.inflate(R.layout.theme_list_view, null, false);
-		//��ʼ��
 		ViewHolder viewHolder = new ViewHolder();
 		viewHolder.tvName = (TextView) convertView.findViewById(R.id.theme_name);
 		viewHolder.tvBack = (TextView) convertView.findViewById(R.id.theme_back);
 		viewHolder.btJoin = (Button) convertView.findViewById(R.id.btn_join);
 		viewHolder.btLook = (Button) convertView.findViewById(R.id.btn_look);
-		
-
-		viewHolder.tvName.setText("����ħ����");
+		viewHolder.tvName.setText(themeEnitiy.getName());
 		viewHolder.tvName.setTextColor(Color.WHITE);
 		viewHolder.tvBack.setBackgroundDrawable(themeEnitiy.getPicture());
-		
+	
 		viewHolder.btJoin.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				v.requestFocus();
-				Toast.makeText(context, "�ۿ�", Toast.LENGTH_SHORT).show();
+				//加入等待逻辑
+				//Toast.makeText(context, "join", Toast.LENGTH_SHORT).show();
 			}
 		});
 		
@@ -91,8 +88,9 @@ public class ThemeListAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				//观看逻辑
 				v.requestFocus();
-				Toast.makeText(context, "�μ�", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(context, "look", Toast.LENGTH_SHORT).show();
 			}
 		});
 		

@@ -10,7 +10,8 @@ import org.jivesoftware.smackx.provider.DataFormProvider;
 import org.jivesoftware.smackx.provider.MUCAdminProvider;
 import org.jivesoftware.smackx.provider.MUCOwnerProvider;
 import org.jivesoftware.smackx.provider.MUCUserProvider;
-import com.domen.lettalk.MainActivity;
+
+import com.domen.activities.MainActivity;
 import com.wxl.lettalk.R;
 import android.app.Activity;
 import android.content.Intent;
@@ -43,7 +44,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		idAddressString = "121.229.26.119";
+		idAddressString = "121.229.27.9";
 		btn_login = (Button) this.findViewById(R.id.loginBtn);
 		btn_regist = (Button) this.findViewById(R.id.registBtn);
 		edt_password = (EditText) this.findViewById(R.id.passwordEt);
@@ -77,7 +78,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 				mXmppConnection.connect();
 				//ProviderManager.getInstance().addIQProvider("query", "com:talky:formateam", new myIQProvider());
 				Looper.prepare();
-				Toast.makeText(LoginActivity.this, "服务器连接成功", Toast.LENGTH_SHORT).show();
+				Toast.makeText(LoginActivity.this, R.string.success_con_of, Toast.LENGTH_SHORT).show();
 				Looper.loop();
 			} catch (XMPPException e)
 			{
@@ -108,7 +109,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 					mXmppConnection.login(edt_username.getText().toString(), edt_password.getText().toString());
 					configure(ProviderManager.getInstance());
 					Looper.prepare();
-					Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+					Toast.makeText(LoginActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
 					Intent mainActivity = new Intent( LoginActivity.this, MainActivity.class);
 					startActivity(mainActivity);
 					LoginActivity.this.finish();
@@ -116,7 +117,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 				}
 				else {
 					Looper.prepare();
-					Toast.makeText(LoginActivity.this, "请检查网络", Toast.LENGTH_SHORT).show();
+					Toast.makeText(LoginActivity.this, R.string.internet_failure, Toast.LENGTH_SHORT).show();
 					Looper.loop();
 				}
 				
@@ -124,7 +125,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 			{
 				// TODO Auto-generated catch block
 				Looper.prepare();
-				Toast.makeText(LoginActivity.this, "账号或密码错误", Toast.LENGTH_SHORT).show();
+				Toast.makeText(LoginActivity.this, R.string.uername_or_password_failure, Toast.LENGTH_SHORT).show();
 				Looper.loop();
 				e.printStackTrace();
 			}
@@ -146,11 +147,11 @@ public class LoginActivity extends Activity implements OnClickListener{
 				AccountManager accountManager = mXmppConnection.getAccountManager();
 				accountManager.createAccount(username,password);
 
-				Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+				Toast.makeText(LoginActivity.this, R.string.success_rigester, Toast.LENGTH_SHORT).show();
 
 			} catch (XMPPException e) {
 				// TODO: handle exception
-				Toast.makeText(LoginActivity.this, "账号已存在", Toast.LENGTH_SHORT).show();
+				Toast.makeText(LoginActivity.this, R.string.replicated_username, Toast.LENGTH_SHORT).show();
 			}
 			break;
 		}

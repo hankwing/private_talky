@@ -2,6 +2,11 @@ package com.domen.entity;
 
 import android.graphics.drawable.Drawable;
 
+/**
+ * 话题实体类
+ * @author hankwing
+ *
+ */
 public class ThemeEntity {
 	private String name;
 	private String introduce;

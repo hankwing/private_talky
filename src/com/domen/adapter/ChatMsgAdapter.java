@@ -4,17 +4,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.domen.entity.MsgEntity;
-import com.domen.other.Expressions;
-import com.wxl.lettalk.R;
-
 import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -30,9 +25,16 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ChatMsgAdapter extends BaseAdapter {
+import com.domen.entity.MsgEntity;
+import com.domen.other.Expressions;
+import com.wxl.lettalk.R;
 
-	//����������ʽ
+/**
+ * 聊天记录listview的adapter
+ * @author hankwing
+ *
+ */
+public class ChatMsgAdapter extends BaseAdapter {
 
 	private LayoutInflater chat_inflater;
 	private List<MsgEntity> chat_list;
@@ -42,13 +44,12 @@ public class ChatMsgAdapter extends BaseAdapter {
 	private ImageButton ibtn_shit;
 
 	private int[] expressionImages;
-	private String[] expressionImageNames;
+	//private String[] expressionImageNames;
 	private int[] expressionImages1;
-	private String[] expressionImageNames1;
+	//private String[] expressionImageNames1;
 	private int[] expressionImages2;
-	private String[] expressionImageNames2;
-
-	Bitmap face;
+	//private String[] expressionImageNames2;
+	private Bitmap face;
 
 	public static interface MsgType{
 		int recv_msg = 0;
@@ -70,11 +71,11 @@ public class ChatMsgAdapter extends BaseAdapter {
 		chat_inflater = LayoutInflater.from(context);
 		
 		expressionImages = Expressions.expressionImgs;
-		expressionImageNames = Expressions.expressionImgNames;
+		//expressionImageNames = Expressions.expressionImgNames;
 		expressionImages1 = Expressions.expressionImgs1;
-		expressionImageNames1 = Expressions.expressionImgNames1;
+		//expressionImageNames1 = Expressions.expressionImgNames1;
 		expressionImages2 = Expressions.expressionImgs2;
-		expressionImageNames2 = Expressions.expressionImgNames2;
+		//expressionImageNames2 = Expressions.expressionImgNames2;
 	}
 
 	public int getItemType(int type) {
@@ -88,8 +89,6 @@ public class ChatMsgAdapter extends BaseAdapter {
 		}
 
 	}
-
-
 
 	@Override
 	public int getCount() {
@@ -120,10 +119,9 @@ public class ChatMsgAdapter extends BaseAdapter {
 		MsgEntity msgEnitiy = chat_list.get(arg0);
 		ViewHolder viewHolder= new ViewHolder();
 
-		//�ж��ǽ��ܻ��Ƿ���
 		if (arg1==null) {
 			if(msgEnitiy.getIsPositive()){
-				arg1 = chat_inflater.inflate(R.layout.chat_msg_right, null);
+				arg1 = chat_inflater.inflate(R.layout.chat_msg_right, null);				//在左边显示
 				viewHolder.tvContent = (TextView) arg1.findViewById(R.id.chat_msg_right_content);
 				viewHolder.ivHead = (ImageView) arg1.findViewById(R.id.chat_msg_right_name);
 				viewHolder.tvTime = (TextView) arg1.findViewById(R.id.chat_msg_right_time);
@@ -151,7 +149,7 @@ public class ChatMsgAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Toast.makeText(context, "���", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, "click on headImageView", Toast.LENGTH_SHORT).show();
 				/*Intent intent = new Intent(context,InfomaActivity.class);
 				context.startActivity(intent);*/
 			}
@@ -179,6 +177,7 @@ public class ChatMsgAdapter extends BaseAdapter {
 			@Override
 			public boolean onLongClick(View v) {
 				// TODO Auto-generated method stub
+				//显示点赞点屎界面
 				PopupWindow popupWindow = conPopupWindow(context);
 				popupWindow.showAsDropDown(v, 0, 0);
 				return false;
@@ -198,8 +197,8 @@ public class ChatMsgAdapter extends BaseAdapter {
 		return arg1;
 	}
 
+	//点赞点屎界面
 	PopupWindow conPopupWindow(Context context){
-
 
 		PopupWindow conWindow = new PopupWindow(context);
 		View contentView = LayoutInflater.from(context).inflate(R.layout.con_comment_layout, null);
@@ -229,6 +228,7 @@ public class ChatMsgAdapter extends BaseAdapter {
 		return conWindow;
 	}
 
+	//找到字符串里的表情
 	public SpannableString findFace(String content){
 		SpannableString spString = new SpannableString(content);
 		Pattern facePattern = Pattern.compile("Face:f" + "\\w{3}");

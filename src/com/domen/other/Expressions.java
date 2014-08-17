@@ -2,6 +2,11 @@ package com.domen.other;
 
 import com.wxl.lettalk.R;
 
+/**
+ * 表情
+ * @author hankwing
+ *
+ */
 public class Expressions {
 
 	public static int[] expressionImgs = new int[] { R.drawable.f000,
@@ -12,16 +17,11 @@ public class Expressions {
 			R.drawable.f017, R.drawable.f018, R.drawable.f019, R.drawable.f020,
 			R.drawable.f021, R.drawable.f022, R.drawable.f023 };
 
-	/**
-	 * ���ر���
-	 */
 	public static String[] expressionImgNames = new String[] { "[f000]",
 			"[f001]", "[f002]", "[f003]", "[f004]", "[f005]", "[f006]",
 			"[f007]", "[f008]", "[f009]", "[f010]", "[f011]", "[f012]",
 			"[f013]", "[f014]", "[f015]", "[f016]", "[f017]", "[f018]",
 			"[f019]", "[f020]", "[f021]", "[f022]", "[f023]" };
-	
-	
 	
 	public static int[] expressionImgs1 = new int[] { R.drawable.f024,
 		R.drawable.f025, R.drawable.f026, R.drawable.f027, R.drawable.f028,
@@ -30,18 +30,12 @@ public class Expressions {
 		R.drawable.f037, R.drawable.f038, R.drawable.f039, R.drawable.f040,
 		R.drawable.f041, R.drawable.f042, R.drawable.f043, R.drawable.f044,
 		R.drawable.f045, R.drawable.f046, R.drawable.f047 };
-	
-	/**
-	 * ���ر���
-	 */
+
 	public static String[] expressionImgNames1 = new String[] { "[f024]",
 		"[f025]", "[f026]", "[f027]", "[f028]", "[f029]", "[f030]",
 		"[f031]", "[f032]", "[f033]", "[f034]", "[f035]", "[f036]",
 		"[f037]", "[f038]", "[f039]", "[f040]", "[f041]", "[f042]",
 		"[f043]", "[f044]", "[f045]", "[f046]", "[f047]" };
-	
-	
-	
 	
 	public static int[] expressionImgs2 = new int[] { R.drawable.f048,
 		R.drawable.f049, R.drawable.f050, R.drawable.f051, R.drawable.f052,
@@ -51,9 +45,6 @@ public class Expressions {
 		R.drawable.f065, R.drawable.f066, R.drawable.f067, R.drawable.f068,
 		R.drawable.f069, R.drawable.f070, R.drawable.f071 };
 	
-	/**
-	 * ���ر���
-	 */
 	public static String[] expressionImgNames2 = new String[] { "[f048]",
 		"[f049]", "[f050]", "[f051]", "[f052]", "[f053]", "[f054]",
 		"[f055]", "[f056]", "[f057]", "[f058]", "[f059]", "[f060]",

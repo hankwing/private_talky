@@ -1,27 +1,25 @@
 package com.domen.adapter;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.domen.entity.ThemeEntity;
-import com.domen.lettalk.DecideActivity;
-import com.domen.start.InitApp;
-import com.wxl.lettalk.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import com.domen.activities.DecideActivity;
+import com.domen.entity.ThemeEntity;
+import com.wxl.lettalk.R;
 
+/**
+ * ViewPager的适配器 定义了每个标签下的adapter
+ * @author hankwing
+ *
+ */
 public class TabPagerAdapter extends PagerAdapter {
-
-	//�����б�
 	
 	List<ThemeListAdapter> adapterslist;
 	List<View> viewsList;
@@ -42,8 +40,7 @@ public class TabPagerAdapter extends PagerAdapter {
 	public Object instantiateItem(View container, int position) {
 		
 		((ViewPager)container).addView(viewsList.get(position),0);
-		//��ʼ��ÿ����Ļ
-		ThemeEntity entity = new ThemeEntity();
+		//ThemeEntity entity = new ThemeEntity();
 		ThemeListAdapter adapter;
 		switch (position) {
 		case 0:

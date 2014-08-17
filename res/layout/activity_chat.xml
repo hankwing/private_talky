@@ -17,12 +17,13 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="主 题"
+            android:text="@string/title"
             android:textColor="#cccccc"
-            android:textSize="21dp" />
+            android:textSize="@dimen/chatactivity_topic_fontsize" />
 
         <ImageButton
             android:id="@+id/ibtn_chat_back"
+            android:contentDescription="@string/re"
             android:layout_width="42dp"
             android:layout_height="37dp"
             android:layout_alignParentLeft="true"
@@ -32,6 +33,7 @@
 
         <ImageButton
             android:id="@+id/ibtn_group_member"
+            android:contentDescription="@string/re"
             android:layout_width="42dp"
             android:layout_height="37dp"
             android:layout_alignParentRight="true"
@@ -67,6 +69,7 @@
 
         <ImageView
             android:id="@+id/page0_select"
+            android:contentDescription="@string/re"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="matrix"
@@ -74,6 +77,7 @@
 
         <ImageView
             android:id="@+id/page1_select"
+            android:contentDescription="@string/re"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -82,6 +86,7 @@
 
         <ImageView
             android:id="@+id/page2_select"
+            android:contentDescription="@string/re"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -113,6 +118,7 @@
 
         <ImageView
             android:id="@+id/imageView2"
+            android:contentDescription="@string/re"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_centerVertical="true"
@@ -122,6 +128,7 @@
 
         <ImageView
             android:id="@+id/imageView1"
+            android:contentDescription="@string/re"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentRight="true"
@@ -131,6 +138,7 @@
 
         <ImageButton
             android:id="@+id/ibt_ranks"
+            android:contentDescription="@string/re"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_centerVertical="true"
@@ -140,6 +148,7 @@
 
         <ImageButton
             android:id="@+id/btn_add_image"
+            android:contentDescription="@string/re"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentLeft="true"
@@ -149,6 +158,7 @@
 
         <ImageButton
             android:id="@+id/btn_add_face"
+            android:contentDescription="@string/re"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_centerVertical="true"
@@ -179,7 +189,8 @@
 
             <EditText
                 android:id="@+id/chat_message"
-                android:layout_width="fill_parent"
+                android:inputType="text"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@null"
@@ -189,6 +200,7 @@
 
             <ImageButton
                 android:id="@+id/btn_add_record"
+                android:contentDescription="@string/re"
                 android:layout_width="20dp"
                 android:layout_height="30dp"
                 android:background="@drawable/icon_record" />
@@ -203,8 +215,8 @@
             android:layout_centerVertical="true"
             android:layout_marginBottom="7dp"
             android:layout_marginRight="7dp"
-            android:background="#666666"
-            android:text="发 送" />
+            android:background="@color/send_backcolor"
+            android:text="@string/send" />
     </RelativeLayout>
 
 </RelativeLayout>

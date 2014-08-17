@@ -2,16 +2,20 @@ package com.domen.entity;
 
 import android.graphics.drawable.Drawable;
 
+/**
+ * message实体类
+ * @author hankwing
+ *
+ */
 public class MsgEntity {
-	String content;
-	String date;
-	//�ж����������Ƿ���
-	Boolean isPositive;
-	//�ж��Ƿ����ı�����ͼƬ
-	Boolean isText;
-	String name;
-	Drawable head;
-	Drawable image;
+	
+	private String content;
+	private String date;
+	private Boolean isPositive;
+	private Boolean isText;
+	private String name;
+	private Drawable head;
+	private Drawable image;
 
 	public MsgEntity(){
 		content = null;
@@ -137,7 +141,5 @@ public class MsgEntity {
 	public void setIsText(Boolean isText) {
 		this.isText = isText;
 	}
-
-	
 	
 }

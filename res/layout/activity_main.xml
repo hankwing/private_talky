@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="49dp"
-        android:background="#454545" >
+        android:background="@color/mainactivity_top" >
 
         <TextView
             android:id="@+id/textView1"
@@ -32,9 +32,9 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="17dp"
-            android:text="个人"
-            android:textColor="#D9D9D9"
-            android:textSize="17dp" />
+            android:text="@string/info"
+            android:textColor="@color/font_color"
+            android:textSize="17sp" />
         
     </RelativeLayout>
 
@@ -51,8 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="动漫"
-            android:textSize="14dp" />
+            android:text="@string/society"
+            android:textSize="@dimen/mainactivity_topic_fontsize"/>
 
         <TextView
             android:id="@+id/theme_science"
@@ -60,8 +60,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="科学"
-            android:textSize="14dp" />
+            android:text="@string/science"
+            android:textSize="@dimen/mainactivity_topic_fontsize" />
 
         <TextView
             android:id="@+id/theme_enviro"
@@ -69,8 +69,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="环境"
-            android:textSize="14dp" />
+            android:text="@string/environment"
+            android:textSize="@dimen/mainactivity_topic_fontsize" />
 
         <TextView
             android:id="@+id/theme_women"
@@ -78,8 +78,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="女人"
-            android:textSize="14dp" />
+            android:text="@string/women"
+            android:textSize="@dimen/mainactivity_topic_fontsize" />
     </LinearLayout>
 
      <LinearLayout
@@ -89,6 +89,7 @@
 
             <ImageView
                 android:id="@+id/tab_under_img"
+                android:contentDescription="@string/choose_topic_bar"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="3.0"
@@ -96,6 +97,7 @@
                 android:src="@drawable/tab_under_img" />
 
             <ImageView
+                android:contentDescription="@string/choose_topic_bar"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0" />
@@ -104,10 +106,10 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/theme_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1.0"
-        android:background="#D9D9D9"
+        android:background="@color/font_color"
         android:flipInterval="30"
         android:persistentDrawingCache="animation" />
 

@@ -11,6 +11,7 @@
 
         <ImageView
             android:id="@+id/iv_head"
+            android:contentDescription="@string/head_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
@@ -25,8 +26,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
-            android:text="设置"
-            android:textSize="14dp" />
+            android:text="@string/setting"
+            android:textSize="14sp" />
     </RelativeLayout>
 
     <LinearLayout
@@ -48,8 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="昵称"
-                android:textSize="17dp" >
+                android:text="@string/surname"
+                android:textSize="17sp" >
             </TextView>
 
             <TextView
@@ -57,8 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"
-                android:text="Legend"
-                android:textSize="17dp" />
+                android:text="@string/test_name"
+                android:textSize="17sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -70,8 +71,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="等级"
-                android:textSize="17dp" >
+                android:text="@string/grade"
+                android:textSize="17sp" >
             </TextView>
 
             <TextView
@@ -80,7 +81,7 @@
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"
                 android:text="7级"
-                android:textSize="17dp" />
+                android:textSize="17sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -93,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:text="称号"
-                android:textSize="17dp" >
+                android:textSize="17sp" >
             </TextView>
 
             <TextView
@@ -102,7 +103,7 @@
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"
                 android:text="无敌天王"
-                android:textSize="17dp" />
+                android:textSize="17sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -115,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:text="被赞"
-                android:textSize="17dp" >
+                android:textSize="17sp" >
             </TextView>
 
             <TextView
@@ -124,7 +125,7 @@
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"
                 android:text="74"
-                android:textSize="17dp" />
+                android:textSize="17sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -137,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:text="被屎"
-                android:textSize="17dp" >
+                android:textSize="17sp" >
             </TextView>
 
             <TextView
@@ -146,7 +147,7 @@
                 android:layout_centerHorizontal="true"
                 android:padding="10dp"
                 android:text="47"
-                android:textSize="17dp" />
+                android:textSize="17sp" />
         </RelativeLayout>
     </LinearLayout>
 

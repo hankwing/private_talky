@@ -3,35 +3,25 @@ package com.domen.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.domen.entity.GroupEntity;
-import com.domen.lettalk.ChatActivity;
-import com.domen.start.InitApp;
-import com.wxl.lettalk.R;
-
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.domen.entity.GroupEntity;
+import com.wxl.lettalk.R;
 
 public class GroupAdapter extends BaseAdapter {
 
 	List<GroupEntity> group_list = new ArrayList<GroupEntity>();
-	private Context context;
+	//private Context context;
 	private LayoutInflater group_inflater;
-
-
-
 	public GroupAdapter(Context context,List<GroupEntity> group_list) {
 		// TODO Auto-generated constructor stub
-		this.context = context;
+		//this.context = context;
 		this.group_list = group_list;
 		group_inflater = LayoutInflater.from(context);
 	}

@@ -22,6 +22,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+/**
+ * 软件第一次进入时的介绍图片
+ * @author hankwing
+ *
+ */
 public class GuideActivity extends Activity implements OnClickListener,
 OnPageChangeListener{
 
@@ -34,8 +39,6 @@ OnPageChangeListener{
 	private GuidePagerAdapter vpAdapter;
 	private ImageView imageView;
 	private static final int GO_BTN = 10;
-
-	//�������ܽ���
 	private static final int[] help_pics = { R.drawable.guide0,
 		R.drawable.guide1, R.drawable.guide2, R.drawable.guide_cooperate};
 

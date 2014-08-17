@@ -122,9 +122,12 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int viewBehind=0x7f010002;
     }
     public static final class color {
-        public static final int Brown=0x7f080002;
-        public static final int Orange=0x7f080000;
-        public static final int Purple=0x7f080001;
+        public static final int Brown=0x7f050005;
+        public static final int Orange=0x7f050003;
+        public static final int Purple=0x7f050004;
+        public static final int font_color=0x7f050001;
+        public static final int mainactivity_top=0x7f050000;
+        public static final int send_backcolor=0x7f050002;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -133,10 +136,12 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f050000;
-        public static final int activity_vertical_margin=0x7f050001;
-        public static final int shadow_offset=0x7f050003;
-        public static final int shadow_width=0x7f050002;
+        public static final int activity_horizontal_margin=0x7f060000;
+        public static final int activity_vertical_margin=0x7f060001;
+        public static final int chatactivity_topic_fontsize=0x7f060005;
+        public static final int mainactivity_topic_fontsize=0x7f060004;
+        public static final int shadow_offset=0x7f060003;
+        public static final int shadow_width=0x7f060002;
     }
     public static final class drawable {
         public static final int chatfrom_bg_normal=0x7f020000;
@@ -406,9 +411,36 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int main=0x7f090000;
     }
     public static final class string {
-        public static final int action_settings=0x7f060001;
-        public static final int app_name=0x7f060000;
-        public static final int hello_world=0x7f060002;
+        public static final int action_settings=0x7f070004;
+        public static final int app_name=0x7f070003;
+        public static final int choose_topic_bar=0x7f070014;
+        public static final int environment=0x7f070012;
+        public static final int failed_open_photo=0x7f07001a;
+        public static final int grade=0x7f070019;
+        public static final int head_image=0x7f070015;
+        public static final int hello_world=0x7f070005;
+        public static final int info=0x7f07000f;
+        public static final int internet_failure=0x7f070008;
+        public static final int login=0x7f070002;
+        public static final int logo=0x7f070001;
+        public static final int password_=0x7f07000d;
+        public static final int re=0x7f07001c;
+        public static final int register=0x7f07000c;
+        public static final int replicated_username=0x7f07000b;
+        public static final int science=0x7f070011;
+        public static final int send=0x7f07001d;
+        public static final int setting=0x7f070016;
+        public static final int society=0x7f070010;
+        public static final int success_con_of=0x7f070006;
+        public static final int success_login=0x7f070007;
+        public static final int success_rigester=0x7f07000a;
+        public static final int surname=0x7f070017;
+        public static final int test_name=0x7f070018;
+        public static final int title=0x7f07001b;
+        public static final int uername_or_password_failure=0x7f070009;
+        public static final int username_=0x7f07000e;
+        public static final int welcome=0x7f070000;
+        public static final int women=0x7f070013;
     }
     public static final class style {
         /** 
@@ -434,15 +466,15 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f070000;
+        public static final int AppBaseTheme=0x7f080000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f070001;
-        public static final int MyDialogTheme=0x7f070002;
-        public static final int chat_content_style=0x7f070003;
-        public static final int chat_image_style=0x7f070004;
-        public static final int win8_large_button=0x7f070005;
+        public static final int AppTheme=0x7f080001;
+        public static final int MyDialogTheme=0x7f080002;
+        public static final int chat_content_style=0x7f080003;
+        public static final int chat_image_style=0x7f080004;
+        public static final int win8_large_button=0x7f080005;
     }
     public static final class styleable {
         /** Attributes that can be used with a SlidingMenu.

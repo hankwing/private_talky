@@ -9,20 +9,13 @@ import java.util.Map.Entry;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-//�ڴ滺��
 public class MemoryCache {
 
 	private static final String TAG = "MemoryCache";
-	// ���뻺��ʱ�Ǹ�ͬ������
-	// LinkedHashMap���췽�������һ������true�������map���Ԫ�ؽ��������ʹ�ô������ٵ������У���LRU
-	// �����ĺô������Ҫ�������е�Ԫ���滻�����ȱ������������ʹ�õ�Ԫ�����滻�����Ч��
 	private Map<String, Bitmap> cache = Collections
 			.synchronizedMap(new LinkedHashMap<String, Bitmap>(10, 1.5f, true));
-	// ������ͼƬ��ռ�õ��ֽڣ���ʼ0����ͨ���˱����ϸ���ƻ�����ռ�õĶ��ڴ�
-	private long size = 0;// current allocated size
-	// ����ֻ��ռ�õ������ڴ�
-	private long limit = 1000000;// max memory in bytes
-
+	private long size = 0;				// current allocated size
+	private long limit = 1000000;		// max memory in bytes
 	public MemoryCache() {
 		// use 25% of available heap size
 		setLimit(Runtime.getRuntime().maxMemory() / 4);
@@ -55,14 +48,9 @@ public class MemoryCache {
 		}
 	}
 
-	/**
-	 * �ϸ���ƶ��ڴ棬��������������滻�������ʹ�õ��Ǹ�ͼƬ����
-	 * 
-	 */
 	private void checkSize() {
 		Log.i(TAG, "cache size=" + size + " length=" + cache.size());
 		if (size > limit) {
-			// �ȱ����������ʹ�õ�Ԫ��
 			Iterator<Entry<String, Bitmap>> iter = cache.entrySet().iterator();
 			while (iter.hasNext()) {
 				Entry<String, Bitmap> entry = iter.next();
@@ -79,12 +67,6 @@ public class MemoryCache {
 		cache.clear();
 	}
 
-	/**
-	 * ͼƬռ�õ��ڴ�
-	 * 
-	 * @param bitmap
-	 * @return
-	 */
 	long getSizeInBytes(Bitmap bitmap) {
 		if (bitmap == null)
 			return 0;
