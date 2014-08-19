@@ -435,6 +435,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int success_login=0x7f070007;
         public static final int success_rigester=0x7f07000a;
         public static final int surname=0x7f070017;
+        public static final int sync=0x7f07001e;
         public static final int test_name=0x7f070018;
         public static final int title=0x7f07001b;
         public static final int uername_or_password_failure=0x7f070009;

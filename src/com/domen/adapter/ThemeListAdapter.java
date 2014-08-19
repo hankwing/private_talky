@@ -98,4 +98,7 @@ public class ThemeListAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	public void updateData( List<ThemeEntity> newData) {
+		themelist = newData;
+	}
 }

@@ -44,7 +44,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		idAddressString = "121.229.27.9";
+		idAddressString = "121.229.27.13";
 		btn_login = (Button) this.findViewById(R.id.loginBtn);
 		btn_regist = (Button) this.findViewById(R.id.registBtn);
 		edt_password = (EditText) this.findViewById(R.id.passwordEt);
@@ -55,6 +55,8 @@ public class LoginActivity extends Activity implements OnClickListener{
 		
 		XMPPCon conn = new XMPPCon();
 		conn.start();				//连接openfire服务器
+		//添加监听同步IQ包的IQProvider
+		
 	}
 	
 	/**

@@ -307,6 +307,7 @@ int string success_con_of 0x7f070006
 int string success_login 0x7f070007
 int string success_rigester 0x7f07000a
 int string surname 0x7f070017
+int string sync 0x7f07001e
 int string test_name 0x7f070018
 int string title 0x7f07001b
 int string uername_or_password_failure 0x7f070009

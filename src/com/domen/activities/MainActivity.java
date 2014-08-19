@@ -1,7 +1,14 @@
 package com.domen.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.provider.IQProvider;
+import org.jivesoftware.smack.provider.ProviderManager;
+import org.xmlpull.v1.XmlPullParser;
+
 import android.app.Activity;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -31,6 +38,9 @@ import android.widget.Toast;
 import com.domen.adapter.TabPagerAdapter;
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.entity.ThemeEntity;
+import com.domen.openfire.RequestSync;
+import com.domen.other.Util;
+import com.domen.start.LoginActivity;
 import com.domen.viewsolve.ShowView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
@@ -51,20 +61,21 @@ public class MainActivity extends Activity implements OnClickListener{
 	private TextView tv_enviro;
 	private SlidingMenu selfMenu;					//滑动侧边菜单
 	private ImageView headView;
-	private TextView tv_myself;						//用户信息
+	private TextView tv_myself;						//用户信息 暂时先做同步功能用 8.19.2014
 	private int offset = 0;
 	private	int currIndex = 0;
 	private int bmpW;
 	private ImageView tab_under_img;
+	private ArrayList<ArrayList<HashMap<String, Object>>> topics;
 	public static float Height = 0;					//屏幕高度
 	public static float Width = 0;					//屏幕宽度
+					//存储话题数据
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
-
 		tv_society = (TextView) this.findViewById(R.id.theme_comic);
 		tv_science = (TextView) this.findViewById(R.id.theme_science);
 		tv_enviro = (TextView) this.findViewById(R.id.theme_enviro);
@@ -73,10 +84,11 @@ public class MainActivity extends Activity implements OnClickListener{
 		tv_society.setOnClickListener(this);
 		tv_enviro.setOnClickListener(this);
 		tv_science.setOnClickListener(this);
-
+		tv_myself.setOnClickListener(this);
 		viewslist = new ArrayList<View>();
 		adapterslist = new ArrayList<ThemeListAdapter>();
-
+		//添加监听同步话题IQ包的IOProvider
+		ProviderManager.getInstance().addIQProvider("json", "com:talky:syncTopics", new SyncTopicsIQProvider());
 		DisplayMetrics Win = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(Win);
 		Width = Win.widthPixels;					//获得屏幕宽度像素数
@@ -124,15 +136,6 @@ public class MainActivity extends Activity implements OnClickListener{
 			}
 		});
 
-		tv_myself.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				selfMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-			}
-		});
-
 	}
 
 	private void InitImageView(){
@@ -169,7 +172,14 @@ public class MainActivity extends Activity implements OnClickListener{
 		case R.id.theme_enviro:
 			themeViewPager.setCurrentItem(2);
 			break;
-
+		case R.id.tv_main_self:
+			//selfMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+			//暂时先放同步功能
+			RequestSync rs = new RequestSync();
+			rs.setType(IQ.Type.GET);
+			LoginActivity.mXmppConnection.sendPacket(rs);
+			
+			break;
 		default:
 			break;
 		}
@@ -183,7 +193,7 @@ public class MainActivity extends Activity implements OnClickListener{
 
 		//一个话题就是一个Entity
 		ThemeEntity themeEnitiy = new ThemeEntity("你喜欢王小亮吗", "变态类", drawable);
-
+		
 		List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
 		themelist.add(themeEnitiy);
 
@@ -268,7 +278,59 @@ public class MainActivity extends Activity implements OnClickListener{
 			headView.setBackgroundDrawable(headDrawable);
 		}
 	}
+	
+	/**
+	 * 内部类 定义了请求同步IQ的Provider
+	 * @author hankwing
+	 *
+	 */
+	public class SyncTopicsIQProvider implements IQProvider{
+		
+		//private static final String PREFERRED_ENCODING = "UTF-8";
+		@Override
+		public IQ parseIQ(XmlPullParser parser) throws Exception {
+			// TODO Auto-generated method stub
+			int eventType = parser.getEventType();
+	        while (eventType != XmlPullParser.END_DOCUMENT) {
+	         if(eventType == XmlPullParser.TEXT) {
+	             //获得jsonData
+	        	 //parser.getText();
+	             topics = Util.AnalysisNotes(parser.getText());				//解析这个jsondata到数组中
+	             for( int i = 0; i< topics.size() ; i++ ) {
+	            	 ArrayList<HashMap<String, Object>> temp = topics.get(i);				//获得某个类下的话题
+	            	 final List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
+	            	 for( int j = 0; j< temp.size(); j++ ) {
+	            		 HashMap<String, Object> singleTopics = temp.get(j);				//获得某个话题，下面加入话题list
+	            		 Drawable drawable = getResources().getDrawable(R.drawable.theme_init_view);
+	            		 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
+	            					drawable.getIntrinsicHeight());
+	            		 ThemeEntity themeEnitiy = new ThemeEntity( (String)singleTopics.get("topics"),
+	            				 (String)singleTopics.get("type"), drawable);
+	            		 
+	            		 themelist.add(themeEnitiy);
+	            		 
+	            	 }
+	            	 final ThemeListAdapter tla = adapterslist.get(i);
+	            	 MainActivity.this.runOnUiThread(new Runnable() {
 
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							tla.updateData(themelist);
+							tla.notifyDataSetChanged();
+						}
+	            		 
+	            	 });
+	            	 
+	            	 
+	             }
+	         } 
+	         eventType = parser.next();
+	        }
+			return null;
+		}
+		
+	}
 
 }
 

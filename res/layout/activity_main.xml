@@ -32,7 +32,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="17dp"
-            android:text="@string/info"
+            android:text="@string/sync"
             android:textColor="@color/font_color"
             android:textSize="17sp" />
         
