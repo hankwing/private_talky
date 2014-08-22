@@ -35,6 +35,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.domen.adapter.TabPagerAdapter;
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.entity.ThemeEntity;
@@ -67,6 +68,7 @@ public class MainActivity extends Activity implements OnClickListener{
 	private int bmpW;
 	private ImageView tab_under_img;
 	private ArrayList<ArrayList<HashMap<String, Object>>> topics;
+	public static ProviderManager providerManager = null;
 	public static float Height = 0;					//屏幕高度
 	public static float Width = 0;					//屏幕宽度
 					//存储话题数据
@@ -88,7 +90,8 @@ public class MainActivity extends Activity implements OnClickListener{
 		viewslist = new ArrayList<View>();
 		adapterslist = new ArrayList<ThemeListAdapter>();
 		//添加监听同步话题IQ包的IOProvider
-		ProviderManager.getInstance().addIQProvider("json", "com:talky:syncTopics", new SyncTopicsIQProvider());
+		providerManager = ProviderManager.getInstance();
+		providerManager.addIQProvider("json", "com:talky:syncTopics", new SyncTopicsIQProvider());
 		DisplayMetrics Win = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(Win);
 		Width = Win.widthPixels;					//获得屏幕宽度像素数
@@ -192,7 +195,7 @@ public class MainActivity extends Activity implements OnClickListener{
 				drawable.getIntrinsicHeight());
 
 		//一个话题就是一个Entity
-		ThemeEntity themeEnitiy = new ThemeEntity("你喜欢王小亮吗", "变态类", drawable);
+		ThemeEntity themeEnitiy = new ThemeEntity("0", "你喜欢王小亮吗", "变态类", drawable );
 		
 		List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
 		themelist.add(themeEnitiy);
@@ -203,8 +206,8 @@ public class MainActivity extends Activity implements OnClickListener{
 
 	public ThemeListAdapter initScience(){
 
-		ThemeEntity themeEnitiy = new ThemeEntity("1", "1", null);
-		ThemeEntity themeEnitiy2 = new ThemeEntity("2","2",null);
+		ThemeEntity themeEnitiy = new ThemeEntity("2","1", "1", null);
+		ThemeEntity themeEnitiy2 = new ThemeEntity("3", "2","2",null);
 		List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
 		themelist.add(themeEnitiy);
 		themelist.add(themeEnitiy2);
@@ -279,6 +282,14 @@ public class MainActivity extends Activity implements OnClickListener{
 		}
 	}
 	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		LoginActivity.mXmppConnection.disconnect();
+		LoginActivity.mXmppConnection2.disconnect();
+		super.onDestroy();
+	}
+
 	/**
 	 * 内部类 定义了请求同步IQ的Provider
 	 * @author hankwing
@@ -290,12 +301,15 @@ public class MainActivity extends Activity implements OnClickListener{
 		@Override
 		public IQ parseIQ(XmlPullParser parser) throws Exception {
 			// TODO Auto-generated method stub
+			//Log.i("message", "receive an IQ");
 			int eventType = parser.getEventType();
-	        while (eventType != XmlPullParser.END_DOCUMENT) {
+			boolean done = false;
+	        while (!done) {
 	         if(eventType == XmlPullParser.TEXT) {
+	        	 done = true;
 	             //获得jsonData
 	        	 //parser.getText();
-	             topics = Util.AnalysisNotes(parser.getText());				//解析这个jsondata到数组中
+	             topics = Util.AnalysisTopics(parser.getText());				//解析这个jsondata到数组中
 	             for( int i = 0; i< topics.size() ; i++ ) {
 	            	 ArrayList<HashMap<String, Object>> temp = topics.get(i);				//获得某个类下的话题
 	            	 final List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
@@ -304,13 +318,12 @@ public class MainActivity extends Activity implements OnClickListener{
 	            		 Drawable drawable = getResources().getDrawable(R.drawable.theme_init_view);
 	            		 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
 	            					drawable.getIntrinsicHeight());
-	            		 ThemeEntity themeEnitiy = new ThemeEntity( (String)singleTopics.get("topics"),
+	            		 ThemeEntity themeEnitiy = new ThemeEntity( singleTopics.get("id").toString(), (String)singleTopics.get("topics"),
 	            				 (String)singleTopics.get("type"), drawable);
-	            		 
 	            		 themelist.add(themeEnitiy);
-	            		 
 	            	 }
 	            	 final ThemeListAdapter tla = adapterslist.get(i);
+	            	 //更新话题列表
 	            	 MainActivity.this.runOnUiThread(new Runnable() {
 
 						@Override
@@ -318,18 +331,14 @@ public class MainActivity extends Activity implements OnClickListener{
 							// TODO Auto-generated method stub
 							tla.updateData(themelist);
 							tla.notifyDataSetChanged();
-						}
-	            		 
-	            	 });
-	            	 
-	            	 
+						} 
+	            	 }); 	             	 
 	             }
 	         } 
 	         eventType = parser.next();
 	        }
 			return null;
 		}
-		
 	}
 
 }

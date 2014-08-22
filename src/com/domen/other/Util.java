@@ -24,7 +24,7 @@ public class Util {
 	 * @throws JarException
 	 * @throws JSONException
 	 */
-	public static ArrayList<ArrayList<HashMap<String, Object>>> AnalysisNotes(
+	public static ArrayList<ArrayList<HashMap<String, Object>>> AnalysisTopics(
 			String jsonStr) throws JarException, JSONException {
 
 		ArrayList<ArrayList<HashMap<String, Object>>> listWrapper = new ArrayList<ArrayList<HashMap<String, Object>>>();				//存放3个话题类型的list

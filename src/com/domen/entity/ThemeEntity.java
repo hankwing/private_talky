@@ -12,13 +12,17 @@ public class ThemeEntity {
 	private String introduce;
 	private Drawable picture;
 	private String temp;
-	public ThemeEntity(String name,String introduce,Drawable picture) {
+	private String id;
+	public ThemeEntity(String id, String name,String introduce,Drawable picture) {
 		// TODO Auto-generated constructor stub
+		this.id = id;
 		this.name = name;
 		this.introduce = introduce;
 		this.picture = picture;
+		
 	}
 	public ThemeEntity(){
+		this.id = null;
 		this.introduce = null;
 		this.name = null;
 		this.picture = null;
@@ -70,6 +74,14 @@ public class ThemeEntity {
 	 */
 	public void setTemp(String temp) {
 		this.temp = temp;
+	}
+	
+	public String getID() {
+		return id;
+	}
+	
+	public void setID( String id) {
+		this.id = id;
 	}
 	
 }

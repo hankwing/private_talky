@@ -39,12 +39,13 @@ public class LoginActivity extends Activity implements OnClickListener{
 	private String password;			//密码
 	private String idAddressString;
 	public static XMPPConnection mXmppConnection = null;
+	public static XMPPConnection mXmppConnection2 = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		idAddressString = "121.229.27.13";
+		idAddressString = "114.222.97.156";
 		btn_login = (Button) this.findViewById(R.id.loginBtn);
 		btn_regist = (Button) this.findViewById(R.id.registBtn);
 		edt_password = (EditText) this.findViewById(R.id.passwordEt);
@@ -75,9 +76,11 @@ public class LoginActivity extends Activity implements OnClickListener{
 			mConnectionConfiguration.setTruststorePassword("changeit");       
 			mConnectionConfiguration.setTruststoreType("bks");    
 			mXmppConnection = new XMPPConnection(mConnectionConfiguration);
+			mXmppConnection2 = new XMPPConnection(mConnectionConfiguration);
 			try
 			{
 				mXmppConnection.connect();
+				mXmppConnection2.connect();
 				//ProviderManager.getInstance().addIQProvider("query", "com:talky:formateam", new myIQProvider());
 				Looper.prepare();
 				Toast.makeText(LoginActivity.this, R.string.success_con_of, Toast.LENGTH_SHORT).show();
@@ -97,6 +100,13 @@ public class LoginActivity extends Activity implements OnClickListener{
 		return true;
 	}
 
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		
+		super.onDestroy();
+	}
+
 	/**
 	 * login with the content of "account" textview.
 	 * @author hankwing
@@ -109,6 +119,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 				//Log.i("Login", accountText.getText().toString());
 				if(mXmppConnection.isConnected()) {
 					mXmppConnection.login(edt_username.getText().toString(), edt_password.getText().toString());
+					mXmppConnection2.login("wengjia999", "123456");
 					configure(ProviderManager.getInstance());
 					Looper.prepare();
 					Toast.makeText(LoginActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();

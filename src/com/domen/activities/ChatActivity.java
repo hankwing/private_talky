@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,6 +35,7 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,9 +68,11 @@ import com.wxl.lettalk.R;
  * @author hankwing
  *
  */
-public class ChatActivity extends Activity{
+public class ChatActivity extends Activity implements OnClickListener{
 
 	//private Chat chat;
+	public static MultiUserChat chat = null;
+	public static MultiUserChat chat2 = null;
 	private Button btn_send;				//发送按钮
 	private EditText edt_message;			//用户聊天内容输入框
 	private ListView listView;				//聊天显示listview
@@ -113,154 +122,164 @@ public class ChatActivity extends Activity{
 		}else{
 			isPositive = false;
 		}
+		chat.addMessageListener(new PacketListener() {
 
+			@Override
+			public void processPacket(Packet arg0) {
+				// TODO Auto-generated method stub
+				//接收到消息 应该更新界面
+				Message msg = (Message) arg0;
+				Log.i("message", "roomMessageReceivedBy_hankwing:" + msg.getBody());
+			}
+			
+		});
+		chat2.addMessageListener(new PacketListener() {
+
+			@Override
+			public void processPacket(Packet arg0) {
+				// TODO Auto-generated method stub
+				Message msg = (Message) arg0;
+				Log.i("message", "roomMessageReceivedBy_wengjia999:" + msg.getBody());
+			}
+			
+		});
 		imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		
 		tv_theme =(TextView) this.findViewById(R.id.chat_theme);
 		listView =(ListView) this.findViewById(R.id.chat_list);
 		edt_message = (EditText) this.findViewById(R.id.chat_message);
+		edt_message.setOnClickListener(this);
 		btn_send = (Button) this.findViewById(R.id.btn_send);
+		btn_send.setOnClickListener(this);
 		btn_ranks = (ImageButton) this.findViewById(R.id.ibt_ranks);
+		btn_ranks.setOnClickListener(this);
 		tv_theme.setText(bundle.getString("theme"));
 		btn_add_image = (ImageButton) this.findViewById(R.id.btn_add_image);
+		btn_add_image.setOnClickListener(this);
 		btn_add_face = (ImageButton) this.findViewById(R.id.btn_add_face);
+		btn_add_face.setOnClickListener(this);
 		btn_add_record = (ImageButton) this.findViewById(R.id.btn_add_record);
+		btn_add_record.setOnClickListener(this);
 		facePager = (ViewPager) findViewById(R.id.vip_face);
 		page0 = (ImageView) findViewById(R.id.page0_select);
 		page1 = (ImageView) findViewById(R.id.page1_select);
 		page2 = (ImageView) findViewById(R.id.page2_select);
 		page_select = (LinearLayout) findViewById(R.id.page_select);
 		ibtn_back = (ImageButton) findViewById(R.id.ibtn_chat_back);
+		ibtn_back.setOnClickListener(this);
 		chatMsgAdapter = new ChatMsgAdapter(getApplicationContext(),msgList);
 		listView.setAdapter(chatMsgAdapter);				//定义适配器
 		initViewPager();									//初始化表情选择界面
-		btn_add_record.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				//进入录音界面
-				Intent intent = new Intent(ChatActivity.this,RecordActivity.class);
-				startActivityForResult(intent, 28);
-			}
-		});
-
-		btn_add_face.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				//打开表情选择窗口
-				facePager.setVisibility(View.VISIBLE);
-				page_select.setVisibility(View.VISIBLE);
-			}
-		});
-
-
-		btn_ranks.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(ChatActivity.this, RanksActivity.class);
-				startActivity(intent);
-
-			}
-		});
-
-		btn_add_image.setOnClickListener(new OnClickListener() {
-
-			//打开选择图片界面
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				String status = Environment.getExternalStorageState();
-				if (status.equals(Environment.MEDIA_MOUNTED))
-				{
-					Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-					intent.setType("image/*");
-					if (intent != null)
-					{
-						startActivityForResult(intent, 7);
-					}
-				} else
-				{
-					Toast.makeText(ChatActivity.this, getResources().getString(R.string.failed_open_photo),
-							Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
-		
-		edt_message.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				//控制表情界面的消失与显示
-				facePager.setVisibility(View.GONE);
-				page_select.setVisibility(View.GONE);
-			}
-		});
-
-		btn_send.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				//发送消息
-				MsgEntity msgEnitiy = new MsgEntity();
-				String content = "";
-				content = edt_message.getText().toString();
-				msgEnitiy.setContent(content);
-				Toast.makeText(getApplicationContext(), content, Toast.LENGTH_SHORT).show();
-				msgEnitiy.setDate(getTime());
-				msgEnitiy.setName(LoginActivity.mXmppConnection.getUser());
-				Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
-				msgEnitiy.setHead(head);
-				msgEnitiy.setIsPositive(isPositive);
-				msgList.add(msgEnitiy);
-				chatMsgAdapter.notifyDataSetChanged();				//通知适配器界面刷新
-				edt_message.setText("");
-				listView.setSelection(listView.getCount() - 1);
-
-			}
-		});
-
-		ibtn_back.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				AlertDialog dialog = new AlertDialog.Builder(
-						ChatActivity.this)
-				.setTitle("�˳���ʾ")
-				.setMessage("�������û�н����˳�����ܵ��ͷ�")
-				.setPositiveButton("ȷ��", new DialogInterface.OnClickListener()
-				{
-
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
-						Intent intent = new Intent(getApplicationContext(), CountActivity.class);
-						startActivity(intent);
-						ChatActivity.this.finish();
-					}
-				})
-				.setNegativeButton("�˳�", new DialogInterface.OnClickListener()
-				{
-
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
-						// TODO Auto-generated method stub
-						ChatActivity.this.finish();
-					}
-				}).create();
-				dialog.show();
-			}
-		});
-
 		imm.hideSoftInputFromWindow(edt_message.getWindowToken(), 0);
 		
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch( v.getId()) {
+		case R.id.btn_add_record:
+			//进入录音界面
+			Intent intent = new Intent(ChatActivity.this,RecordActivity.class);
+			startActivityForResult(intent, 28);
+			break;
+		case R.id.btn_add_face:
+			//打开表情选择窗口
+			facePager.setVisibility(View.VISIBLE);
+			page_select.setVisibility(View.VISIBLE);
+			break;
+		case R.id.ibt_ranks:
+			Intent ranksIntent = new Intent(ChatActivity.this, RanksActivity.class);
+			startActivity(ranksIntent);
+			break;
+		case R.id.btn_add_image:
+			String status = Environment.getExternalStorageState();
+			if (status.equals(Environment.MEDIA_MOUNTED))
+			{
+				Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+				getIntent.setType("image/*");
+				if (getIntent != null)
+				{
+					startActivityForResult(getIntent, 7);
+				}
+			} else
+			{
+				Toast.makeText(ChatActivity.this, getResources().getString(R.string.failed_open_photo),
+						Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case R.id.chat_message:
+			//控制表情界面的消失与显示
+			facePager.setVisibility(View.GONE);
+			page_select.setVisibility(View.GONE);
+			break;
+		case R.id.btn_send:
+			//发送消息
+			MsgEntity msgEnitiy = new MsgEntity();
+			String content = "";
+			content = edt_message.getText().toString();
+			msgEnitiy.setContent(content);
+			Toast.makeText(getApplicationContext(), content, Toast.LENGTH_SHORT).show();
+			msgEnitiy.setDate(getTime());
+			msgEnitiy.setName(LoginActivity.mXmppConnection.getUser());
+			Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
+			msgEnitiy.setHead(head);
+			msgEnitiy.setIsPositive(isPositive);
+			msgList.add(msgEnitiy);
+			chatMsgAdapter.notifyDataSetChanged();				//通知适配器界面刷新
+			edt_message.setText("");
+			listView.setSelection(listView.getCount() - 1);
+			
+			//下面向服务器发送信息
+			if(isPositive) {
+				isPositive = false;
+				try {
+					chat.sendMessage(content);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else {
+				isPositive = true;
+				try {
+					chat2.sendMessage(content);
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
+		case R.id.ibtn_chat_back:
+			AlertDialog dialog = new AlertDialog.Builder(
+					ChatActivity.this)
+			.setTitle("点屎")
+			.setMessage("呵呵")
+			.setPositiveButton("ȷ��", new DialogInterface.OnClickListener()
+			{
+
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					Intent intent = new Intent(getApplicationContext(), CountActivity.class);
+					startActivity(intent);
+					ChatActivity.this.finish();
+				}
+			})
+			.setNegativeButton("�˳�", new DialogInterface.OnClickListener()
+			{
+
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					// TODO Auto-generated method stub
+					ChatActivity.this.finish();
+				}
+			}).create();
+			dialog.show();
+			break;
+			
+		}
 	}
 
 	public String getTime(){
@@ -536,5 +555,11 @@ public class ChatActivity extends Activity{
 		mbody.insert(start, span);
 
 	}
+	
+	public static MultiUserChat getUserChat() {
+		return chat;
+	}
+
+	
 	
 }
