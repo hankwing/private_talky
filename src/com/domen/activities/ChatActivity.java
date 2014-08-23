@@ -58,6 +58,7 @@ import android.widget.Toast;
 
 import com.domen.adapter.ChatMsgAdapter;
 import com.domen.entity.MsgEntity;
+import com.domen.entity.UserInfo;
 import com.domen.other.Expressions;
 import com.domen.start.LoginActivity;
 import com.domen.viewsolve.ShowView;
@@ -72,7 +73,7 @@ public class ChatActivity extends Activity implements OnClickListener{
 
 	//private Chat chat;
 	public static MultiUserChat chat = null;
-	public static MultiUserChat chat2 = null;
+	// static MultiUserChat chat2 = null;
 	private Button btn_send;				//发送按钮
 	private EditText edt_message;			//用户聊天内容输入框
 	private ListView listView;				//聊天显示listview
@@ -128,21 +129,35 @@ public class ChatActivity extends Activity implements OnClickListener{
 			public void processPacket(Packet arg0) {
 				// TODO Auto-generated method stub
 				//接收到消息 应该更新界面
-				Message msg = (Message) arg0;
+				final Message msg = (Message) arg0;
+				ChatActivity.this.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						Log.i("message", UserInfo.roomJID+"/"+UserInfo.fullUserJID);
+						if( msg.getFrom().compareTo( UserInfo.roomJID+"/"+UserInfo.fullUserJID ) != 0 ) {
+							//房间内其他成员发来的信息 应该更新界面
+							updateMesList(msg.getBody(), !isPositive);				//收到消息更新界面
+						}
+						
+					}
+					
+				});
 				Log.i("message", "roomMessageReceivedBy_hankwing:" + msg.getBody());
 			}
 			
 		});
-		chat2.addMessageListener(new PacketListener() {
-
-			@Override
-			public void processPacket(Packet arg0) {
-				// TODO Auto-generated method stub
-				Message msg = (Message) arg0;
-				Log.i("message", "roomMessageReceivedBy_wengjia999:" + msg.getBody());
-			}
-			
-		});
+//		chat2.addMessageListener(new PacketListener() {
+//
+//			@Override
+//			public void processPacket(Packet arg0) {
+//				// TODO Auto-generated method stub
+//				Message msg = (Message) arg0;
+//				Log.i("message", "roomMessageReceivedBy_wengjia999:" + msg.getBody());
+//			}
+//			
+//		});
 		imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		
 		tv_theme =(TextView) this.findViewById(R.id.chat_theme);
@@ -215,40 +230,17 @@ public class ChatActivity extends Activity implements OnClickListener{
 			break;
 		case R.id.btn_send:
 			//发送消息
-			MsgEntity msgEnitiy = new MsgEntity();
-			String content = "";
-			content = edt_message.getText().toString();
-			msgEnitiy.setContent(content);
-			Toast.makeText(getApplicationContext(), content, Toast.LENGTH_SHORT).show();
-			msgEnitiy.setDate(getTime());
-			msgEnitiy.setName(LoginActivity.mXmppConnection.getUser());
-			Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
-			msgEnitiy.setHead(head);
-			msgEnitiy.setIsPositive(isPositive);
-			msgList.add(msgEnitiy);
-			chatMsgAdapter.notifyDataSetChanged();				//通知适配器界面刷新
-			edt_message.setText("");
-			listView.setSelection(listView.getCount() - 1);
+			updateMesList(edt_message.getText().toString() , isPositive);
 			
+			listView.setSelection(listView.getCount() - 1);
 			//下面向服务器发送信息
-			if(isPositive) {
-				isPositive = false;
-				try {
-					chat.sendMessage(content);
-				} catch (XMPPException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			try {
+				chat.sendMessage(edt_message.getText().toString());
+			} catch (XMPPException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else {
-				isPositive = true;
-				try {
-					chat2.sendMessage(content);
-				} catch (XMPPException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			edt_message.setText("");				//清空编辑框
 			break;
 		case R.id.ibtn_chat_back:
 			AlertDialog dialog = new AlertDialog.Builder(
@@ -280,6 +272,21 @@ public class ChatActivity extends Activity implements OnClickListener{
 			break;
 			
 		}
+	}
+	
+	public void updateMesList( String content ,boolean isPositive) {
+		
+		MsgEntity msgEnitiy = new MsgEntity();
+		msgEnitiy.setContent(content);
+		//Toast.makeText(getApplicationContext(), content, Toast.LENGTH_SHORT).show();
+		msgEnitiy.setDate(getTime());
+		msgEnitiy.setName(LoginActivity.mXmppConnection.getUser());
+		Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
+		msgEnitiy.setHead(head);
+		msgEnitiy.setIsPositive(isPositive);
+		msgList.add(msgEnitiy);
+		chatMsgAdapter.notifyDataSetChanged();				//通知适配器界面刷新
+		
 	}
 
 	public String getTime(){

@@ -286,7 +286,7 @@ public class MainActivity extends Activity implements OnClickListener{
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		LoginActivity.mXmppConnection.disconnect();
-		LoginActivity.mXmppConnection2.disconnect();
+		//LoginActivity.mXmppConnection2.disconnect();
 		super.onDestroy();
 	}
 

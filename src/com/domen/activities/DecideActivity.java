@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.domen.entity.UserInfo;
 import com.domen.openfire.RequestATeam;
 import com.domen.start.LoginActivity;
 import com.wxl.lettalk.R;
@@ -76,10 +77,10 @@ public class DecideActivity extends Activity implements OnClickListener{
 			bundle.putString("theme", theme);
 			intentIT.putExtras(bundle);
 			//请求组队
-			RequestATeam ptRA = new RequestATeam( LoginActivity.mXmppConnection2.getUser(), fromBundle.getString("topicID")
+			RequestATeam ptRA = new RequestATeam( LoginActivity.mXmppConnection.getUser(), fromBundle.getString("topicID")
 					, "positive");
 			ptRA.setType(IQ.Type.GET);
-			LoginActivity.mXmppConnection2.sendPacket(ptRA);
+			LoginActivity.mXmppConnection.sendPacket(ptRA);
 			Toast.makeText(this, "正在进行匹配", Toast.LENGTH_SHORT).show();		
 			break;
 		case R.id.btn_discuss_home:
@@ -119,6 +120,7 @@ public class DecideActivity extends Activity implements OnClickListener{
 	        	 //parser.getText();
 	        	 done = true;
 	             roomJID = arg0.getText();
+	             UserInfo.roomJID = roomJID;
 	             Log.i("message", "roomJId: " + roomJID);
 	         } 
 	         eventType = arg0.next();
@@ -131,10 +133,11 @@ public class DecideActivity extends Activity implements OnClickListener{
 					public void run() {
 						// TODO Auto-generated method stub
 						ChatActivity.chat = new MultiUserChat(LoginActivity.mXmppConnection, roomJID);
-						ChatActivity.chat2 = new MultiUserChat(LoginActivity.mXmppConnection2, roomJID);
+						//ChatActivity.chat2 = new MultiUserChat(LoginActivity.mXmppConnection2, roomJID);
 						try {
 							ChatActivity.chat.join(LoginActivity.mXmppConnection.getUser());
-							ChatActivity.chat2.join(LoginActivity.mXmppConnection2.getUser());
+							
+							//ChatActivity.chat2.join(LoginActivity.mXmppConnection2.getUser());
 							//匹配成功 进入chatActitity
 							Toast.makeText(DecideActivity.this, "匹配成功", Toast.LENGTH_SHORT).show();
 							DecideActivity.this.startActivity(intentIT);
