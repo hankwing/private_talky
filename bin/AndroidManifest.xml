@@ -9,6 +9,7 @@
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -16,40 +17,61 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@android:style/Theme.Holo.Light" >
         <activity
             android:name="com.domen.start.InitApp"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+				
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+         <activity android:name="com.domen.activities.MainActivity"
+             	   android:launchMode="singleTask" >
+        </activity>
+        
         <activity android:name="com.domen.activities.ChatActivity" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.domen.activities.DecideActivity" />
         </activity>
-        <activity android:name="com.domen.start.LoginActivity" >
+        
+        <activity android:name="com.domen.start.LoginActivity" 
+            	  android:windowSoftInputMode="adjustResize" >
+            
         </activity>
-        <activity android:name="com.domen.activities.MainActivity" >
-        </activity>
+       
         <activity android:name="com.domen.activities.DecideActivity" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.domen.activities.MainActivity" />
         </activity>
+        
         <activity android:name="com.domen.start.GuideActivity" >
         </activity>
+        
         <activity android:name="com.domen.activities.InformaActivity" >
         </activity>
+        
         <activity android:name="com.domen.activities.GroupActivity" >
         </activity>
+        
         <activity android:name="com.domen.activities.SettingActivity" >
         </activity>
+        
         <activity
             android:name="com.domen.activities.RecordActivity"
             android:theme="@android:style/Theme.Dialog" >
         </activity>
+        
         <activity
             android:name="com.domen.activities.RanksActivity"
             android:theme="@style/MyDialogTheme" >
         </activity>
+        
         <activity
             android:name="com.domen.activities.CountActivity"
             android:theme="@style/MyDialogTheme" >

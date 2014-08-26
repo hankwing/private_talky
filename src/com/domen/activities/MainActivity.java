@@ -1,5 +1,6 @@
 package com.domen.activities;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
+import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
@@ -39,7 +40,6 @@ import android.widget.Toast;
 import com.domen.adapter.TabPagerAdapter;
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.entity.ThemeEntity;
-import com.domen.openfire.RequestSync;
 import com.domen.other.Util;
 import com.domen.start.LoginActivity;
 import com.domen.viewsolve.ShowView;
@@ -62,7 +62,6 @@ public class MainActivity extends Activity implements OnClickListener{
 	private TextView tv_enviro;
 	private SlidingMenu selfMenu;					//滑动侧边菜单
 	private ImageView headView;
-	private TextView tv_myself;						//用户信息 暂时先做同步功能用 8.19.2014
 	private int offset = 0;
 	private	int currIndex = 0;
 	private int bmpW;
@@ -76,17 +75,14 @@ public class MainActivity extends Activity implements OnClickListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
+		forceShowActionBarOverflowMenu();
 		tv_society = (TextView) this.findViewById(R.id.theme_comic);
 		tv_science = (TextView) this.findViewById(R.id.theme_science);
 		tv_enviro = (TextView) this.findViewById(R.id.theme_enviro);
-		tv_myself = (TextView) this.findViewById(R.id.tv_main_self);
-
 		tv_society.setOnClickListener(this);
 		tv_enviro.setOnClickListener(this);
 		tv_science.setOnClickListener(this);
-		tv_myself.setOnClickListener(this);
 		viewslist = new ArrayList<View>();
 		adapterslist = new ArrayList<ThemeListAdapter>();
 		//添加监听同步话题IQ包的IOProvider
@@ -156,8 +152,8 @@ public class MainActivity extends Activity implements OnClickListener{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -175,14 +171,14 @@ public class MainActivity extends Activity implements OnClickListener{
 		case R.id.theme_enviro:
 			themeViewPager.setCurrentItem(2);
 			break;
-		case R.id.tv_main_self:
-			//selfMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-			//暂时先放同步功能
-			RequestSync rs = new RequestSync();
-			rs.setType(IQ.Type.GET);
-			LoginActivity.mXmppConnection.sendPacket(rs);
-			
-			break;
+//		case R.id.tv_main_self:
+//			//selfMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+//			//暂时先放同步功能
+//			RequestSync rs = new RequestSync();
+//			rs.setType(IQ.Type.GET);
+//			LoginActivity.mXmppConnection.sendPacket(rs);
+//			
+//			break;
 		default:
 			break;
 		}
@@ -286,6 +282,7 @@ public class MainActivity extends Activity implements OnClickListener{
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		LoginActivity.mXmppConnection.disconnect();
+		LoginActivity.mXmppConnection = null;
 		//LoginActivity.mXmppConnection2.disconnect();
 		super.onDestroy();
 	}
@@ -340,6 +337,23 @@ public class MainActivity extends Activity implements OnClickListener{
 			return null;
 		}
 	}
+	
+	/**
+	 * 在有物理按键的手机上依旧显示overflow按键
+	 */
+	private void forceShowActionBarOverflowMenu() {  
+	    try {  
+	        ViewConfiguration config = ViewConfiguration.get(this);  
+	        Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");  
+	        if (menuKeyField != null) {  
+	            menuKeyField.setAccessible(true);  
+	            menuKeyField.setBoolean(config, false);  
+	        }  
+	    } catch (Exception e) {  
+	        e.printStackTrace();  
+	    }  
+	}  
+	
 
 }
 

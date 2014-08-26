@@ -24,32 +24,25 @@ public class InitApp extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 
-		//handler
-		new Handler().postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				SharedPreferences settings = getSharedPreferences("runTime", 0);
-				if(settings.getInt("time", 0)==0) {
-					Intent intent = new Intent(InitApp.this, GuideActivity.class);
-					InitApp.this.startActivity(intent);
-					settings.edit().putInt("time", 1).commit();
-					InitApp.this.finish();
-					overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-				}
-				else {
-					Intent mainIntent = new Intent(InitApp.this, LoginActivity.class);
-					if(getIntent().getExtras() != null) {
-						mainIntent.putExtra("flag", getIntent().getExtras().getInt("flag"));
-					}
-					InitApp.this.startActivity(mainIntent);
-					InitApp.this.finish();
-					//overridePendingTransition(R.anim.zoomin, R.anim.zoomout);  
-					//overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
-					overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-				}
+		SharedPreferences settings = getSharedPreferences("runTime", 0);
+		if(settings.getInt("time", 0)==0) {
+			Intent intent = new Intent(InitApp.this, GuideActivity.class);
+			startActivity(intent);
+			settings.edit().putInt("time", 1).commit();
+			finish();
+			overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+		}
+		else {
+			Intent mainIntent = new Intent(InitApp.this, LoginActivity.class);
+			if(getIntent().getExtras() != null) {
+				mainIntent.putExtra("flag", getIntent().getExtras().getInt("flag"));
 			}
-		}, 1000);
+			startActivity(mainIntent);
+			finish();
+			//overridePendingTransition(R.anim.zoomin, R.anim.zoomout);  
+			//overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+			overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+		}
 	}
 
 }

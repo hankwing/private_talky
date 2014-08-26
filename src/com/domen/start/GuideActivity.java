@@ -43,7 +43,7 @@ OnPageChangeListener{
 		R.drawable.guide1, R.drawable.guide2, R.drawable.guide_cooperate};
 
 	/**
-	 * (�� Javadoc) Title: onCreate Description:
+	 * ( Javadoc) Title: onCreate Description:
 	 * 
 	 * @param savedInstanceState
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -73,7 +73,7 @@ OnPageChangeListener{
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						Intent mainIntent = new Intent(GuideActivity.this, com.domen.start.LoginActivity.class);
+						Intent mainIntent = new Intent(GuideActivity.this, LoginActivity.class);
 						startActivity(mainIntent);
 						finish();
 					}
@@ -98,9 +98,7 @@ OnPageChangeListener{
 		viewPager = (ViewPager) main.findViewById(R.id.guidePages);
 		vpAdapter = new GuidePagerAdapter(pageViews);
 		viewPager.setAdapter(vpAdapter);
-		// �󶨻ص�
 		viewPager.setOnPageChangeListener(this);
-		// ��ʼ���ײ�С��
 		initDots();
 		setContentView(main); 
 	}

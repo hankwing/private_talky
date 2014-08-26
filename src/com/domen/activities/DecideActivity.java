@@ -9,7 +9,9 @@ import org.xmlpull.v1.XmlPullParser;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -42,6 +44,7 @@ public class DecideActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		setContentView(R.layout.activity_decide);
 		MainActivity.providerManager.addIQProvider("success", "com:talky:asRequestATeamIQ", new ResultIQProvider());
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		btn_neg = (Button) this.findViewById(R.id.btn_negative);
 		btn_neg.setOnClickListener(this);
 		btn_pos = (Button) this.findViewById(R.id.btn_positive);
@@ -93,6 +96,18 @@ public class DecideActivity extends Activity implements OnClickListener{
 		
 	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+	    // Respond to the action bar's Up/Home button
+	    case android.R.id.home:
+	        NavUtils.navigateUpFromSameTask(this);
+	        return true;
+	    }
+		return super.onOptionsItemSelected(item);
+	}
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
