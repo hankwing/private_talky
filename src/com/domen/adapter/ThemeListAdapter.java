@@ -6,10 +6,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.domen.entity.ThemeEntity;
@@ -39,6 +37,9 @@ public class ThemeListAdapter extends BaseAdapter {
 		return themelist.size();
 	}
 
+	/**
+	 * 获得点击的对象
+	 */
 	@Override
 	public Object getItem(int position) {
 		// TODO Auto-generated method stub
@@ -54,47 +55,24 @@ public class ThemeListAdapter extends BaseAdapter {
 	static class ViewHolder{
 		public TextView tvName;
 		public TextView tvBack;
-		public Button btLook;
-		public Button btJoin;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
-		ThemeEntity themeEnitiy = themelist.get(position);
-		convertView = theme_inflater.inflate(R.layout.theme_list_view, null, false);
-		ViewHolder viewHolder = new ViewHolder();
-		viewHolder.tvName = (TextView) convertView.findViewById(R.id.theme_name);
-		viewHolder.tvBack = (TextView) convertView.findViewById(R.id.theme_back);
-		viewHolder.btJoin = (Button) convertView.findViewById(R.id.btn_join);
-		viewHolder.btLook = (Button) convertView.findViewById(R.id.btn_look);
-		viewHolder.tvName.setText(themeEnitiy.getName());
-		viewHolder.tvName.setTextColor(Color.WHITE);
-		viewHolder.tvBack.setBackgroundDrawable(themeEnitiy.getPicture());
-	
-		viewHolder.btJoin.setOnClickListener(new OnClickListener() {
+		if( convertView == null ) {
+			ThemeEntity themeEnitiy = themelist.get(position);
+			convertView = theme_inflater.inflate(R.layout.single_topic_view, parent, false);
+			ViewHolder viewHolder = new ViewHolder();
+			viewHolder.tvName = (TextView) convertView.findViewById(R.id.theme_name);
+			viewHolder.tvBack = (TextView) convertView.findViewById(R.id.theme_back);
+			viewHolder.tvName.setText(themeEnitiy.getName());
+			viewHolder.tvName.setTextColor(Color.WHITE);
+			viewHolder.tvBack.setBackgroundDrawable(themeEnitiy.getPicture());
+			convertView.setTag(viewHolder);
 			
-			@Override
-			public void onClick(View v) {
-				v.requestFocus();
-				//加入等待逻辑
-				//Toast.makeText(context, "join", Toast.LENGTH_SHORT).show();
-			}
-		});
-		
-		viewHolder.btLook.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				//观看逻辑
-				v.requestFocus();
-				//Toast.makeText(context, "look", Toast.LENGTH_SHORT).show();
-			}
-		});
-		
-		convertView.setTag(viewHolder);
+		}
 		return convertView;
 	}
 

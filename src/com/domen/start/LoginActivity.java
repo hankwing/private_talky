@@ -247,13 +247,16 @@ public class LoginActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		switch( v.getId() ) {
 		case R.id.loginBtn:
-			if( InternetStatu.isConnected ) {
-				loginThread = new Login();
-				loginThread.execute( edt_username.getText().toString(), edt_password.getText().toString());
-			}
-			else {
-				Toast.makeText(this, R.string.internet_failure, Toast.LENGTH_SHORT).show();
-			}
+//			if( InternetStatu.isConnected ) {
+//				loginThread = new Login();
+//				loginThread.execute( edt_username.getText().toString(), edt_password.getText().toString());
+//			}
+//			else {
+//				Toast.makeText(this, R.string.internet_failure, Toast.LENGTH_SHORT).show();
+//			}
+			Intent mainActivity = new Intent( LoginActivity.this, MainActivity.class);
+			startActivity(mainActivity);
+			LoginActivity.this.finish();
 			break;
 		case R.id.registBtn:
 			if( InternetStatu.isConnected ) {

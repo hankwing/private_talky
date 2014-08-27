@@ -1,82 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/theme_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/font_color" >
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/pager_title_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="#9D9696"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp" />
+    </android.support.v4.view.ViewPager>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:background="#949494"
-        android:gravity="center"
-        android:orientation="horizontal" >
+        android:id="@+id/drawer_drawer_layout"
+        android:layout_width="240dp"
+        android:clickable="true"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#cccccc"
+        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/theme_comic"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="@string/society"
-            android:textSize="@dimen/mainactivity_topic_fontsize"/>
-
-        <TextView
-            android:id="@+id/theme_science"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="@string/science"
-            android:textSize="@dimen/mainactivity_topic_fontsize" />
-
-        <TextView
-            android:id="@+id/theme_enviro"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="@string/environment"
-            android:textSize="@dimen/mainactivity_topic_fontsize" />
-
-        <TextView
-            android:id="@+id/theme_women"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="@string/women"
-            android:textSize="@dimen/mainactivity_topic_fontsize" />
-    </LinearLayout>
-
-     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="5dp"
-            android:orientation="horizontal" >
+            android:layout_height="49dp" >
 
             <ImageView
-                android:id="@+id/tab_under_img"
-                android:contentDescription="@string/choose_topic_bar"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="3.0"
-                android:scaleType="matrix"
-                android:src="@drawable/tab_under_img" />
+                android:id="@+id/iv_head"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/icon_temp_head"
+                android:contentDescription="@string/head_image"
+                android:padding="2dp" />
 
-            <ImageView
-                android:contentDescription="@string/choose_topic_bar"
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:text="@string/setting"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0" />
+                android:layout_height="21dp" >
+            </TextView>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_preference_first_normal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="@string/surname"
+                    android:textSize="17sp" >
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:padding="10dp"
+                    android:text="@string/test_name"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_preference_normal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="@string/grade"
+                    android:textSize="17sp" >
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:padding="10dp"
+                    android:text="7级"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_preference_normal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="称号"
+                    android:textSize="17sp" >
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:padding="10dp"
+                    android:text="无敌天王"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_preference_normal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="被赞"
+                    android:textSize="17sp" >
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:padding="10dp"
+                    android:text="74"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_preference_last_normal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="被屎"
+                    android:textSize="17sp" >
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:padding="10dp"
+                    android:text="47"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
-    
-    <android.support.v4.view.ViewPager
-        android:id="@+id/theme_view"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1.0"
-        android:background="@color/font_color"
-        android:flipInterval="30"
-        android:persistentDrawingCache="animation" />
 
-</LinearLayout>
+</android.support.v4.widget.DrawerLayout>
