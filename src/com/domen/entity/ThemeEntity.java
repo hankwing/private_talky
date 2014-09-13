@@ -1,6 +1,5 @@
 package com.domen.entity;
 
-import android.graphics.drawable.Drawable;
 
 /**
  * 话题实体类
@@ -9,23 +8,20 @@ import android.graphics.drawable.Drawable;
  */
 public class ThemeEntity {
 	private String name;
-	private String introduce;
-	private Drawable picture;
+	private String bitmapUrl;
 	private String temp;
 	private String id;
-	public ThemeEntity(String id, String name,String introduce,Drawable picture) {
+	public ThemeEntity(String id, String name,String bitmapUrl) {
 		// TODO Auto-generated constructor stub
 		this.id = id;
 		this.name = name;
-		this.introduce = introduce;
-		this.picture = picture;
+		this.bitmapUrl = bitmapUrl;
 		
 	}
 	public ThemeEntity(){
 		this.id = null;
-		this.introduce = null;
 		this.name = null;
-		this.picture = null;
+		this.bitmapUrl = null;
 	}
 	/**
 	 * @return the name
@@ -39,29 +35,18 @@ public class ThemeEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	/**
-	 * @return the introduce
-	 */
-	public String getIntroduce() {
-		return introduce;
-	}
-	/**
-	 * @param introduce the introduce to set
-	 */
-	public void setIntroduce(String introduce) {
-		this.introduce = introduce;
-	}
+
 	/**
 	 * @return the picture
 	 */
-	public Drawable getPicture() {
-		return picture;
+	public String getBitmapUrl() {
+		return bitmapUrl;
 	}
 	/**
 	 * @param picture the picture to set
 	 */
-	public void setPicture(Drawable picture) {
-		this.picture = picture;
+	public void setPicture(String bitmapUrl) {
+		this.bitmapUrl = bitmapUrl;
 	}
 	/**
 	 * @return the temp

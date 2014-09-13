@@ -10,8 +10,10 @@ import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.xmlpull.v1.XmlPullParser;
 
+import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,6 +26,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -32,13 +35,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.adapter.ThemeTabAdapter;
+import com.domen.adapter.ThemeTabAdapter.ThemeFragment;
 import com.domen.entity.ThemeEntity;
-import com.domen.other.Util;
+import com.domen.openfire.RequestSync;
 import com.domen.start.LoginActivity;
+import com.domen.tools.TopicDatabaseOpenHelper;
+import com.domen.tools.Util;
 import com.domen.viewsolve.ShowView;
 import com.wxl.lettalk.R;
 
@@ -48,18 +53,22 @@ import com.wxl.lettalk.R;
  * @author hankwing
  * 
  */
-public class MainActivity extends FragmentActivity implements OnClickListener {
+public class MainActivity extends FragmentActivity implements OnClickListener,
+		LoaderManager.LoaderCallbacks<Cursor> {
 
+	public static final String bitmapUrl = "http://img0.ph.126.net/A4zoc_Khk4IalYGLCrGelg==/6619281001048883256.jpg";
+	public static final String LOG_TAG = "mainActivity";
 	private ViewPager themeViewPager; // 话题选择page
+	private ThemeTabAdapter themeTabAdapter;
 	private List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
-	private DrawerLayout mDrawerLayout;			//左侧滑动栏
-	private ActionBarDrawerToggle mDrawerToggle;				//滑动栏触发器
+	private DrawerLayout mDrawerLayout; // 左侧滑动栏
+	private ActionBarDrawerToggle mDrawerToggle; // 滑动栏触发器
 	private ImageView headView;
-	private ArrayList<ArrayList<HashMap<String, Object>>> topics;
+	private ArrayList<HashMap<String, Object>> topics;
 	public static ProviderManager providerManager = null;
 	public static float Height = 0; // 屏幕高度
 	public static float Width = 0; // 屏幕宽度
-	
+	private TopicDatabaseOpenHelper dbOpenHelper = null;
 
 	// 存储话题数据
 
@@ -67,51 +76,65 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		forceShowActionBarOverflowMenu(); 				// 强制显示overFlowButton
-		adapterslist = new ArrayList<ThemeListAdapter>();
-		adapterslist.add(initComic());
+		forceShowActionBarOverflowMenu(); // 强制显示overFlowButton
+		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
+		getLoaderManager().initLoader(0, null, this).forceLoad();				//初始化话题获取Loader
+		getLoaderManager().initLoader(1, null, this).forceLoad();				//初始化话题获取Loader
+		getLoaderManager().initLoader(2, null, this).forceLoad();				//初始化话题获取Loader
+		getLoaderManager().initLoader(3, null, this).forceLoad();				//初始化话题获取Loader
+		adapterslist = new ArrayList<ThemeListAdapter>();			//适配器list 传给tabAdapter
+		adapterslist.add(new ThemeListAdapter( this, null, 0));
+		adapterslist.add(new ThemeListAdapter( this, null, 0));
+		adapterslist.add(new ThemeListAdapter( this, null, 0));
+		adapterslist.add(new ThemeListAdapter( this, null, 0));
 		// 添加监听同步话题IQ包的IOProvider
 		providerManager = ProviderManager.getInstance();
 		providerManager.addIQProvider("json", "com:talky:syncTopics",
 				new SyncTopicsIQProvider());
 		DisplayMetrics Win = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(Win);
-		Width = Win.widthPixels; 		// 获得屏幕宽度像素数
-		Height = Win.heightPixels; 		// 获得屏幕高度像素数
+		Width = Win.widthPixels; // 获得屏幕宽度像素数
+		Height = Win.heightPixels; // 获得屏幕高度像素数
 		// showView = new ShowView(getApplicationContext(), this.Width,
 		// this.Height);
-		//initSelfMenu(); 				// 初始化侧边滑动菜单 定义一系列事件
+		// initSelfMenu(); // 初始化侧边滑动菜单 定义一系列事件
 		themeViewPager = (ViewPager) this.findViewById(R.id.theme_pager);
-		//4个主题
-		String[] titles = {getResources().getString(R.string.society),
-						   getResources().getString(R.string.science),
-						   getResources().getString(R.string.environment),
-						   getResources().getString(R.string.women)};
-		themeViewPager.setAdapter(new ThemeTabAdapter(this, 
-				getSupportFragmentManager() , 4, titles, adapterslist));
+		// 4个主题
+		String[] titles = { getResources().getString(R.string.society),
+				getResources().getString(R.string.science),
+				getResources().getString(R.string.environment),
+				getResources().getString(R.string.women) };
+		themeTabAdapter = new ThemeTabAdapter(this,
+				getSupportFragmentManager(), 4, titles, adapterslist);
+		themeViewPager.setAdapter(themeTabAdapter);
+
 		mDrawerLayout = (DrawerLayout) this.findViewById(R.id.drawer_layout);
-		//添加打开关闭drawer的监听器
+		// 添加打开关闭drawer的监听器
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
 
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getActionBar().setTitle(MainActivity.this.getTitle());
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
+			/** Called when a drawer has settled in a completely closed state. */
+			public void onDrawerClosed(View view) {
+				super.onDrawerClosed(view);
+				getActionBar().setTitle(MainActivity.this.getTitle());
+				invalidateOptionsMenu(); // creates call to
+											// onPrepareOptionsMenu()
+			}
 
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getActionBar().setTitle(getResources().getString(R.string.info));
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        //getActionBar().setHomeButtonEnabled(true);
-        
+			/** Called when a drawer has settled in a completely open state. */
+			public void onDrawerOpened(View drawerView) {
+				super.onDrawerOpened(drawerView);
+				getActionBar()
+						.setTitle(getResources().getString(R.string.info));
+				invalidateOptionsMenu(); // creates call to
+											// onPrepareOptionsMenu()
+			}
+		};
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		// getActionBar().setHomeButtonEnabled(true);
+
 	}
 
 	/**
@@ -139,29 +162,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 		default:
 			break;
 		}
-	}
-
-	/**
-	 * 添加话题	之后改为从数据库查找
-	 * @return
-	 */
-	public ThemeListAdapter initComic() {
-
-		Drawable drawable = getResources().getDrawable(
-				R.drawable.theme_init_view);
-		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
-				drawable.getIntrinsicHeight());
-
-		// 一个话题就是一个Entity
-		ThemeEntity themeEnitiy = new ThemeEntity("0", "你好徐梦雪", "健康类",
-				drawable);
-
-		List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
-		themelist.add(themeEnitiy);
-
-		ThemeListAdapter adapter = new ThemeListAdapter(
-				getApplicationContext(), themelist);
-		return adapter;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -198,6 +198,16 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 		super.onDestroy();
 	}
 
+	public void processStartElement(XmlPullParser xpp) {
+		String name = xpp.getName();
+		String uri = xpp.getNamespace();
+		if ("".equals(uri)) {
+			System.out.println("Start element: " + name);
+		} else {
+			System.out.println("Start element: {" + uri + "}" + name);
+		}
+	}
+
 	/**
 	 * 内部类 定义了请求同步IQ的Provider
 	 * 
@@ -213,40 +223,38 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 			// Log.i("message", "receive an IQ");
 			int eventType = parser.getEventType();
 			boolean done = false;
+			String requestType = null; // 请求类型
+			int position = 0; // 适配器编号
+			String topicType = null;
 			while (!done) {
-				if (eventType == XmlPullParser.TEXT) {
+				if (eventType == XmlPullParser.START_TAG) {
+					if (parser.getName().equals("json")) {
+						requestType = parser.getAttributeValue(0);
+						position = Integer.valueOf(parser.getAttributeValue(1));
+						topicType = parser.getAttributeValue(2);
+					}
+				} else if (eventType == XmlPullParser.TEXT) {
 					done = true;
 					// 获得jsonData
 					// parser.getText();
-					topics = Util.AnalysisTopics(parser.getText()); // 解析这个jsondata到数组中
-					for (int i = 0; i < topics.size(); i++) {
-						ArrayList<HashMap<String, Object>> temp = topics.get(i); // 获得某个类下的话题
-						final List<ThemeEntity> themelist = new ArrayList<ThemeEntity>();
-						for (int j = 0; j < temp.size(); j++) {
-							HashMap<String, Object> singleTopics = temp.get(j); // 获得某个话题，下面加入话题list
-							Drawable drawable = getResources().getDrawable(
-									R.drawable.theme_init_view);
-							drawable.setBounds(0, 0,
-									drawable.getIntrinsicWidth(),
-									drawable.getIntrinsicHeight());
-							ThemeEntity themeEnitiy = new ThemeEntity(
-									singleTopics.get("id").toString(),
-									(String) singleTopics.get("topics"),
-									(String) singleTopics.get("type"), drawable);
-							themelist.add(themeEnitiy);
-						}
-						final ThemeListAdapter tla = adapterslist.get(i);
-						// 更新话题列表
-						MainActivity.this.runOnUiThread(new Runnable() {
 
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								tla.updateData(themelist);
-								tla.notifyDataSetChanged();
-							}
-						});
-					}
+					topics = Util.AnalysisTopics(parser.getText(), requestType); // 解析这个jsondata到数组中
+					dbOpenHelper.updateTopics(topics, topicType); // 将新话题数据存入数据库中
+					getLoaderManager().restartLoader(position, null, MainActivity.this).forceLoad();	//重新获取刷新后的话题数据
+//					// 更新话题列表
+					MainActivity.this.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							SwipeRefreshListFragmentFragment page = (SwipeRefreshListFragmentFragment) themeViewPager
+									.getAdapter().instantiateItem(
+											themeViewPager,
+											themeViewPager.getCurrentItem());
+							page.setRefreshing(false); // 停止界面刷新
+
+						}
+					});
 				}
 				eventType = parser.next();
 			}
@@ -270,47 +278,103 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 调用invalidateOptionsMenu()后触发此方法
 	 */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        
-        return super.onPrepareOptionsMenu(menu);
-    }
-    
-    /**
-     * 在activity运行中 配置改变时 同时改变toggle的配置
-     */
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-    
-    /**
-     * 在恢复activity时同时恢复drawer的状态
-     */
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// If the nav drawer is open, hide action items related to the content
+		// view
 
-    /**
-     * 菜单点击事件
-     */
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	/**
+	 * 在activity运行中 配置改变时 同时改变toggle的配置
+	 */
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	/**
+	 * 在恢复activity时同时恢复drawer的状态
+	 */
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+	/**
+	 * 菜单点击事件
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
-		//如果在drawer显示的情况下点击了item,那么就触发该item
+		// 如果在drawer显示的情况下点击了item,那么就触发该item
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	public static class SwipeRefreshListFragmentFragment extends ThemeFragment {
+
+		private String topicType;
+		private int requestType;
+		private int position;
+
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			Bundle bundle = getArguments();
+			topicType = bundle.getString(RequestSync.TOPICTYPE);
+			requestType = bundle.getInt(RequestSync.REQUESTTYPE);
+			position = bundle.getInt(RequestSync.POSITION);
+			// Notify the system to allow an options menu for this fragment.
+		}
+
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
+			// 添加监听器
+			setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					RequestSync rs = new RequestSync(topicType, requestType,
+							position);
+					rs.setType(IQ.Type.GET);
+					LoginActivity.mXmppConnection.sendPacket(rs);
+				}
+			});
+			// END_INCLUDE (setup_refreshlistener)
+		}
+	}
+
+	/**
+	 * 得到AsyncTaskLoader 加载话题数据
+	 */
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		// TODO Auto-generated method stub
+		return new TopicDatabaseOpenHelper.TopicsLoader(this , id);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		// TODO Auto-generated method stub
+		//处理返回的结果cursor;
+		adapterslist.get(arg0.getId()).changeCursor(arg1);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		// TODO Auto-generated method stub
+		adapterslist.get(arg0.getId()).swapCursor(null);
 	}
 
 }

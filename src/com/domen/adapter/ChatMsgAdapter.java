@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.domen.entity.MsgEntity;
-import com.domen.other.Expressions;
+import com.domen.tools.Expressions;
 import com.wxl.lettalk.R;
 
 /**

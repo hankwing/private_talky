@@ -59,8 +59,8 @@ import android.widget.Toast;
 import com.domen.adapter.ChatMsgAdapter;
 import com.domen.entity.MsgEntity;
 import com.domen.entity.UserInfo;
-import com.domen.other.Expressions;
 import com.domen.start.LoginActivity;
+import com.domen.tools.Expressions;
 import com.domen.viewsolve.ShowView;
 import com.wxl.lettalk.R;
 
