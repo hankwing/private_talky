@@ -21,5 +21,13 @@
         <item name="android:focusable">true</item>
         <item name="android:lineSpacingExtra">2dp</item>
     </style>
+    
+    <style name="login_button">
+        <item name="android:background">@drawable/login_button</item>
+    </style>
+
+    <style name="register_button">
+        <item name="android:background">@drawable/register_button</item>
+    </style>
 
 </resources>

@@ -11,44 +11,44 @@ public class MsgEntity {
 	
 	private String content;
 	private String date;
-	private Boolean isPositive;
+	private Boolean isLeft;
 	private Boolean isText;
 	private String name;
 	private Drawable head;
-	private Drawable image;
+	private Drawable image;				//聊天图片
 
 	public MsgEntity(){
 		content = null;
 		date =null;
 		name =null;
-		isPositive=false;
+		isLeft=false;
 		isText=true;
 	}
 
-	public MsgEntity(String content,String date,String name,Boolean isPositive){
+	public MsgEntity(String content,String date,String name,Boolean isLeft){
 		this.content = content;
 		this.date = date;
 		this.name = name;
-		this.isPositive = isPositive;
+		this.isLeft = isLeft;
 		
 	}
 
-	public MsgEntity(String content,String date,String name,Drawable head,Boolean isPositive){
+	public MsgEntity(String content,String date,String name,Drawable head,Boolean isLeft){
 		this.content = content;
 		this.date = date;
 		this.name = name;
 		this.head = head;
 		this.isText = true;
-		isPositive = false;
+		this.isLeft = isLeft;
 	}
 	
-	public MsgEntity(String content,String date,String name,Drawable head,Boolean isPositive,Boolean isText){
+	public MsgEntity(String content,String date,String name,Drawable head,Boolean isLeft,Boolean isText){
 		this.content = content;
 		this.date = date;
 		this.name = name;
 		this.head = head;
 		this.isText = isText;
-		isPositive = false;
+		this.isLeft = isLeft;
 	}
 	
 	/**
@@ -78,14 +78,14 @@ public class MsgEntity {
 	/**
 	 * @return the isPositive
 	 */
-	public Boolean getIsPositive() {
-		return isPositive;
+	public Boolean getIsLeft() {
+		return isLeft;
 	}
 	/**
 	 * @param isPositive the isPositive to set
 	 */
-	public void setIsPositive(Boolean isPositive) {
-		this.isPositive = isPositive;
+	public void setIsLeft(Boolean isLeft) {
+		this.isLeft = isLeft;
 	}
 	/**
 	 * @return the name

@@ -3,10 +3,6 @@ package com.domen.activities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.domen.adapter.GroupAdapter;
-import com.domen.entity.GroupEntity;
-import com.wxl.lettalk.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -16,6 +12,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import com.domen.adapter.GroupAdapter;
+import com.domen.entity.GroupEntity;
+import com.wxl.lettalk.R;
 
 
 public class GroupActivity extends Activity {

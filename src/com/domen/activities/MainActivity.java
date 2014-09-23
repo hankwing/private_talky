@@ -5,15 +5,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.xmlpull.v1.XmlPullParser;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -25,10 +29,11 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,9 +44,8 @@ import android.widget.ImageView;
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.adapter.ThemeTabAdapter;
 import com.domen.adapter.ThemeTabAdapter.ThemeFragment;
-import com.domen.entity.ThemeEntity;
 import com.domen.openfire.RequestSync;
-import com.domen.start.LoginActivity;
+import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
 import com.domen.tools.Util;
 import com.domen.viewsolve.ShowView;
@@ -58,17 +62,18 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 	public static final String bitmapUrl = "http://img0.ph.126.net/A4zoc_Khk4IalYGLCrGelg==/6619281001048883256.jpg";
 	public static final String LOG_TAG = "mainActivity";
-	private ViewPager themeViewPager; // 话题选择page
+	private static ViewPager themeViewPager; // 话题选择page
 	private ThemeTabAdapter themeTabAdapter;
 	private List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
 	private DrawerLayout mDrawerLayout; // 左侧滑动栏
 	private ActionBarDrawerToggle mDrawerToggle; // 滑动栏触发器
 	private ImageView headView;
 	private ArrayList<HashMap<String, Object>> topics;
-	public static ProviderManager providerManager = null;
 	public static float Height = 0; // 屏幕高度
 	public static float Width = 0; // 屏幕宽度
 	private TopicDatabaseOpenHelper dbOpenHelper = null;
+	private static SharedPreferences sharedPref;
+	public static XMPPTCPConnection mXmppConnection;
 
 	// 存储话题数据
 
@@ -77,7 +82,18 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		forceShowActionBarOverflowMenu(); // 强制显示overFlowButton
+		//刷新话题
+		new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				mXmppConnection = MXMPPConnection.getInstance();
+			}
+			
+		}).start();
 		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
+		sharedPref = getPreferences(Context.MODE_PRIVATE);
 		getLoaderManager().initLoader(0, null, this).forceLoad();				//初始化话题获取Loader
 		getLoaderManager().initLoader(1, null, this).forceLoad();				//初始化话题获取Loader
 		getLoaderManager().initLoader(2, null, this).forceLoad();				//初始化话题获取Loader
@@ -88,8 +104,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		adapterslist.add(new ThemeListAdapter( this, null, 0));
 		adapterslist.add(new ThemeListAdapter( this, null, 0));
 		// 添加监听同步话题IQ包的IOProvider
-		providerManager = ProviderManager.getInstance();
-		providerManager.addIQProvider("json", "com:talky:syncTopics",
+		ProviderManager.addIQProvider("json", "com:talky:syncTopics",
 				new SyncTopicsIQProvider());
 		DisplayMetrics Win = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(Win);
@@ -107,7 +122,41 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		themeTabAdapter = new ThemeTabAdapter(this,
 				getSupportFragmentManager(), 4, titles, adapterslist);
 		themeViewPager.setAdapter(themeTabAdapter);
+		
+		/**
+		 * 超过固定时间 则自动刷新话题列表
+		 */
+		themeViewPager.setOnPageChangeListener(new OnPageChangeListener(){
 
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				long currentTime = System.currentTimeMillis();
+				long previousTime = sharedPref.getLong("refreshTime" + arg0, 0);
+				if( previousTime == 0 || currentTime - previousTime > 300000) {
+					//刷新
+					SwipeRefreshListFragmentFragment page = (SwipeRefreshListFragmentFragment) themeViewPager
+							.getAdapter().instantiateItem(themeViewPager,arg0);
+					page.setRefreshing(true);				//开始刷新
+					page.getOnFreshListener().onRefresh();
+					
+				}
+			}
+			
+		});
+		
 		mDrawerLayout = (DrawerLayout) this.findViewById(R.id.drawer_layout);
 		// 添加打开关闭drawer的监听器
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -135,6 +184,16 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// getActionBar().setHomeButtonEnabled(true);
 
+	}
+
+	/**
+	 * 界面创建完成后 检查话题更新
+	 */
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		
+		super.onResume();
 	}
 
 	/**
@@ -192,8 +251,20 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		LoginActivity.mXmppConnection.disconnect();
-		LoginActivity.mXmppConnection = null;
+		new Thread( new Runnable(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					mXmppConnection.disconnect();
+				} catch (NotConnectedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}).start();
 		// LoginActivity.mXmppConnection2.disconnect();
 		super.onDestroy();
 	}
@@ -327,6 +398,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		private String topicType;
 		private int requestType;
 		private int position;
+		private OnRefreshListener mOnRefreshListener;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -335,23 +407,53 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			topicType = bundle.getString(RequestSync.TOPICTYPE);
 			requestType = bundle.getInt(RequestSync.REQUESTTYPE);
 			position = bundle.getInt(RequestSync.POSITION);
+			mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					int i = themeViewPager.getCurrentItem();				//获取当前的话题类别
+					long currentTime = System.currentTimeMillis();
+					long previousTime = sharedPref.getLong("refreshTime" + i, 0);
+					if( previousTime == 0 || currentTime - previousTime > 300000) {
+						//第一次刷新
+						RequestSync rs = new RequestSync(topicType, requestType,
+								position);
+						rs.setType(IQ.Type.GET);
+						try {
+							mXmppConnection.sendPacket(rs);
+						} catch (NotConnectedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						sharedPref.edit().putLong("refreshTime" + i, currentTime).commit();
+					}
+					else {
+						setRefreshing(false); 
+					}
+					
+				}
+			};
 			// Notify the system to allow an options menu for this fragment.
+		}
+		
+		public OnRefreshListener getOnFreshListener(){
+			return mOnRefreshListener;
 		}
 
 		@Override
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
 			// 添加监听器
-			setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					RequestSync rs = new RequestSync(topicType, requestType,
-							position);
-					rs.setType(IQ.Type.GET);
-					LoginActivity.mXmppConnection.sendPacket(rs);
-				}
-			});
+			setOnRefreshListener(mOnRefreshListener);
 			// END_INCLUDE (setup_refreshlistener)
+			//检查话题更新
+			long currentTime = System.currentTimeMillis();
+			long previousTime = sharedPref.getLong("refreshTime" + 0, 0);
+			if( previousTime == 0 || currentTime - previousTime > 300000) {
+				//刷新第一个屏幕
+				setRefreshing(true);				//开始刷新
+				getOnFreshListener().onRefresh();
+				
+			}
 		}
 	}
 

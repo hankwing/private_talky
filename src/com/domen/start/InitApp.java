@@ -1,12 +1,11 @@
 package com.domen.start;
 
-import com.wxl.lettalk.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
+
+import com.wxl.lettalk.R;
 
 /**
  * 应用初始化时的工作，如果第一次打开那么就打开介绍界面，否则正常进入应用

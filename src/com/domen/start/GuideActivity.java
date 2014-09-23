@@ -2,9 +2,6 @@ package com.domen.start;
 
 import java.util.ArrayList;
 
-import com.domen.adapter.GuidePagerAdapter;
-import com.wxl.lettalk.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,14 +10,17 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.domen.adapter.GuidePagerAdapter;
+import com.wxl.lettalk.R;
 
 /**
  * 软件第一次进入时的介绍图片

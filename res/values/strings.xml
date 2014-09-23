@@ -36,5 +36,17 @@
     <string name="sync">同步</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="refresh_time">refreshTime</string>
+    <string name="topicName">topicName</string>
+    <string name="seeking">寻找对手中</string>
+    <string name="connecting">连接中</string>
+    <string name="nickname">账号／昵称</string>
+    <string name="password">密码</string>
+    <string name="password_again">确认密码</string>
+    <string name="return_to_mainview">返回</string>
+    <string name="inconsistent">两次密码不一致</string>
+    <string name="password_tip">请输入6到16位的账号和密码</string>
+     <string name="use_third">使用第三方账号登录</string>
+    <string name="wait_for_update">新功能待添加</string>
 
 </resources>

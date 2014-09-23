@@ -5,7 +5,7 @@
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical" >
 
-    <RelativeLayout
+<!--     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
@@ -17,7 +17,7 @@
             android:layout_marginLeft="7dp"
             android:text=" 2012/11/20 8:57"
             android:textSize="17dp" />
-    </RelativeLayout>
+    </RelativeLayout> -->
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -26,18 +26,17 @@
 
         <ImageView
             android:id="@+id/chat_msg_left_name"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="14dp"
+            android:layout_marginLeft="10dp"
             android:background="@drawable/round_image" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="26dp"
             android:layout_toRightOf="@+id/chat_msg_left_name"
             android:background="@drawable/chatfrom_bg_normal" >
 
@@ -52,10 +51,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
+                android:textSize="19sp"
                 android:focusable="false"
-                android:text="content"
-                android:textSize="21dp" 
-                style="@style/chat_content_style"/>
+                android:gravity="left|center"/>
         </RelativeLayout>
     </RelativeLayout>
 

@@ -1,9 +1,9 @@
 package com.domen.activities;
 
-import com.wxl.lettalk.R;
-
 import android.app.Activity;
 import android.os.Bundle;
+
+import com.wxl.lettalk.R;
 
 public class SettingActivity extends Activity {
 
