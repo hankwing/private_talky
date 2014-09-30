@@ -40,7 +40,7 @@ OnPageChangeListener{
 	private ImageView imageView;
 	private static final int GO_BTN = 10;
 	private static final int[] help_pics = { R.drawable.guide0,
-		R.drawable.guide1, R.drawable.guide2, R.drawable.guide_cooperate};
+		R.drawable.guide1, R.drawable.guide_cooperate};
 
 	/**
 	 * ( Javadoc) Title: onCreate Description:
@@ -66,7 +66,7 @@ OnPageChangeListener{
 			if(i == (help_pics.length -1)){
 				imgbtn = new ImageButton(this);
 				imgbtn.setBackgroundResource(R.drawable.help_go_btn_selector);
-				imgbtn.setOnClickListener(this);
+				//imgbtn.setOnClickListener(this);
 				imgbtn.setTag(GO_BTN);
 				imgbtn.setOnClickListener(new OnClickListener() {
 

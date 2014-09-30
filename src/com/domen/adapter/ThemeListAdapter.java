@@ -37,7 +37,7 @@ public class ThemeListAdapter extends CursorAdapter {
 		this.context = context;
 		theme_inflater = LayoutInflater.from(this.context);
 	}
-	
+
 	static class ViewHolder{
 		public TextView tvName;
 		private NetworkImageView mNetworkImageView;

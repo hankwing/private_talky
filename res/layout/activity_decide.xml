@@ -4,20 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/tv_topicName"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:background="#cccccc"
-        android:contentDescription="@string/topicName"
-        android:gravity="center" >
-    </TextView>
-
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/layout_altitude"
-        android:layout_below="@+id/tv_topicName" >
+        android:layout_above="@+id/layout_altitude" >
 
         <RelativeLayout
             android:id="@+id/text_introduce"

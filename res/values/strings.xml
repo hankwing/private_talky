@@ -33,7 +33,7 @@
     <string name="title">主 题</string>
     <string name="re">return</string>
     <string name="send">发 送</string>
-    <string name="sync">同步</string>
+    <string name="quit">退出</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="refresh_time">refreshTime</string>
@@ -48,5 +48,14 @@
     <string name="password_tip">请输入6到16位的账号和密码</string>
      <string name="use_third">使用第三方账号登录</string>
     <string name="wait_for_update">新功能待添加</string>
+    <string name="subtitle">称号</string>
+    <string name="favour">被赞</string>
+    <string name="shit">被屎</string>
+    <string name="cancel_requestateam">退出队列</string>
+    <string name="cancel_requestateam_dialog">取消组队中</string>
+    <string name="quitchat">退出聊天</string>
+    <string name="dialog_positive">确认</string>
+    <string name="dialog_negative">取消</string>
+    <string name="no_memeber">退出房间</string>
 
 </resources>

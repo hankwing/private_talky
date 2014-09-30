@@ -1,11 +1,15 @@
 package com.domen.activities;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.harmony.javax.security.sasl.SaslException;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -13,6 +17,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.xmlpull.v1.XmlPullParser;
 
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -24,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -34,16 +40,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.adapter.ThemeTabAdapter;
 import com.domen.adapter.ThemeTabAdapter.ThemeFragment;
+import com.domen.customView.ProgressDialogWithKeyBack;
 import com.domen.openfire.RequestSync;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
@@ -67,42 +76,53 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
 	private DrawerLayout mDrawerLayout; // 左侧滑动栏
 	private ActionBarDrawerToggle mDrawerToggle; // 滑动栏触发器
-	private ImageView headView;
+	
+	private ImageView headView;						//用户头像
+	private TextView drawerUserName;				//用户名
+	private TextView drawerRank;					//等级
+	private TextView drawerSubTitle;				//称号
+	private TextView drawerFavour;					//被赞
+	private TextView drawerShit;					//被屎
+	
 	private ArrayList<HashMap<String, Object>> topics;
 	public static float Height = 0; // 屏幕高度
 	public static float Width = 0; // 屏幕宽度
 	private TopicDatabaseOpenHelper dbOpenHelper = null;
 	private static SharedPreferences sharedPref;
+	private SharedPreferences accountInfo;
+	private ProgressDialog loginDialog = null; // 注册时显示的进度条
 	public static XMPPTCPConnection mXmppConnection;
-
-	// 存储话题数据
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		forceShowActionBarOverflowMenu(); // 强制显示overFlowButton
-		//刷新话题
-		new Thread(new Runnable(){
+		sharedPref = getPreferences(Context.MODE_PRIVATE); // 保存刷新时间 用户账号信息等
+		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
+
+		// 刷新话题
+		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				mXmppConnection = MXMPPConnection.getInstance();
 			}
-			
+
 		}).start();
+		
 		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
-		sharedPref = getPreferences(Context.MODE_PRIVATE);
-		getLoaderManager().initLoader(0, null, this).forceLoad();				//初始化话题获取Loader
-		getLoaderManager().initLoader(1, null, this).forceLoad();				//初始化话题获取Loader
-		getLoaderManager().initLoader(2, null, this).forceLoad();				//初始化话题获取Loader
-		getLoaderManager().initLoader(3, null, this).forceLoad();				//初始化话题获取Loader
-		adapterslist = new ArrayList<ThemeListAdapter>();			//适配器list 传给tabAdapter
-		adapterslist.add(new ThemeListAdapter( this, null, 0));
-		adapterslist.add(new ThemeListAdapter( this, null, 0));
-		adapterslist.add(new ThemeListAdapter( this, null, 0));
-		adapterslist.add(new ThemeListAdapter( this, null, 0));
+
+		getLoaderManager().initLoader(0, null, this).forceLoad(); // 初始化话题获取Loader
+		getLoaderManager().initLoader(1, null, this).forceLoad(); // 初始化话题获取Loader
+		getLoaderManager().initLoader(2, null, this).forceLoad(); // 初始化话题获取Loader
+		getLoaderManager().initLoader(3, null, this).forceLoad(); // 初始化话题获取Loader
+		adapterslist = new ArrayList<ThemeListAdapter>(); // 适配器list
+															// 传给tabAdapter
+		adapterslist.add(new ThemeListAdapter(this, null, 0));
+		adapterslist.add(new ThemeListAdapter(this, null, 0));
+		adapterslist.add(new ThemeListAdapter(this, null, 0));
+		adapterslist.add(new ThemeListAdapter(this, null, 0));
 		// 添加监听同步话题IQ包的IOProvider
 		ProviderManager.addIQProvider("json", "com:talky:syncTopics",
 				new SyncTopicsIQProvider());
@@ -122,22 +142,22 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		themeTabAdapter = new ThemeTabAdapter(this,
 				getSupportFragmentManager(), 4, titles, adapterslist);
 		themeViewPager.setAdapter(themeTabAdapter);
-		
+
 		/**
 		 * 超过固定时间 则自动刷新话题列表
 		 */
-		themeViewPager.setOnPageChangeListener(new OnPageChangeListener(){
+		themeViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 
 			@Override
 			public void onPageScrollStateChanged(int arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
@@ -145,19 +165,31 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				// TODO Auto-generated method stub
 				long currentTime = System.currentTimeMillis();
 				long previousTime = sharedPref.getLong("refreshTime" + arg0, 0);
-				if( previousTime == 0 || currentTime - previousTime > 300000) {
-					//刷新
+				if (previousTime == 0 || currentTime - previousTime > 300000) {
+					// 刷新
 					SwipeRefreshListFragmentFragment page = (SwipeRefreshListFragmentFragment) themeViewPager
-							.getAdapter().instantiateItem(themeViewPager,arg0);
-					page.setRefreshing(true);				//开始刷新
+							.getAdapter().instantiateItem(themeViewPager, arg0);
+					page.setRefreshing(true); // 开始刷新
 					page.getOnFreshListener().onRefresh();
-					
+
 				}
 			}
-			
+
 		});
-		
+
 		mDrawerLayout = (DrawerLayout) this.findViewById(R.id.drawer_layout);
+		drawerUserName = (TextView) findViewById(R.id.drawer_username);
+		drawerRank = (TextView) findViewById(R.id.drawer_rank);
+		drawerSubTitle = (TextView) findViewById(R.id.drawer_subtitle);
+		drawerFavour = (TextView) findViewById(R.id.drawer_favour);
+		drawerShit = (TextView) findViewById(R.id.drawer_shit);
+		//暂时由客户端指定用户信息
+		drawerUserName.setText(accountInfo.getString("account", null));				//得到用户名
+		drawerRank.setText("1级");
+		drawerSubTitle.setText("牙牙学语");
+		drawerFavour.setText("0次");
+		drawerShit.setText("0次");
+		
 		// 添加打开关闭drawer的监听器
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_open,
@@ -169,6 +201,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				getActionBar().setTitle(MainActivity.this.getTitle());
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
+
 			}
 
 			/** Called when a drawer has settled in a completely open state. */
@@ -182,25 +215,21 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		// getActionBar().setHomeButtonEnabled(true);
-
-	}
-
-	/**
-	 * 界面创建完成后 检查话题更新
-	 */
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		
-		super.onResume();
+		// if restart then login
+		if (savedInstanceState != null
+				&& savedInstanceState.getBoolean("restart")) {
+			// Log.i("message", "account: " + sharedPref.getString("account",
+			// null));
+			new Login().execute(accountInfo.getString("account", null),
+					accountInfo.getString("password", null));
+		}
 	}
 
 	/**
 	 * 加载action bar
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) { 
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_activity_actions, menu);
 		return super.onCreateOptionsMenu(menu);
@@ -229,7 +258,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		// 处理更换头像相片请求
-		if (requestCode == 49) {
+		if (requestCode == 49) { 
 			Uri pictureUri = data.getData();
 			String[] proj = { MediaStore.Images.Media.DATA };
 			CursorLoader cl = new CursorLoader(this, pictureUri, proj, null,
@@ -251,7 +280,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		new Thread( new Runnable(){
+		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -263,7 +292,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					e.printStackTrace();
 				}
 			}
-			
+
 		}).start();
 		// LoginActivity.mXmppConnection2.disconnect();
 		super.onDestroy();
@@ -311,8 +340,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 
 					topics = Util.AnalysisTopics(parser.getText(), requestType); // 解析这个jsondata到数组中
 					dbOpenHelper.updateTopics(topics, topicType); // 将新话题数据存入数据库中
-					getLoaderManager().restartLoader(position, null, MainActivity.this).forceLoad();	//重新获取刷新后的话题数据
-//					// 更新话题列表
+					getLoaderManager().restartLoader(position, null,
+							MainActivity.this).forceLoad(); // 重新获取刷新后的话题数据
+					// // 更新话题列表
 					MainActivity.this.runOnUiThread(new Runnable() {
 
 						@Override
@@ -390,6 +420,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
+		switch (item.getItemId()) {
+		case R.id.action_quit:
+			finish(); // 结束应用
+			break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -410,13 +445,15 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
 				public void onRefresh() {
-					int i = themeViewPager.getCurrentItem();				//获取当前的话题类别
+					int i = themeViewPager.getCurrentItem(); // 获取当前的话题类别
 					long currentTime = System.currentTimeMillis();
-					long previousTime = sharedPref.getLong("refreshTime" + i, 0);
-					if( previousTime == 0 || currentTime - previousTime > 300000) {
-						//第一次刷新
-						RequestSync rs = new RequestSync(topicType, requestType,
-								position);
+					long previousTime = sharedPref
+							.getLong("refreshTime" + i, 0);
+					if (previousTime == 0
+							|| currentTime - previousTime > 300000) {
+						// 第一次刷新
+						RequestSync rs = new RequestSync(topicType,
+								requestType, position);
 						rs.setType(IQ.Type.GET);
 						try {
 							mXmppConnection.sendPacket(rs);
@@ -424,18 +461,19 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						sharedPref.edit().putLong("refreshTime" + i, currentTime).commit();
+						sharedPref.edit()
+								.putLong("refreshTime" + i, currentTime)
+								.commit();
+					} else {
+						setRefreshing(false);
 					}
-					else {
-						setRefreshing(false); 
-					}
-					
+
 				}
 			};
 			// Notify the system to allow an options menu for this fragment.
 		}
-		
-		public OnRefreshListener getOnFreshListener(){
+
+		public OnRefreshListener getOnFreshListener() {
 			return mOnRefreshListener;
 		}
 
@@ -445,14 +483,14 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			// 添加监听器
 			setOnRefreshListener(mOnRefreshListener);
 			// END_INCLUDE (setup_refreshlistener)
-			//检查话题更新
+			// 检查话题更新
 			long currentTime = System.currentTimeMillis();
 			long previousTime = sharedPref.getLong("refreshTime" + 0, 0);
-			if( previousTime == 0 || currentTime - previousTime > 300000) {
-				//刷新第一个屏幕
-				setRefreshing(true);				//开始刷新
+			if (previousTime == 0 || currentTime - previousTime > 300000) {
+				// 刷新第一个屏幕
+				setRefreshing(true); // 开始刷新
 				getOnFreshListener().onRefresh();
-				
+
 			}
 		}
 	}
@@ -463,20 +501,123 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		// TODO Auto-generated method stub
-		return new TopicDatabaseOpenHelper.TopicsLoader(this , id);
+		return new TopicDatabaseOpenHelper.TopicsLoader(this, id);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
 		// TODO Auto-generated method stub
-		//处理返回的结果cursor;
+		// 处理返回的结果cursor;	
 		adapterslist.get(arg0.getId()).changeCursor(arg1);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		// TODO Auto-generated method stub
+
 		adapterslist.get(arg0.getId()).swapCursor(null);
 	}
 
+	@Override
+	public void onBackPressed() {
+		moveTaskToBack(true);
+	}
+
+	/**
+	 * 重新登录
+	 * 
+	 * @author hankwing
+	 * 
+	 */
+	private class Login extends AsyncTask<String, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			// TODO Auto-generated method stub
+			if (mXmppConnection == null || !mXmppConnection.isConnected()) {
+				mXmppConnection = MXMPPConnection.getInstance();
+			}
+			if (mXmppConnection.isConnected()) {
+				try {
+					try {
+						mXmppConnection.login(params[0], params[1]);
+						// 保存用户资料到preference
+					} catch (SaslException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return Boolean.valueOf(false); // 登录失败
+					} catch (SmackException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return Boolean.valueOf(false); // 登录失败
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return Boolean.valueOf(false); // 登录失败
+					}
+				} catch (XMPPException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return Boolean.valueOf(false); // 登录失败
+				}
+				// mXmppConnection2.login("wengjia999", "123456");
+
+				return Boolean.valueOf(true);
+			} else {
+				return Boolean.valueOf(false);
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			// TODO Auto-generated method stub
+			loginDialog.dismiss(); // 进度条消失
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			CharSequence message = MainActivity.this.getResources().getString(
+					R.string.logining);
+			loginDialog = new ProgressDialogWithKeyBack(MainActivity.this, this);
+			loginDialog.setMessage(message);
+			loginDialog.show();
+			super.onPreExecute();
+		}
+
+	}
+
+	/**
+	 * 系统回收activity时调用该方法
+	 */
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		outState.putBoolean("restart", true);
+		super.onSaveInstanceState(outState);
+	}
+
+	/**
+	 * 判断连接是否中断 中断则重新连接
+	 */
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		if(mXmppConnection == null || !mXmppConnection.isConnected()) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					mXmppConnection = MXMPPConnection.getInstance();
+				}
+
+			}).start();
+		}
+		
+		super.onRestart();
+	}
+
+	
 }

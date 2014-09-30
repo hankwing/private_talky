@@ -40,18 +40,9 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/icon_temp_head"
+                android:background="@drawable/ic_portrait_default"
                 android:contentDescription="@string/head_image"
                 android:padding="2dp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
-                android:text="@string/setting"
-                android:textSize="14sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -78,11 +69,11 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/drawer_username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:padding="10dp"
-                    android:text="@string/test_name"
                     android:textSize="17sp" />
             </RelativeLayout>
 
@@ -100,11 +91,11 @@
                 </TextView>
 
                 <TextView
+                    android:id="@+id/drawer_rank"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:padding="10dp"
-                    android:text="7级"
                     android:textSize="17sp" />
             </RelativeLayout>
 
@@ -117,16 +108,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="称号"
+                    android:text="@string/subtitle"
                     android:textSize="17sp" >
                 </TextView>
 
                 <TextView
+                    android:id="@+id/drawer_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:padding="10dp"
-                    android:text="无敌天王"
                     android:textSize="17sp" />
             </RelativeLayout>
 
@@ -139,16 +130,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="被赞"
+                    android:text="@string/favour"
                     android:textSize="17sp" >
                 </TextView>
 
                 <TextView
+                    android:id="@+id/drawer_favour"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:padding="10dp"
-                    android:text="74"
                     android:textSize="17sp" />
             </RelativeLayout>
 
@@ -161,16 +152,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="被屎"
+                    android:text="@string/shit"
                     android:textSize="17sp" >
                 </TextView>
 
                 <TextView
+                    android:id="@+id/drawer_shit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:padding="10dp"
-                    android:text="47"
                     android:textSize="17sp" />
             </RelativeLayout>
         </LinearLayout>

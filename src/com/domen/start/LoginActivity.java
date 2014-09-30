@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -71,6 +72,8 @@ public class LoginActivity extends Activity implements OnClickListener{
 	private ImageView sina;
 	private ImageView qq;
 	private ImageView qqWeibo;
+	
+	private SharedPreferences account = null;
 
 	/**
 	 * 控制输入法弹出时某些视图的可见性
@@ -104,6 +107,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_login);	
 		Context context = getApplicationContext();
+		account = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE);				//保存用户资料的preference
 		SmackAndroid.init(context);				//初始化asmack
 		SharedPreferences settings = getSharedPreferences("runTime", 0);
 		if(settings.getInt("time", 0)==0) {
@@ -185,15 +189,21 @@ public class LoginActivity extends Activity implements OnClickListener{
 				try {
 					try {
 						mXmppConnection.login(params[0], params[1]);
+						//保存用户资料到preference
+						account.edit().putString("account", params[0]).commit();
+						account.edit().putString("password", params[1]).commit();
 					} catch (SaslException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						return Boolean.valueOf(false);			//登录失败
 					} catch (SmackException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						return Boolean.valueOf(false);			//登录失败
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						return Boolean.valueOf(false);			//登录失败
 					} 
 				} catch (XMPPException e) {
 					// TODO Auto-generated catch block
@@ -253,6 +263,7 @@ public class LoginActivity extends Activity implements OnClickListener{
 				loginThread = new Login();
 				String account = edt_username.getText().toString();
 				String password = edt_password.getText().toString();
+				Log.i("message", password);
 				loginThread.execute( account, password);
 			}
 			else {

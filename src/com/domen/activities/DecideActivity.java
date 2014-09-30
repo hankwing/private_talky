@@ -17,9 +17,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,7 +58,6 @@ public class DecideActivity extends Activity implements OnClickListener {
 	private Bundle fromBundle;
 	private String roomJID;
 	private Intent intentIT;
-	private TextView tvTopicName;
 	private LinearLayout svContentView;
 	private ProgressBar progressBar;
 	private int mShortAnimationDuration; // 动画时间
@@ -70,6 +71,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 	private String negative = null;
 	private XMPPConnection mXmppConnection;
 	private ProgressDialog registerDialog;
+	private RequestATeam ngRA;
 
 	/*
 	 * (non-Javadoc)
@@ -86,6 +88,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		// 获得该话题的名称 
 		topicName = fromBundle
 				.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
+		getActionBar().setTitle(topicName); // 显示话题名称
 		topicID = fromBundle.getString(TopicsEntryContract.COLUMN_NAME_OF_ID);
 		topicURL = fromBundle  
 				.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_URL);
@@ -125,9 +128,6 @@ public class DecideActivity extends Activity implements OnClickListener {
 		topicDesc = (TextView) findViewById(R.id.topicDes); // 话题描述
 		positiveView = (TextView) findViewById(R.id.tv_positive); // 正反观点
 		negativeView = (TextView) findViewById(R.id.tv_negative); // 反方观点
-
-		tvTopicName = (TextView) findViewById(R.id.tv_topicName);
-		tvTopicName.setText(topicName);
 		svContentView = (LinearLayout) findViewById(R.id.ll_content_view);
 		progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
 		svContentView.setVisibility(View.GONE); // 内容界面先隐藏
@@ -138,7 +138,12 @@ public class DecideActivity extends Activity implements OnClickListener {
 		topicPic = (NetworkImageView) findViewById(R.id.imgv_dec_image);
 		topicPic.setImageUrl(topicURL, mImageLoader);
 		registerDialog = new ProgressDialog(this);
-		registerDialog.setCanceledOnTouchOutside(false);
+		//取消组队逻辑
+		registerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, 
+				getResources().getString(R.string.cancel_requestateam), 
+				(DialogInterface.OnClickListener)null);				//先设置空监听器
+		registerDialog.setCanceledOnTouchOutside(false);				//设置该dialog不可取消 包括点击屏幕外和按返回键
+		
 		super.onCreate(savedInstanceState);
 	}
 
@@ -154,9 +159,9 @@ public class DecideActivity extends Activity implements OnClickListener {
 					topicName);
 			intentIT.putExtras(bundle);
 			// 请求组队
-			RequestATeam ngRA = new RequestATeam(
+			ngRA = new RequestATeam(
 					mXmppConnection.getUser(), topicID,
-					"negative");
+					"negative", "1");
 			ngRA.setType(IQ.Type.GET);
 			try {
 				mXmppConnection.sendPacket(ngRA);
@@ -166,6 +171,27 @@ public class DecideActivity extends Activity implements OnClickListener {
 			}
 			registerDialog.setMessage(getResources().getString(R.string.seeking));
 			registerDialog.show();
+			final Button cancelButton = registerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+			cancelButton.setVisibility(View.VISIBLE); 
+			cancelButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					registerDialog.setMessage(
+							getResources().getString(R.string.cancel_requestateam_dialog));
+					cancelButton.setVisibility(View.GONE);
+					//发送取消组队IQ包
+					ngRA.setIsJoin("0");				//标志为取消组队
+					ngRA.setType(IQ.Type.GET);
+					try {
+						mXmppConnection.sendPacket(ngRA);
+					} catch (NotConnectedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
 			break;
 		case R.id.btn_positive:
 			bundle.putString("side", "positive");
@@ -173,23 +199,43 @@ public class DecideActivity extends Activity implements OnClickListener {
 					topicName);
 			intentIT.putExtras(bundle);
 			// 请求组队
-			RequestATeam ptRA = new RequestATeam(
+			ngRA = new RequestATeam(
 					mXmppConnection.getUser(), topicID,
-					"positive");
-			ptRA.setType(IQ.Type.GET);
+					"positive", "1");
+			ngRA.setType(IQ.Type.GET);
 			try {
-				mXmppConnection.sendPacket(ptRA);
+				mXmppConnection.sendPacket(ngRA);
 			} catch (NotConnectedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			registerDialog.setMessage(getResources().getString(R.string.seeking));
 			registerDialog.show();
+			final Button cancel_button = registerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+			cancel_button.setVisibility(View.VISIBLE);
+			cancel_button.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					registerDialog.setMessage(
+							getResources().getString(R.string.cancel_requestateam_dialog));
+					cancel_button.setVisibility(View.GONE);
+					//发送取消组队IQ包
+					ngRA.setIsJoin("0");				//标志为取消组队
+					ngRA.setType(IQ.Type.GET);
+					try {
+						mXmppConnection.sendPacket(ngRA);
+					} catch (NotConnectedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
 			break;
 		case R.id.btn_discuss_home:
-			Intent groupIT = new Intent(getApplicationContext(),
-					GroupActivity.class);
-			startActivity(groupIT);
+			Toast.makeText(this, getResources().getString(R.string.wait_for_update), 
+					Toast.LENGTH_SHORT).show();
 			break;
 		default:
 			break;
@@ -228,10 +274,30 @@ public class DecideActivity extends Activity implements OnClickListener {
 		@Override
 		public IQ parseIQ(XmlPullParser arg0) throws Exception {
 			// TODO Auto-generated method stub
+			Log.i("message", "receive an success iQ");
 			boolean done = false;
 			boolean isJoin = false;
 			int eventType = arg0.getEventType();
 			while (!done) {
+				if (eventType == XmlPullParser.START_TAG) {
+					if (arg0.getName().equals("success")) {
+						if( arg0.getAttributeValue(0).equals("1")) {
+							//是取消组队时服务器返回的结果IQ包
+							DecideActivity.this.runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									//dismiss dialog
+									registerDialog.dismiss();
+								}
+								
+							});
+							isJoin = true;				//避免执行下面的加入房间的代码
+							break;
+						}
+					}
+				}
 				if (eventType == XmlPullParser.TEXT) {
 					// 获得roomJID
 					// parser.getText();

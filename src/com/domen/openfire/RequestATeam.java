@@ -13,6 +13,7 @@ public class RequestATeam extends IQ{
 	private String topicID;
 	private String isPositive;
 	private String body;
+	private String isJoin = "1";				//代表用户是否请求组队 如果否 则在相应队列中删除该用户
 	@Override
 	public String getChildElementXML() {
 		// TODO Auto-generated method stub
@@ -23,15 +24,18 @@ public class RequestATeam extends IQ{
         		"</topicID>").append("<jid>"+ username + "</jid>").
         append("<ispositive>" + isPositive +
         		"</ispositive>").
+        append("<isjoin>" + isJoin +
+                "</isjoin>").
         append("</").
         append(getElementName()).append(">");      
         return sb.toString();         
 	}
 	
-	public RequestATeam(String userJID, String topicID, String isPositive) {
+	public RequestATeam(String userJID, String topicID, String isPositive,String isJoin) {
 		this.username = userJID;
 		this.topicID = topicID;
 		this.isPositive = isPositive;
+		this.isJoin = isJoin;
 	}
 	      
     public String getElementName() {      
@@ -49,5 +53,9 @@ public class RequestATeam extends IQ{
     public String getBody() {      
         return body;      
     }      
+    
+    public void setIsJoin( String isJoin) {
+    	this.isJoin = isJoin;
+    }
 
 }
