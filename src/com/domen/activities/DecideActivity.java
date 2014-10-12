@@ -107,12 +107,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 				mXmppConnection = MXMPPConnection.getInstance();
 				RequestTopicInfo rs = new RequestTopicInfo(topicID);
 				rs.setType(IQ.Type.GET);
-				try {
-					mXmppConnection.sendPacket(rs);
-				} catch (NotConnectedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				MXMPPConnection.sendPacket( DecideActivity.this, rs);
 			}
 			
 		}).start();
@@ -160,15 +155,10 @@ public class DecideActivity extends Activity implements OnClickListener {
 			intentIT.putExtras(bundle);
 			// 请求组队
 			ngRA = new RequestATeam(
-					mXmppConnection.getUser(), topicID,
+					MainActivity.accountInfo.getString("userFullId", null), topicID,
 					"negative", "1");
 			ngRA.setType(IQ.Type.GET);
-			try {
-				mXmppConnection.sendPacket(ngRA);
-			} catch (NotConnectedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			MXMPPConnection.sendPacket( this, ngRA);
 			registerDialog.setMessage(getResources().getString(R.string.seeking));
 			registerDialog.show();
 			final Button cancelButton = registerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
@@ -184,12 +174,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 					//发送取消组队IQ包
 					ngRA.setIsJoin("0");				//标志为取消组队
 					ngRA.setType(IQ.Type.GET);
-					try {
-						mXmppConnection.sendPacket(ngRA);
-					} catch (NotConnectedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					MXMPPConnection.sendPacket( DecideActivity.this, ngRA);
 				}
 			});
 			break;
@@ -200,15 +185,10 @@ public class DecideActivity extends Activity implements OnClickListener {
 			intentIT.putExtras(bundle);
 			// 请求组队
 			ngRA = new RequestATeam(
-					mXmppConnection.getUser(), topicID,
+					MainActivity.accountInfo.getString("userFullId", null), topicID,
 					"positive", "1");
 			ngRA.setType(IQ.Type.GET);
-			try {
-				mXmppConnection.sendPacket(ngRA);
-			} catch (NotConnectedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			MXMPPConnection.sendPacket( this, ngRA);
 			registerDialog.setMessage(getResources().getString(R.string.seeking));
 			registerDialog.show();
 			final Button cancel_button = registerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
@@ -224,12 +204,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 					//发送取消组队IQ包
 					ngRA.setIsJoin("0");				//标志为取消组队
 					ngRA.setType(IQ.Type.GET);
-					try {
-						mXmppConnection.sendPacket(ngRA);
-					} catch (NotConnectedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					MXMPPConnection.sendPacket( DecideActivity.this, ngRA);
 				}
 			});
 			break;

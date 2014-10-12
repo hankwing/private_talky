@@ -33,6 +33,7 @@ import android.widget.ListView;
 import com.domen.adapter.ChatMsgAdapter;
 import com.domen.entity.MsgEntity;
 import com.domen.entity.UserInfo;
+import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
 import com.wxl.lettalk.R;
 
@@ -78,6 +79,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	private List<MsgEntity> msgList = new ArrayList<MsgEntity>(); // 聊天记录容器
 	private ChatMsgAdapter chatMsgAdapter; // 聊天记录listView的adapter
+	private String UserFullId;
 
 	/*
 	 * (non-Javadoc)
@@ -91,6 +93,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		getActionBar().setDisplayHomeAsUpEnabled(true); // 显示返回上级的按钮
 		getActionBar().setDisplayShowTitleEnabled(true);
 		setContentView(R.layout.activity_chat);
+		UserFullId = MainActivity.accountInfo.getString("userFullId", null);
 		Bundle bundle = new Bundle();
 		Intent intent = this.getIntent();
 		bundle = intent.getExtras();
@@ -227,9 +230,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 					public void run() {
 						// TODO Auto-generated method stub
 						Log.i("message", UserInfo.roomJID + "/"
-								+ UserInfo.fullUserJID);
+								+ UserFullId);
 						if (!msg.getFrom().equals(
-								UserInfo.roomJID + "/" + UserInfo.fullUserJID)) {
+								UserInfo.roomJID + "/" + UserFullId
+								)) {
 							// 房间内其他成员发来的信息 应该更新界面
 							updateMesList(msg.getBody(), true); // 收到消息更新界面
 						}
@@ -363,7 +367,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// Toast.makeText(getApplicationContext(), content,
 		// Toast.LENGTH_SHORT).show();
 		msgEnitiy.setDate(getTime());
-		msgEnitiy.setName(MainActivity.mXmppConnection.getUser());
+		msgEnitiy.setName(MXMPPConnection.getInstance().getUser());
 		Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
 		msgEnitiy.setHead(head);
 		msgEnitiy.setIsLeft(isLeft);

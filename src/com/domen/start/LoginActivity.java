@@ -19,7 +19,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,7 +35,6 @@ import android.widget.Toast;
 import com.domen.activities.MainActivity;
 import com.domen.activities.RegisterActivity;
 import com.domen.customView.ProgressDialogWithKeyBack;
-import com.domen.entity.InternetStatu;
 import com.domen.entity.UserInfo;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.ResizeLayout;
@@ -44,10 +42,11 @@ import com.wxl.lettalk.R;
 
 /**
  * 登录界面
+ * 
  * @author hankwing
- *
+ * 
  */
-public class LoginActivity extends Activity implements OnClickListener{
+public class LoginActivity extends Activity implements OnClickListener {
 
 	private static final int BIGGER = 1;
 	private static final int SMALLER = 2;
@@ -55,24 +54,24 @@ public class LoginActivity extends Activity implements OnClickListener{
 	private static final int WaitForRegister = 0;
 	private EditText edt_username;
 	private EditText edt_password;
-	private Button btn_login;			//登录按钮
-	private Button btn_regist;			//注册按钮
-	//private String username;			//用户名
-	//private String password;			//密码
+	private Button btn_login; // 登录按钮
+	private Button btn_regist; // 注册按钮
+	// private String username; //用户名
+	// private String password; //密码
 	public XMPPTCPConnection mXmppConnection = null;
-	//public static XMPPConnection mXmppConnection2 = null;
-	
+	// public static XMPPConnection mXmppConnection2 = null;
+
 	private Login loginThread = null;
 	private ProgressDialog loginDialog = null;
-	
+
 	private ResizeLayout mainLayout;
-	private static RelativeLayout logoLayout;				//logo界面
-	private static TextView theThirdTextView;				//第三方登录按钮
+	private static RelativeLayout logoLayout; // logo界面
+	private static TextView theThirdTextView; // 第三方登录按钮
 	private static LinearLayout theThirdLinearLayout;
 	private ImageView sina;
 	private ImageView qq;
 	private ImageView qqWeibo;
-	
+
 	private SharedPreferences account = null;
 
 	/**
@@ -82,16 +81,13 @@ public class LoginActivity extends Activity implements OnClickListener{
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
-			switch (msg.what)
-			{
+			switch (msg.what) {
 			case MSG_RESIZE:
-				if (msg.arg1 == BIGGER)
-				{
+				if (msg.arg1 == BIGGER) {
 					theThirdLinearLayout.setVisibility(View.VISIBLE);
 					theThirdTextView.setVisibility(View.VISIBLE);
 					logoLayout.setVisibility(View.VISIBLE);
-				} else
-				{
+				} else {
 					theThirdLinearLayout.setVisibility(View.GONE);
 					theThirdTextView.setVisibility(View.GONE);
 					logoLayout.setVisibility(View.GONE);
@@ -100,24 +96,24 @@ public class LoginActivity extends Activity implements OnClickListener{
 			}
 		}
 	};
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_login);	
+		setContentView(R.layout.activity_login);
 		Context context = getApplicationContext();
-		account = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE);				//保存用户资料的preference
-		SmackAndroid.init(context);				//初始化asmack
+		account = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
+		SmackAndroid.init(context); // 初始化asmack
 		SharedPreferences settings = getSharedPreferences("runTime", 0);
-		if(settings.getInt("time", 0)==0) {
-			Intent intent = new Intent( this, GuideActivity.class);
+		if (settings.getInt("time", 0) == 0) {
+			Intent intent = new Intent(this, GuideActivity.class);
 			startActivity(intent);
 			settings.edit().putInt("time", 1).commit();
 			finish();
-			overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-		}
-		else {
+			overridePendingTransition(android.R.anim.fade_in,
+					android.R.anim.fade_out);
+		} else {
 			btn_login = (Button) this.findViewById(R.id.loginBtn);
 			btn_regist = (Button) this.findViewById(R.id.registBtn);
 			edt_password = (EditText) this.findViewById(R.id.passwordEt);
@@ -130,19 +126,18 @@ public class LoginActivity extends Activity implements OnClickListener{
 			qqWeibo = (ImageView) findViewById(R.id.qq_weibo_login);
 			mainLayout = (ResizeLayout) findViewById(R.id.common_login_fields);
 			btn_login.setOnClickListener(this);
-			btn_regist.setOnClickListener(this); 
+			btn_regist.setOnClickListener(this);
 			sina.setOnClickListener(this);
 			qq.setOnClickListener(this);
 			qqWeibo.setOnClickListener(this);
-			
+
 			mainLayout.setOnResizeListener(new ResizeLayout.OnResizeListener() {
 
 				@Override
 				public void OnResize(int w, int h, int oldw, int oldh) {
 					// TODO Auto-generated method stub
 					int change = BIGGER;
-					if (h < oldh)
-					{
+					if (h < oldh) {
 						change = SMALLER;
 					}
 					Message msg = new Message();
@@ -151,12 +146,12 @@ public class LoginActivity extends Activity implements OnClickListener{
 					handler.sendMessage(msg);
 				}
 			});
-			
-			//判断网络状况
-			InternetStatu.isConnected = isOnline();
-			InternetStatu.isWifi = isWifi();
+
+			// //判断网络状况
+			// InternetStatu.isConnected = isOnline();
+			// InternetStatu.isWifi = isWifi();
 		}
-		
+
 	}
 
 	@Override
@@ -171,67 +166,80 @@ public class LoginActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
-	
+
 	/**
 	 * 登录线程
+	 * 
 	 * @author hankwing
-	 *
+	 * 
 	 */
-	private class Login extends AsyncTask<String, Void, Boolean> {
-		
+	private class Login extends AsyncTask<String, Void, Integer> {
+
 		@Override
-		protected Boolean doInBackground(String... params) {
+		protected Integer doInBackground(String... params) {
 			// TODO Auto-generated method stub
-			if( mXmppConnection == null || !mXmppConnection.isConnected()) {
+			if (mXmppConnection == null || !mXmppConnection.isConnected()) {
 				mXmppConnection = MXMPPConnection.getInstance();
+				if( mXmppConnection == null) {
+					//连接失败 网络原因
+					return 0;
+				}
 			}
-			if(mXmppConnection.isConnected()) {
+			if (mXmppConnection.isConnected()) {
 				try {
 					try {
 						mXmppConnection.login(params[0], params[1]);
-						//保存用户资料到preference
+						// 保存用户资料到preference
 						account.edit().putString("account", params[0]).commit();
-						account.edit().putString("password", params[1]).commit();
+						account.edit().putString("password", params[1])
+								.commit();
+						account.edit().putString("userFullId", mXmppConnection.getUser()).commit();
+						UserInfo.setAccountName(params[0]);				//存入UserInfo账号信息
+						UserInfo.setPassword(params[1]);				//方便其他地方饮用
 					} catch (SaslException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						return Boolean.valueOf(false);			//登录失败
+						return -1; // 登录失败
 					} catch (SmackException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						return Boolean.valueOf(false);			//登录失败
+						return -1; // 登录失败
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						return Boolean.valueOf(false);			//登录失败
-					} 
+						return -1; // 登录失败
+					}
 				} catch (XMPPException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					return Boolean.valueOf(false);			//登录失败
+					return -1; // 登录失败
 				}
-				//mXmppConnection2.login("wengjia999", "123456");
-				
-				return Boolean.valueOf(true);
-			}
-			else {
-				return Boolean.valueOf(false);
+				// mXmppConnection2.login("wengjia999", "123456");
+
+				return 1;				//登录成功
+			} else {
+				return 0;
 			}
 		}
 
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void onPostExecute(Integer result) {
 			// TODO Auto-generated method stub
-			loginDialog.dismiss();				//进度条消失
-			if(result.booleanValue()) {
-				//登录成功
-				Intent mainActivity = new Intent( LoginActivity.this, MainActivity.class);
-				UserInfo.fullUserJID = mXmppConnection.getUser();				//得到登录用户的FullJID
+			loginDialog.dismiss(); // 进度条消失
+			if (result == 1) {
+				// 登录成功
+				Intent mainActivity = new Intent(LoginActivity.this,
+						MainActivity.class);
 				startActivity(mainActivity);
 				LoginActivity.this.finish();
-			}
-			else {
-				Toast.makeText(LoginActivity.this, R.string.uername_or_password_failure, Toast.LENGTH_SHORT).show();
+			} else if(result == -1){
+				Toast.makeText(LoginActivity.this,
+						R.string.uername_or_password_failure,
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(LoginActivity.this,
+						R.string.internet_failure,
+						Toast.LENGTH_SHORT).show();
 			}
 			super.onPostExecute(result);
 		}
@@ -239,92 +247,85 @@ public class LoginActivity extends Activity implements OnClickListener{
 		@Override
 		protected void onPreExecute() {
 			// TODO Auto-generated method stub
-			CharSequence message = LoginActivity.this.getResources().getString(R.string.logining);
-			loginDialog = new ProgressDialogWithKeyBack(LoginActivity.this,this);
+			CharSequence message = LoginActivity.this.getResources().getString(
+					R.string.logining);
+			loginDialog = new ProgressDialogWithKeyBack(LoginActivity.this, this);
 			loginDialog.setMessage(message);
 			loginDialog.show();
 			super.onPreExecute();
 		}
-		
+
 	}
-	
-	
+
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		switch( v.getId() ) {
+		switch (v.getId()) {
 		case R.id.loginBtn:
-			if( InternetStatu.isConnected ) {
-				((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-				.hideSoftInputFromWindow(getCurrentFocus()
-						.getWindowToken(),
-						InputMethodManager.HIDE_NOT_ALWAYS);
-				loginThread = new Login();
-				String account = edt_username.getText().toString();
-				String password = edt_password.getText().toString();
-				Log.i("message", password);
-				loginThread.execute( account, password);
-			}
-			else {
-				Toast.makeText(this, R.string.internet_failure, Toast.LENGTH_SHORT).show();
-			}
+
+			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+					.hideSoftInputFromWindow(
+							getCurrentFocus().getWindowToken(),
+							InputMethodManager.HIDE_NOT_ALWAYS);
+			loginThread = new Login();
+			String account = edt_username.getText().toString();
+			String password = edt_password.getText().toString();
+			loginThread.execute(account, password);
+
 			break;
 		case R.id.registBtn:
-			if( InternetStatu.isConnected ) {
-				//进入注册界面
-				Intent registerIntent = new Intent(this, RegisterActivity.class);
-				startActivityForResult(registerIntent, WaitForRegister);
-			}
-			else {
-				Toast.makeText(this, R.string.internet_failure, Toast.LENGTH_SHORT).show();
-			}
+			// 进入注册界面
+			Intent registerIntent = new Intent(this, RegisterActivity.class);
+			startActivityForResult(registerIntent, WaitForRegister);
+
 			break;
 		case R.id.qq_cqq_login:
-			//新功能待添加
-			Toast.makeText(this, 
-					getResources().getString(R.string.wait_for_update), Toast.LENGTH_SHORT).show();
+			// 新功能待添加
+			Toast.makeText(this,
+					getResources().getString(R.string.wait_for_update),
+					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.qq_weibo_login:
-			Toast.makeText(this, 
-					getResources().getString(R.string.wait_for_update), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this,
+					getResources().getString(R.string.wait_for_update),
+					Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.sina_login:
-			Toast.makeText(this, 
-					getResources().getString(R.string.wait_for_update), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this,
+					getResources().getString(R.string.wait_for_update),
+					Toast.LENGTH_SHORT).show();
 			break;
 		}
-		
+
 	}
-	
+
 	/**
 	 * 判断是否有网络连接
+	 * 
 	 * @return
 	 */
 	public boolean isOnline() {
-	    ConnectivityManager connMgr = (ConnectivityManager) 
-	            getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-	    return (networkInfo != null && networkInfo.isConnected());
-	} 
-	
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		return (networkInfo != null && networkInfo.isConnected());
+	}
+
 	public boolean isWifi() {
-	    ConnectivityManager connMgr = (ConnectivityManager) 
-	            getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-	    return (networkInfo != null && networkInfo.isConnected());
+		ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr
+				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		return (networkInfo != null && networkInfo.isConnected());
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
-		if(requestCode == WaitForRegister && resultCode == RESULT_OK) {
-			//注册成功与否 成功则关闭当前activity
+		if (requestCode == WaitForRegister && resultCode == RESULT_OK) {
+			// 注册成功与否 成功则关闭当前activity
 			finish();
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
-	
 
 }

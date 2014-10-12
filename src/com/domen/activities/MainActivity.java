@@ -1,15 +1,11 @@
 package com.domen.activities;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.harmony.javax.security.sasl.SaslException;
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -17,7 +13,6 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.xmlpull.v1.XmlPullParser;
 
 import android.app.LoaderManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -29,7 +24,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -40,7 +34,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,7 +45,6 @@ import android.widget.TextView;
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.adapter.ThemeTabAdapter;
 import com.domen.adapter.ThemeTabAdapter.ThemeFragment;
-import com.domen.customView.ProgressDialogWithKeyBack;
 import com.domen.openfire.RequestSync;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
@@ -73,7 +65,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public static final String LOG_TAG = "mainActivity";
 	private static ViewPager themeViewPager; // 话题选择page
 	private ThemeTabAdapter themeTabAdapter;
-	private List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
+	private static List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
 	private DrawerLayout mDrawerLayout; // 左侧滑动栏
 	private ActionBarDrawerToggle mDrawerToggle; // 滑动栏触发器
 	
@@ -89,9 +81,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public static float Width = 0; // 屏幕宽度
 	private TopicDatabaseOpenHelper dbOpenHelper = null;
 	private static SharedPreferences sharedPref;
-	private SharedPreferences accountInfo;
-	private ProgressDialog loginDialog = null; // 注册时显示的进度条
-	public static XMPPTCPConnection mXmppConnection;
+	public static SharedPreferences accountInfo;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,17 +90,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		forceShowActionBarOverflowMenu(); // 强制显示overFlowButton
 		sharedPref = getPreferences(Context.MODE_PRIVATE); // 保存刷新时间 用户账号信息等
 		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
-
-		// 刷新话题
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				mXmppConnection = MXMPPConnection.getInstance();
-			}
-
-		}).start();
 		
 		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
 
@@ -216,13 +196,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// if restart then login
-		if (savedInstanceState != null
-				&& savedInstanceState.getBoolean("restart")) {
-			// Log.i("message", "account: " + sharedPref.getString("account",
-			// null));
-			new Login().execute(accountInfo.getString("account", null),
-					accountInfo.getString("password", null));
-		}
+//		if (savedInstanceState != null
+//				&& savedInstanceState.getBoolean("restart")) {
+//			// Log.i("message", "account: " + sharedPref.getString("account",
+//			// null));
+//			new Login().execute(accountInfo.getString("account", null),
+//					accountInfo.getString("password", null));
+//		}
 	}
 
 	/**
@@ -275,27 +255,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					ShowView.toRoundCorner(tmp, 35));
 			headView.setBackgroundDrawable(headDrawable);
 		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					mXmppConnection.disconnect();
-				} catch (NotConnectedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		}).start();
-		// LoginActivity.mXmppConnection2.disconnect();
-		super.onDestroy();
 	}
 
 	public void processStartElement(XmlPullParser xpp) {
@@ -422,6 +381,16 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		}
 		switch (item.getItemId()) {
 		case R.id.action_quit:
+			try {
+				XMPPTCPConnection mXmppConnection = MXMPPConnection.getInstance();
+				if( mXmppConnection.isConnected()) {
+					mXmppConnection.disconnect();				//断开连接
+				}
+								
+			} catch (NotConnectedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			finish(); // 结束应用
 			break;
 		}
@@ -434,14 +403,17 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		private int requestType;
 		private int position;
 		private OnRefreshListener mOnRefreshListener;
-
+		private int itemPosition;
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			Bundle bundle = getArguments();
 			topicType = bundle.getString(RequestSync.TOPICTYPE);
+			itemPosition = bundle.getInt("itemPosition");
 			requestType = bundle.getInt(RequestSync.REQUESTTYPE);
 			position = bundle.getInt(RequestSync.POSITION);
+			
 			mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
 				public void onRefresh() {
@@ -455,12 +427,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						RequestSync rs = new RequestSync(topicType,
 								requestType, position);
 						rs.setType(IQ.Type.GET);
-						try {
-							mXmppConnection.sendPacket(rs);
-						} catch (NotConnectedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						//发送IQ包
+						MXMPPConnection.sendPacket( getActivity() ,rs);
 						sharedPref.edit()
 								.putLong("refreshTime" + i, currentTime)
 								.commit();
@@ -481,6 +449,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
 			// 添加监听器
+			setListAdapter(adapterslist.get(itemPosition));
 			setOnRefreshListener(mOnRefreshListener);
 			// END_INCLUDE (setup_refreshlistener)
 			// 检查话题更新
@@ -522,102 +491,5 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public void onBackPressed() {
 		moveTaskToBack(true);
 	}
-
-	/**
-	 * 重新登录
-	 * 
-	 * @author hankwing
-	 * 
-	 */
-	private class Login extends AsyncTask<String, Void, Boolean> {
-
-		@Override
-		protected Boolean doInBackground(String... params) {
-			// TODO Auto-generated method stub
-			if (mXmppConnection == null || !mXmppConnection.isConnected()) {
-				mXmppConnection = MXMPPConnection.getInstance();
-			}
-			if (mXmppConnection.isConnected()) {
-				try {
-					try {
-						mXmppConnection.login(params[0], params[1]);
-						// 保存用户资料到preference
-					} catch (SaslException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return Boolean.valueOf(false); // 登录失败
-					} catch (SmackException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return Boolean.valueOf(false); // 登录失败
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return Boolean.valueOf(false); // 登录失败
-					}
-				} catch (XMPPException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return Boolean.valueOf(false); // 登录失败
-				}
-				// mXmppConnection2.login("wengjia999", "123456");
-
-				return Boolean.valueOf(true);
-			} else {
-				return Boolean.valueOf(false);
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			// TODO Auto-generated method stub
-			loginDialog.dismiss(); // 进度条消失
-			super.onPostExecute(result);
-		}
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			CharSequence message = MainActivity.this.getResources().getString(
-					R.string.logining);
-			loginDialog = new ProgressDialogWithKeyBack(MainActivity.this, this);
-			loginDialog.setMessage(message);
-			loginDialog.show();
-			super.onPreExecute();
-		}
-
-	}
-
-	/**
-	 * 系统回收activity时调用该方法
-	 */
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
-		outState.putBoolean("restart", true);
-		super.onSaveInstanceState(outState);
-	}
-
-	/**
-	 * 判断连接是否中断 中断则重新连接
-	 */
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		if(mXmppConnection == null || !mXmppConnection.isConnected()) {
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					mXmppConnection = MXMPPConnection.getInstance();
-				}
-
-			}).start();
-		}
-		
-		super.onRestart();
-	}
-
 	
 }
