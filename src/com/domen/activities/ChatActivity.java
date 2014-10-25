@@ -7,6 +7,7 @@ import java.util.List;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.DefaultPacketExtension;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -20,7 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,11 +30,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.domen.adapter.ChatMsgAdapter;
 import com.domen.entity.MsgEntity;
 import com.domen.entity.UserInfo;
-import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
 import com.wxl.lettalk.R;
 
@@ -47,6 +49,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	// private Chat chat;
 	public static MultiUserChat chat = null;
+	private RelativeLayout bottomBar;
+	private int side;				//0-观众 1-正方 -1-反方
 	// static MultiUserChat chat2 = null;
 	private Button btn_send; // 发送按钮
 	private EditText edt_message; // 用户聊天内容输入框
@@ -99,6 +103,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		bundle = intent.getExtras();
 		getActionBar().setTitle(
 				bundle.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME)); // 显示话题名称
+		
 		// 得到用户选择是正方还是反方
 		// if(bundle.get("side").equals("positive")){
 		// isPositive = true;
@@ -142,6 +147,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 			public void left(String arg0) {
 				// TODO Auto-generated method stub
 				// 成员离开时 如果自己或者房间内无成员 就退出聊天
+				Looper.prepare();
+				Toast.makeText(ChatActivity.this, "User "+arg0 +" left", Toast.LENGTH_SHORT).show();
+				Looper.loop();
 //				if (arg0.equals(UserInfo.roomJID + "/" + UserInfo.fullUserJID)) {
 //					// 自己退出
 //					finish();
@@ -158,7 +166,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 //							Toast.LENGTH_SHORT).show();
 //					finish();
 //				}
-				finish();
+//				try {
+//					Log.i("message", "occupation left!");
+//					chat.leave();
+//					finish();
+//				} catch (NotConnectedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 
 			}
 
@@ -217,33 +232,69 @@ public class ChatActivity extends Activity implements OnClickListener {
 			}
 
 		});
-		chat.addMessageListener(new PacketListener() {
-
-			@Override
-			public void processPacket(Packet arg0) {
-				// TODO Auto-generated method stub
-				// 接收到消息 应该更新界面
-				final Message msg = (Message) arg0;
-				ChatActivity.this.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						Log.i("message", UserInfo.roomJID + "/"
-								+ UserFullId);
-						if (!msg.getFrom().equals(
-								UserInfo.roomJID + "/" + UserFullId
-								)) {
-							// 房间内其他成员发来的信息 应该更新界面
-							updateMesList(msg.getBody(), true); // 收到消息更新界面
+		
+		side = bundle.getInt("side");
+		
+		if( side == 0) {
+			//旁观者的消息监听器
+			chat.addMessageListener(new PacketListener() {
+				
+				@Override
+				public void processPacket(Packet arg0) {
+					// TODO Auto-generated method stub
+					// 接收到消息 应该更新界面
+					final Message msg = (Message) arg0;
+					
+					ChatActivity.this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							
+							DefaultPacketExtension extension = 
+									msg.getExtension("message", "com:talky:message");
+							int isLeft = Integer.valueOf( extension.getValue("side"));
+							Log.i("message", "side: " + isLeft);
+						
+								// 房间内其他成员发来的信息 应该更新界面
+								updateMesList(msg.getBody(), isLeft == 1?true:false); // 收到消息更新界面
+	
 						}
-
-					}
-
-				});
-			}
-
-		});
+	
+					});
+				}
+	
+			});
+		}
+		else {
+			//参与者的消息监听器
+			chat.addMessageListener(new PacketListener() {
+	
+				@Override
+				public void processPacket(Packet arg0) {
+					// TODO Auto-generated method stub
+					// 接收到消息 应该更新界面
+					final Message msg = (Message) arg0;
+					ChatActivity.this.runOnUiThread(new Runnable() {
+	
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							
+							if (!msg.getFrom().equals(
+									UserInfo.roomJID + "/" + UserFullId
+									)) {
+								// 房间内其他成员发来的信息 应该更新界面
+								updateMesList(msg.getBody(), true); // 收到消息更新界面
+							}
+	
+						}
+	
+					});
+				}
+	
+			});
+		}
+	
 		// chat2.addMessageListener(new PacketListener() {
 		//
 		// @Override
@@ -256,7 +307,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		//
 		// });
 		imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-
+		bottomBar = (RelativeLayout) this.findViewById(R.id.activity_chat_bottom);
 		listView = (ListView) this.findViewById(R.id.chat_list);
 		edt_message = (EditText) this.findViewById(R.id.chat_message);
 		edt_message.setOnClickListener(this);
@@ -268,7 +319,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		listView.setStackFromBottom(true);
 		// initViewPager(); //初始化表情选择界面
 		imm.hideSoftInputFromWindow(edt_message.getWindowToken(), 0);
-
+		
+		if( side == 0 ) {
+			//旁观者 不能发言
+			bottomBar.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -317,7 +372,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 			updateMesList(edt_message.getText().toString(), false); // 自己发出的信息右侧
 			// 下面向服务器发送信息
 			try {
-				chat.sendMessage(edt_message.getText().toString());
+				Message message = chat.createMessage();
+				message.setBody(edt_message.getText().toString());
+				//添加消息包的附加消息
+				DefaultPacketExtension extension = new 
+						DefaultPacketExtension("message","com:talky:message");
+				extension.setValue("side", String.valueOf(side));
+				message.addExtension(extension);
+				chat.sendMessage(message);
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -367,7 +429,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// Toast.makeText(getApplicationContext(), content,
 		// Toast.LENGTH_SHORT).show();
 		msgEnitiy.setDate(getTime());
-		msgEnitiy.setName(MXMPPConnection.getInstance().getUser());
+		//msgEnitiy.setName(MXMPPConnection.getInstance().getUser());
 		Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
 		msgEnitiy.setHead(head);
 		msgEnitiy.setIsLeft(isLeft);
@@ -397,7 +459,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 		switch (item.getItemId()) {
 		// Respond to the action bar's Up/Home button
 		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
+			new ConfirmQuitDialogFragment().show(getFragmentManager(),
+					"ConfirmQuitDialogFragment");
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

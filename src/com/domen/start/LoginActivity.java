@@ -178,48 +178,50 @@ public class LoginActivity extends Activity implements OnClickListener {
 		@Override
 		protected Integer doInBackground(String... params) {
 			// TODO Auto-generated method stub
-			if (mXmppConnection == null || !mXmppConnection.isConnected()) {
-				mXmppConnection = MXMPPConnection.getInstance();
-				if( mXmppConnection == null) {
-					//连接失败 网络原因
+			mXmppConnection = MXMPPConnection.getInstance();
+			if (mXmppConnection == null) {
+				// 无连接 下面尝试连接
+				if (MXMPPConnection.Connection()) {
+					// 连接成功
+					mXmppConnection = MXMPPConnection.getInstance();
+				} else {
+					// 连接失败
 					return 0;
 				}
 			}
-			if (mXmppConnection.isConnected()) {
+
+			try {
 				try {
-					try {
-						mXmppConnection.login(params[0], params[1]);
-						// 保存用户资料到preference
-						account.edit().putString("account", params[0]).commit();
-						account.edit().putString("password", params[1])
-								.commit();
-						account.edit().putString("userFullId", mXmppConnection.getUser()).commit();
-						UserInfo.setAccountName(params[0]);				//存入UserInfo账号信息
-						UserInfo.setPassword(params[1]);				//方便其他地方饮用
-					} catch (SaslException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return -1; // 登录失败
-					} catch (SmackException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return -1; // 登录失败
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return -1; // 登录失败
-					}
-				} catch (XMPPException e) {
+					mXmppConnection.login(params[0], params[1]);
+					// 保存用户资料到preference
+					account.edit().putString("account", params[0]).commit();
+					account.edit().putString("password", params[1]).commit();
+					account.edit()
+							.putString("userFullId", mXmppConnection.getUser())
+							.commit();
+					UserInfo.setAccountName(params[0]); // 存入UserInfo账号信息
+					UserInfo.setPassword(params[1]); // 方便其他地方饮用
+				} catch (SaslException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return -1; // 登录失败
+				} catch (SmackException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return -1; // 登录失败
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					return -1; // 登录失败
 				}
-				// mXmppConnection2.login("wengjia999", "123456");
-
-				return 1;				//登录成功
-			} else {
-				return 0;
+			} catch (XMPPException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return -1; // 登录失败
 			}
+			// mXmppConnection2.login("wengjia999", "123456");
+
+			return 1; // 登录成功
 		}
 
 		@Override
@@ -232,13 +234,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 						MainActivity.class);
 				startActivity(mainActivity);
 				LoginActivity.this.finish();
-			} else if(result == -1){
+			} else if (result == -1) {
 				Toast.makeText(LoginActivity.this,
 						R.string.uername_or_password_failure,
-						Toast.LENGTH_SHORT).show();
+						Toast.LENGTH_SHORT).show(); 
 			} else {
-				Toast.makeText(LoginActivity.this,
-						R.string.internet_failure,
+				Toast.makeText(LoginActivity.this, R.string.internet_failure,
 						Toast.LENGTH_SHORT).show();
 			}
 			super.onPostExecute(result);
@@ -249,14 +250,14 @@ public class LoginActivity extends Activity implements OnClickListener {
 			// TODO Auto-generated method stub
 			CharSequence message = LoginActivity.this.getResources().getString(
 					R.string.logining);
-			loginDialog = new ProgressDialogWithKeyBack(LoginActivity.this, this);
+			loginDialog = new ProgressDialogWithKeyBack(LoginActivity.this,
+					this);
 			loginDialog.setMessage(message);
 			loginDialog.show();
 			super.onPreExecute();
 		}
 
 	}
-
 
 	@Override
 	public void onClick(View v) {

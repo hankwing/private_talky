@@ -1255,8 +1255,8 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050024;
-        public static final int action_quit=0x7f05009e;
-        public static final int action_settings=0x7f05009d;
+        public static final int action_quit=0x7f0500a0;
+        public static final int action_settings=0x7f05009f;
         public static final int activity_chat_bottom=0x7f05003e;
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int always=0x7f05000b;
@@ -1306,7 +1306,7 @@ containing a value of this type.
         public static final int ifRoom=0x7f05000a;
         public static final int image=0x7f050027;
         public static final int imageView1=0x7f050086;
-        public static final int imageView2=0x7f050099;
+        public static final int imageView2=0x7f05009b;
         public static final int imgv_dec_image=0x7f050047;
         public static final int iv_head=0x7f050062;
         public static final int layout_altitude=0x7f050044;
@@ -1321,6 +1321,8 @@ containing a value of this type.
         public static final int never=0x7f050009;
         public static final int none=0x7f050010;
         public static final int normal=0x7f050000;
+        public static final int occupant0=0x7f050098;
+        public static final int occupant1=0x7f050099;
         public static final int other_account_login=0x7f050059;
         public static final int other_image=0x7f05005a;
         public static final int pager_title_strip=0x7f050060;
@@ -1360,14 +1362,14 @@ containing a value of this type.
         public static final int submit_area=0x7f050039;
         public static final int tabMode=0x7f050002;
         public static final int text_introduce=0x7f050045;
-        public static final int theme_back=0x7f050098;
-        public static final int theme_name=0x7f05009a;
+        public static final int theme_back=0x7f05009a;
+        public static final int theme_name=0x7f05009c;
         public static final int theme_pager=0x7f05005f;
         public static final int title=0x7f05002b;
         public static final int top_action_bar=0x7f050020;
         public static final int topicDes=0x7f050048;
-        public static final int tv_join_num=0x7f05009c;
-        public static final int tv_look_num=0x7f05009b;
+        public static final int tv_join_num=0x7f05009e;
+        public static final int tv_look_num=0x7f05009d;
         public static final int tv_negative=0x7f05004a;
         public static final int tv_num_count=0x7f050043;
         public static final int tv_positive=0x7f050049;
@@ -1470,12 +1472,13 @@ containing a value of this type.
         public static final int grid2=0x7f030027;
         public static final int grid3=0x7f030028;
         public static final int guide_layout=0x7f030029;
-        public static final int rank_layout=0x7f03002a;
-        public static final int register=0x7f03002b;
-        public static final int science_layout=0x7f03002c;
-        public static final int single_topic_view=0x7f03002d;
-        public static final int support_simple_spinner_dropdown_item=0x7f03002e;
-        public static final int topis_list_layout=0x7f03002f;
+        public static final int list_layout=0x7f03002a;
+        public static final int rank_layout=0x7f03002b;
+        public static final int register=0x7f03002c;
+        public static final int science_layout=0x7f03002d;
+        public static final int single_roomlist_view=0x7f03002e;
+        public static final int single_topic_view=0x7f03002f;
+        public static final int support_simple_spinner_dropdown_item=0x7f030030;
     }
     public static final class menu {
         public static final int main=0x7f0c0000;
@@ -1545,6 +1548,7 @@ containing a value of this type.
         public static final int logining=0x7f0a0010;
         public static final int logo=0x7f0a000e;
         public static final int nickname=0x7f0a0034;
+        public static final int no_data=0x7f0a0045;
         public static final int no_memeber=0x7f0a0044;
         public static final int password=0x7f0a0035;
         public static final int password_=0x7f0a001c;

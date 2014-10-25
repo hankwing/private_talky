@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
@@ -21,7 +20,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,9 +65,9 @@ public class DecideActivity extends Activity implements OnClickListener {
 	private TextView positiveView;
 	private TextView negativeView;
 	private String topicDescription = null;
-	private	String positive = null;
+	private String positive = null;
 	private String negative = null;
-	private XMPPConnection mXmppConnection;
+	//private XMPPConnection mXmppConnection = null;
 	private ProgressDialog registerDialog;
 	private RequestATeam ngRA;
 
@@ -84,35 +82,25 @@ public class DecideActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_decide);
 		Intent intent = this.getIntent();
 		fromBundle = intent.getExtras();
-		
-		// 获得该话题的名称 
+
+		// 获得该话题的名称
 		topicName = fromBundle
 				.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
 		getActionBar().setTitle(topicName); // 显示话题名称
 		topicID = fromBundle.getString(TopicsEntryContract.COLUMN_NAME_OF_ID);
-		topicURL = fromBundle  
+		topicURL = fromBundle
 				.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_URL);
 		// 添加监听请求组队结果IQ包
-		ProviderManager.addIQProvider("success",
-				"com:talky:asRequestATeamIQ", new ResultIQProvider());
+		ProviderManager.addIQProvider("success", "com:talky:asRequestATeamIQ",
+				new ResultIQProvider());
 		// 添加话题详情IQ监听器
 		ProviderManager.addIQProvider("requestTopicInfo",
 				"com:talky:requestTopicInfo", new ResultTopicInfoProvider());
 		// 发送话题详情请求IQ包
-		new Thread(new Runnable(){
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				mXmppConnection = MXMPPConnection.getInstance();
-				RequestTopicInfo rs = new RequestTopicInfo(topicID);
-				rs.setType(IQ.Type.GET);
-				MXMPPConnection.sendPacket( DecideActivity.this, rs);
-			}
-			
-		}).start();
+		RequestTopicInfo rs = new RequestTopicInfo(topicID);
+		rs.setType(IQ.Type.GET);
+		MXMPPConnection.sendPacket(DecideActivity.this, rs);
 		
-
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		btn_neg = (Button) this.findViewById(R.id.btn_negative);
 		btn_neg.setOnClickListener(this);
@@ -133,12 +121,13 @@ public class DecideActivity extends Activity implements OnClickListener {
 		topicPic = (NetworkImageView) findViewById(R.id.imgv_dec_image);
 		topicPic.setImageUrl(topicURL, mImageLoader);
 		registerDialog = new ProgressDialog(this);
-		//取消组队逻辑
-		registerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, 
-				getResources().getString(R.string.cancel_requestateam), 
-				(DialogInterface.OnClickListener)null);				//先设置空监听器
-		registerDialog.setCanceledOnTouchOutside(false);				//设置该dialog不可取消 包括点击屏幕外和按返回键
-		
+		// 取消组队逻辑
+		registerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+				getResources().getString(R.string.cancel_requestateam),
+				(DialogInterface.OnClickListener) null); // 先设置空监听器
+		registerDialog.setCanceledOnTouchOutside(false); // 设置该dialog不可取消
+															// 包括点击屏幕外和按返回键
+
 		super.onCreate(savedInstanceState);
 	}
 
@@ -149,68 +138,74 @@ public class DecideActivity extends Activity implements OnClickListener {
 		Bundle bundle = new Bundle();
 		switch (v.getId()) {
 		case R.id.btn_negative:
-			bundle.putString("side", "negative");
+			bundle.putInt("side", -1);				//-1代表反方
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
 					topicName);
 			intentIT.putExtras(bundle);
 			// 请求组队
-			ngRA = new RequestATeam(
-					MainActivity.accountInfo.getString("userFullId", null), topicID,
-					"negative", "1");
+			ngRA = new RequestATeam(MainActivity.accountInfo.getString(
+					"userFullId", null), topicID, "negative", "1");
 			ngRA.setType(IQ.Type.GET);
-			MXMPPConnection.sendPacket( this, ngRA);
-			registerDialog.setMessage(getResources().getString(R.string.seeking));
+			MXMPPConnection.sendPacket(this, ngRA);
+			registerDialog.setMessage(getResources()
+					.getString(R.string.seeking));
 			registerDialog.show();
-			final Button cancelButton = registerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-			cancelButton.setVisibility(View.VISIBLE); 
+			final Button cancelButton = registerDialog
+					.getButton(DialogInterface.BUTTON_NEGATIVE);
+			cancelButton.setVisibility(View.VISIBLE);
 			cancelButton.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					registerDialog.setMessage(
-							getResources().getString(R.string.cancel_requestateam_dialog));
+					registerDialog.setMessage(getResources().getString(
+							R.string.cancel_requestateam_dialog));
 					cancelButton.setVisibility(View.GONE);
-					//发送取消组队IQ包
-					ngRA.setIsJoin("0");				//标志为取消组队
+					// 发送取消组队IQ包
+					ngRA.setIsJoin("0"); // 标志为取消组队
 					ngRA.setType(IQ.Type.GET);
-					MXMPPConnection.sendPacket( DecideActivity.this, ngRA);
+					MXMPPConnection.sendPacket(DecideActivity.this, ngRA);
 				}
 			});
 			break;
 		case R.id.btn_positive:
-			bundle.putString("side", "positive");
+			bundle.putInt("side", 1);				//1代表正方
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
 					topicName);
 			intentIT.putExtras(bundle);
 			// 请求组队
-			ngRA = new RequestATeam(
-					MainActivity.accountInfo.getString("userFullId", null), topicID,
-					"positive", "1");
+			ngRA = new RequestATeam(MainActivity.accountInfo.getString(
+					"userFullId", null), topicID, "positive", "1");
 			ngRA.setType(IQ.Type.GET);
-			MXMPPConnection.sendPacket( this, ngRA);
-			registerDialog.setMessage(getResources().getString(R.string.seeking));
+			MXMPPConnection.sendPacket(this, ngRA);
+			registerDialog.setMessage(getResources()
+					.getString(R.string.seeking));
 			registerDialog.show();
-			final Button cancel_button = registerDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+			final Button cancel_button = registerDialog
+					.getButton(DialogInterface.BUTTON_NEGATIVE);
 			cancel_button.setVisibility(View.VISIBLE);
 			cancel_button.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					registerDialog.setMessage(
-							getResources().getString(R.string.cancel_requestateam_dialog));
+					registerDialog.setMessage(getResources().getString(
+							R.string.cancel_requestateam_dialog));
 					cancel_button.setVisibility(View.GONE);
-					//发送取消组队IQ包
-					ngRA.setIsJoin("0");				//标志为取消组队
+					// 发送取消组队IQ包
+					ngRA.setIsJoin("0"); // 标志为取消组队
 					ngRA.setType(IQ.Type.GET);
-					MXMPPConnection.sendPacket( DecideActivity.this, ngRA);
+					MXMPPConnection.sendPacket(DecideActivity.this, ngRA);
 				}
 			});
 			break;
 		case R.id.btn_discuss_home:
-			Toast.makeText(this, getResources().getString(R.string.wait_for_update), 
-					Toast.LENGTH_SHORT).show();
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // 带上选择话题的ID
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME, topicName); // 带上选择话题的名字
+			Intent roomList = new Intent(getApplicationContext(),
+					RoomListActivity.class);
+			roomList.putExtras(bundle);
+			startActivity(roomList);
 			break;
 		default:
 			break;
@@ -249,26 +244,26 @@ public class DecideActivity extends Activity implements OnClickListener {
 		@Override
 		public IQ parseIQ(XmlPullParser arg0) throws Exception {
 			// TODO Auto-generated method stub
-			Log.i("message", "receive an success iQ");
+			//Log.i("message", "receive an success iQ");
 			boolean done = false;
 			boolean isJoin = false;
 			int eventType = arg0.getEventType();
 			while (!done) {
 				if (eventType == XmlPullParser.START_TAG) {
 					if (arg0.getName().equals("success")) {
-						if( arg0.getAttributeValue(0).equals("1")) {
-							//是取消组队时服务器返回的结果IQ包
+						if (arg0.getAttributeValue(0).equals("1")) {
+							// 是取消组队时服务器返回的结果IQ包
 							DecideActivity.this.runOnUiThread(new Runnable() {
 
 								@Override
 								public void run() {
 									// TODO Auto-generated method stub
-									//dismiss dialog
+									// dismiss dialog
 									registerDialog.dismiss();
 								}
-								
+
 							});
-							isJoin = true;				//避免执行下面的加入房间的代码
+							isJoin = true; // 避免执行下面的加入房间的代码
 							break;
 						}
 					}
@@ -289,16 +284,14 @@ public class DecideActivity extends Activity implements OnClickListener {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						ChatActivity.chat = new MultiUserChat(
-								mXmppConnection, roomJID);
+						ChatActivity.chat = new MultiUserChat(MXMPPConnection.getInstance(),
+								roomJID);
 						// ChatActivity.chat2 = new
 						// MultiUserChat(LoginActivity.mXmppConnection2,
 						// roomJID);
 						try {
-							ChatActivity.chat
-									.join(mXmppConnection
-											.getUser());
-							
+							ChatActivity.chat.join(MXMPPConnection.getInstance().getUser());
+
 							// ChatActivity.chat2.join(LoginActivity.mXmppConnection2.getUser());
 							// 匹配成功 进入chatActitity
 							registerDialog.dismiss();
@@ -336,30 +329,31 @@ public class DecideActivity extends Activity implements OnClickListener {
 		@Override
 		public IQ parseIQ(XmlPullParser parser) throws Exception {
 			// TODO Auto-generated method stub
-			parser.require(XmlPullParser.START_TAG, "com:talky:requestTopicInfo", "requestTopicInfo");
+			parser.require(XmlPullParser.START_TAG,
+					"com:talky:requestTopicInfo", "requestTopicInfo");
 			while (parser.next() != XmlPullParser.END_TAG) {
 				if (parser.getEventType() != XmlPullParser.START_TAG) {
-		            continue;
-		        }
+					continue;
+				}
 				String name = parser.getName();
-							
+
 				if (name.equals("description")) {
 					parser.require(XmlPullParser.START_TAG, null, "description");
 					topicDescription = readText(parser);
-				    parser.require(XmlPullParser.END_TAG, null, "description");	
+					parser.require(XmlPullParser.END_TAG, null, "description");
 				} else if (name.equals("positive")) {
 					parser.require(XmlPullParser.START_TAG, null, "positive");
 					positive = readText(parser);
-				    parser.require(XmlPullParser.END_TAG, null, "positive");	
+					parser.require(XmlPullParser.END_TAG, null, "positive");
 				} else if (name.equals("negative")) {
 					parser.require(XmlPullParser.START_TAG, null, "negative");
 					negative = readText(parser);
-				    parser.require(XmlPullParser.END_TAG, null, "negative");	
+					parser.require(XmlPullParser.END_TAG, null, "negative");
 				} else {
 					skip(parser);
 				}
 			}
-			//解析结束 界面操作开始
+			// 解析结束 界面操作开始
 			DecideActivity.this.runOnUiThread(new Runnable() {
 
 				@Override
@@ -368,67 +362,71 @@ public class DecideActivity extends Activity implements OnClickListener {
 					topicDesc.setText(topicDescription);
 					positiveView.setText(positive);
 					negativeView.setText(negative);
-					
-					//hide progressBar and show content
+
+					// hide progressBar and show content
 					svContentView.setAlpha(0f);
 					svContentView.setVisibility(View.VISIBLE);
-					svContentView.animate()
-		            	.alpha(1f)
-		            	.setDuration(mShortAnimationDuration)
-		            	.setListener(null);
-					progressBar.animate().alpha(0f).setDuration(mShortAnimationDuration)
-					.setListener(new AnimatorListenerAdapter() {
+					svContentView.animate().alpha(1f)
+							.setDuration(mShortAnimationDuration)
+							.setListener(null);
+					progressBar.animate().alpha(0f)
+							.setDuration(mShortAnimationDuration)
+							.setListener(new AnimatorListenerAdapter() {
 
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							// TODO Auto-generated method stub
-							progressBar.setVisibility(View.GONE);
-							super.onAnimationEnd(animation);
-						}
-						
-					});
+								@Override
+								public void onAnimationEnd(Animator animation) {
+									// TODO Auto-generated method stub
+									progressBar.setVisibility(View.GONE);
+									super.onAnimationEnd(animation);
+								}
+
+							});
 				}
 			});
 			return null;
 		}
-		
+
 		/**
 		 * 跳过一个标签
+		 * 
 		 * @param parser
 		 * @throws XmlPullParserException
 		 * @throws IOException
 		 */
-		private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-		    if (parser.getEventType() != XmlPullParser.START_TAG) {
-		        throw new IllegalStateException();
-		    }
-		    int depth = 1;
-		    while (depth != 0) {
-		        switch (parser.next()) {
-		        case XmlPullParser.END_TAG:
-		            depth--;
-		            break;
-		        case XmlPullParser.START_TAG:
-		            depth++;
-		            break;
-		        }
-		    }
-		 }
-		
+		private void skip(XmlPullParser parser) throws XmlPullParserException,
+				IOException {
+			if (parser.getEventType() != XmlPullParser.START_TAG) {
+				throw new IllegalStateException();
+			}
+			int depth = 1;
+			while (depth != 0) {
+				switch (parser.next()) {
+				case XmlPullParser.END_TAG:
+					depth--;
+					break;
+				case XmlPullParser.START_TAG:
+					depth++;
+					break;
+				}
+			}
+		}
+
 		/**
 		 * 读取标签下的内容
+		 * 
 		 * @param parser
 		 * @return
 		 * @throws IOException
 		 * @throws XmlPullParserException
 		 */
-		private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-		    String result = "";
-		    if (parser.next() == XmlPullParser.TEXT) {
-		        result = parser.getText();
-		        parser.nextTag();
-		    }
-		    return result;
+		private String readText(XmlPullParser parser) throws IOException,
+				XmlPullParserException {
+			String result = "";
+			if (parser.next() == XmlPullParser.TEXT) {
+				result = parser.getText();
+				parser.nextTag();
+			}
+			return result;
 		}
 
 	}

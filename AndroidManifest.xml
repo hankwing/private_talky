@@ -44,7 +44,8 @@
             
         </activity>
        
-        <activity android:name="com.domen.activities.DecideActivity" >
+        <activity android:name="com.domen.activities.DecideActivity"
+            android:launchMode="singleTask" >
             <meta-data
             	android:name="android.support.PARENT_ACTIVITY"
             	android:value="com.domen.activities.MainActivity" />
@@ -79,6 +80,12 @@
         <activity
             android:name="com.domen.activities.CountActivity"
             android:theme="@style/MyDialogTheme" >
+        </activity>
+        
+        <activity android:name="com.domen.activities.RoomListActivity" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.domen.activities.DecideActivity" />
         </activity>
     </application>
 

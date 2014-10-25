@@ -57,5 +57,6 @@
     <string name="dialog_positive">确认</string>
     <string name="dialog_negative">取消</string>
     <string name="no_memeber">退出房间</string>
+    <string name="no_data">暂无数据</string>
 
 </resources>

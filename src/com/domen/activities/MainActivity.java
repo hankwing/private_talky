@@ -383,7 +383,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		case R.id.action_quit:
 			try {
 				XMPPTCPConnection mXmppConnection = MXMPPConnection.getInstance();
-				if( mXmppConnection.isConnected()) {
+				if( mXmppConnection!= null && mXmppConnection.isConnected()) {
 					mXmppConnection.disconnect();				//断开连接
 				}
 								
