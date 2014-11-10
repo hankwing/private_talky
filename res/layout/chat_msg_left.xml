@@ -31,7 +31,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
-            android:background="@drawable/round_image" />
+            android:src="@drawable/default_avatar"/>
 
         <RelativeLayout
             android:layout_width="wrap_content"

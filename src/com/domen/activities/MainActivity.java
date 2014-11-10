@@ -1,30 +1,46 @@
 package com.domen.activities;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.ping.packet.Ping;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.xmlpull.v1.XmlPullParser;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
@@ -41,15 +57,19 @@ import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.domen.adapter.ThemeListAdapter;
 import com.domen.adapter.ThemeTabAdapter;
 import com.domen.adapter.ThemeTabAdapter.ThemeFragment;
+import com.domen.openfire.MultipleLoginPresenceListener;
 import com.domen.openfire.RequestSync;
+import com.domen.tools.BitmapMemAndDiskCache;
+import com.domen.tools.BitmapTool;
+import com.domen.tools.CurrentActivity;
+import com.domen.tools.JsonUtil;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
-import com.domen.tools.Util;
-import com.domen.viewsolve.ShowView;
 import com.wxl.lettalk.R;
 
 /**
@@ -61,21 +81,23 @@ import com.wxl.lettalk.R;
 public class MainActivity extends FragmentActivity implements OnClickListener,
 		LoaderManager.LoaderCallbacks<Cursor> {
 
-	public static final String bitmapUrl = "http://img0.ph.126.net/A4zoc_Khk4IalYGLCrGelg==/6619281001048883256.jpg";
+	public static final int CAPTURE_PICTURE = 1;
+	public static final int CHOOSE_FROM_GALLERY = 2;
+	public static final int GALLERY_URL = 10; // query code
 	public static final String LOG_TAG = "mainActivity";
 	private static ViewPager themeViewPager; // 话题选择page
 	private ThemeTabAdapter themeTabAdapter;
 	private static List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
 	private DrawerLayout mDrawerLayout; // 左侧滑动栏
 	private ActionBarDrawerToggle mDrawerToggle; // 滑动栏触发器
-	
-	private ImageView headView;						//用户头像
-	private TextView drawerUserName;				//用户名
-	private TextView drawerRank;					//等级
-	private TextView drawerSubTitle;				//称号
-	private TextView drawerFavour;					//被赞
-	private TextView drawerShit;					//被屎
-	
+
+	private ImageView drawerAvatar; // 用户头像
+	private TextView drawerUserName; // 用户名
+	private TextView drawerRank; // 等级
+	private TextView drawerSubTitle; // 称号
+	private TextView drawerFavour; // 被赞
+	private TextView drawerShit; // 被屎
+
 	private ArrayList<HashMap<String, Object>> topics;
 	public static float Height = 0; // 屏幕高度
 	public static float Width = 0; // 屏幕宽度
@@ -83,16 +105,33 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private static SharedPreferences sharedPref;
 	public static SharedPreferences accountInfo;
 
+	private int favour; // 从服务器获取的用户被赞被屎的次数
+	private int shit;
+	private BitmapMemAndDiskCache avatarCache = null;
+	private VCard mVCard;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		avatarCache = BitmapMemAndDiskCache.getInstance(this); // 获得缓存实例
+		
 		forceShowActionBarOverflowMenu(); // 强制显示overFlowButton
 		sharedPref = getPreferences(Context.MODE_PRIVATE); // 保存刷新时间 用户账号信息等
 		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
-		
-		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
 
+		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
+		if (savedInstanceState != null) {
+			// 应用被销毁并重建时ping主机
+			CurrentActivity.setCurrentActivity(this);
+			Ping pingIQ = new Ping();
+			MXMPPConnection.sendPacket(this, pingIQ);
+		} else {
+			// 从login 或者 register 转到main 里 添加roaster监听器
+			CurrentActivity.setCurrentActivity(this);
+			Roster mRoster = MXMPPConnection.getInstance().getRoster();
+			mRoster.addRosterListener(new MultipleLoginPresenceListener());
+		}
 		getLoaderManager().initLoader(0, null, this).forceLoad(); // 初始化话题获取Loader
 		getLoaderManager().initLoader(1, null, this).forceLoad(); // 初始化话题获取Loader
 		getLoaderManager().initLoader(2, null, this).forceLoad(); // 初始化话题获取Loader
@@ -158,18 +197,40 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		});
 
 		mDrawerLayout = (DrawerLayout) this.findViewById(R.id.drawer_layout);
+		drawerAvatar = (ImageView) findViewById(R.id.drawer_avatar);
 		drawerUserName = (TextView) findViewById(R.id.drawer_username);
 		drawerRank = (TextView) findViewById(R.id.drawer_rank);
 		drawerSubTitle = (TextView) findViewById(R.id.drawer_subtitle);
 		drawerFavour = (TextView) findViewById(R.id.drawer_favour);
 		drawerShit = (TextView) findViewById(R.id.drawer_shit);
-		//暂时由客户端指定用户信息
-		drawerUserName.setText(accountInfo.getString("account", null));				//得到用户名
+		// 暂时由客户端指定用户信息
+		drawerUserName.setText(accountInfo.getString("account", null)); // 得到用户名
 		drawerRank.setText("1级");
 		drawerSubTitle.setText("牙牙学语");
 		drawerFavour.setText("0次");
 		drawerShit.setText("0次");
-		
+
+		drawerAvatar.setOnClickListener(this); // 头像点击监听器
+		mVCard = new VCard();
+		if (MXMPPConnection.getInstance() != null) {
+			// 有连接 获得用户的VCard
+			try {
+				mVCard.load(MXMPPConnection.getInstance());
+			} catch (NoResponseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (XMPPErrorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotConnectedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		avatarCache.loadAvatarBitmap(accountInfo.getString("account", null),
+				mVCard, drawerAvatar, true);
+
 		// 添加打开关闭drawer的监听器
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_open,
@@ -196,20 +257,20 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// if restart then login
-//		if (savedInstanceState != null
-//				&& savedInstanceState.getBoolean("restart")) {
-//			// Log.i("message", "account: " + sharedPref.getString("account",
-//			// null));
-//			new Login().execute(accountInfo.getString("account", null),
-//					accountInfo.getString("password", null));
-//		}
+		// if (savedInstanceState != null
+		// && savedInstanceState.getBoolean("restart")) {
+		// // Log.i("message", "account: " + sharedPref.getString("account",
+		// // null));
+		// new Login().execute(accountInfo.getString("account", null),
+		// accountInfo.getString("password", null));
+		// }
 	}
 
 	/**
 	 * 加载action bar
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) { 
+	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_activity_actions, menu);
 		return super.onCreateOptionsMenu(menu);
@@ -227,33 +288,57 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		// LoginActivity.mXmppConnection.sendPacket(rs);
 		//
 		// break;
+		case R.id.drawer_avatar:
+			XMPPTCPConnection mConnection = MXMPPConnection.getInstance();
+			if (mConnection == null) {
+				// 无连接
+				Toast.makeText(this,
+						getResources().getString(R.string.internet_failure),
+						Toast.LENGTH_SHORT).show();
+			} else {
+				// VCard mVCard = new VCard();
+				// 获得头像的bitmap对象
+				// Bitmap defaultAvatar = BitmapFactory.
+				// decodeResource(getResources(), R.drawable.default_avatar);
+				// ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				// //格式化输出到stream
+				// defaultAvatar.compress(Bitmap.CompressFormat.JPEG, 100,
+				// stream);
+
+				new SelectAvatarDialog().show(getFragmentManager(),
+						"chooseWhatWay");
+				// 暂且放上传头像的代码
+				// mVCard.setJabberId(MXMPPConnection.getInstance().getUser());
+				// try {
+				// // vcard.setAvatar(new URL( "http://img2.ph.126.net/5VnOqN" +
+				// // "ppTtF_45pMyK9gqQ==/6619174348421271779.jpg"));
+				// // vcard.setField("avatarURL",
+				// "http://img2.ph.126.net/5VnOqN" +
+				// // "ppTtF_45pMyK9gqQ==/6619174348421271779.jpg");
+				// Bitmap defaultAvatar = BitmapFactory.
+				// decodeResource(getResources(), R.drawable.default_avatar);
+				// ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				//
+				// //格式化输出到stream
+				// defaultAvatar.compress(Bitmap.CompressFormat.JPEG, 100,
+				// stream);
+				// byte[] avatarByte = stream.toByteArray();
+				// mVCard.setAvatar(avatarByte);
+				// mVCard.save(MXMPPConnection.getInstance());
+				// }catch (NoResponseException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (XMPPErrorException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (NotConnectedException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+			}
+			break;
 		default:
 			break;
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
-		// 处理更换头像相片请求
-		if (requestCode == 49) { 
-			Uri pictureUri = data.getData();
-			String[] proj = { MediaStore.Images.Media.DATA };
-			CursorLoader cl = new CursorLoader(this, pictureUri, proj, null,
-					null, null);
-			Cursor cursor = cl.loadInBackground();
-			cursor.moveToFirst();
-			Bitmap tmp = ShowView
-					.readBitmapAutoSize(
-							cursor.getString(
-									cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-									.toString(), MainActivity.Width,
-							MainActivity.Height);
-			Drawable headDrawable = new BitmapDrawable(getResources(),
-					ShowView.toRoundCorner(tmp, 35));
-			headView.setBackgroundDrawable(headDrawable);
 		}
 	}
 
@@ -291,13 +376,19 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						requestType = parser.getAttributeValue(0);
 						position = Integer.valueOf(parser.getAttributeValue(1));
 						topicType = parser.getAttributeValue(2);
+						if ("society".equals(topicType)) {
+							// 如果是第一个界面 则获得个人被赞被屎数据
+							favour = Integer.valueOf(parser
+									.getAttributeValue(3));
+							shit = Integer.valueOf(parser.getAttributeValue(4));
+						}
 					}
 				} else if (eventType == XmlPullParser.TEXT) {
 					done = true;
 					// 获得jsonData
 					// parser.getText();
-
-					topics = Util.AnalysisTopics(parser.getText(), requestType); // 解析这个jsondata到数组中
+					topics = JsonUtil.AnalysisTopics(parser.getText(),
+							requestType); // 解析这个jsondata到数组中
 					dbOpenHelper.updateTopics(topics, topicType); // 将新话题数据存入数据库中
 					getLoaderManager().restartLoader(position, null,
 							MainActivity.this).forceLoad(); // 重新获取刷新后的话题数据
@@ -307,6 +398,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
+							if (favour != 0 || shit != 0) {
+								// 如果是第一个界面 则进行刷新个人被赞被屎数据
+								drawerFavour.setText(favour + "次");
+								drawerShit.setText(shit + "次");
+							}
 							SwipeRefreshListFragmentFragment page = (SwipeRefreshListFragmentFragment) themeViewPager
 									.getAdapter().instantiateItem(
 											themeViewPager,
@@ -381,17 +477,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		}
 		switch (item.getItemId()) {
 		case R.id.action_quit:
-			try {
-				XMPPTCPConnection mXmppConnection = MXMPPConnection.getInstance();
-				if( mXmppConnection!= null && mXmppConnection.isConnected()) {
-					mXmppConnection.disconnect();				//断开连接
-				}
-								
-			} catch (NotConnectedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			finish(); // 结束应用
+			 new LogOut().execute(); //断开连接后退出应用
+			
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -404,7 +491,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		private int position;
 		private OnRefreshListener mOnRefreshListener;
 		private int itemPosition;
-		
+
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -413,7 +500,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			itemPosition = bundle.getInt("itemPosition");
 			requestType = bundle.getInt(RequestSync.REQUESTTYPE);
 			position = bundle.getInt(RequestSync.POSITION);
-			
+
 			mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
 				public void onRefresh() {
@@ -427,8 +514,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 						RequestSync rs = new RequestSync(topicType,
 								requestType, position);
 						rs.setType(IQ.Type.GET);
-						//发送IQ包
-						MXMPPConnection.sendPacket( getActivity() ,rs);
+						// 发送IQ包
+						MXMPPConnection.sendPacket(getActivity(), rs);
 						sharedPref.edit()
 								.putLong("refreshTime" + i, currentTime)
 								.commit();
@@ -470,26 +557,279 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		// TODO Auto-generated method stub
-		return new TopicDatabaseOpenHelper.TopicsLoader(this, id);
+		switch (id) {
+		case GALLERY_URL:
+			String[] projection = { MediaStore.Images.Media.DATA };
+			Uri myUri = Uri.parse(args.getString("uri"));
+			return new CursorLoader(this, // Parent activity context
+					myUri, // Table to query
+					projection, // Projection to return
+					null, // No selection clause
+					null, // No selection arguments
+					null // Default sort order
+			);
+		default:
+			return new TopicDatabaseOpenHelper.TopicsLoader(this, id);
+		}
+
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
 		// TODO Auto-generated method stub
-		// 处理返回的结果cursor;	
-		adapterslist.get(arg0.getId()).changeCursor(arg1);
+		// 处理返回的结果cursor;
+		switch (arg0.getId()) {
+		case GALLERY_URL:
+			int column_index = arg1
+					.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			arg1.moveToFirst();
+			File f = new File(arg1.getString(column_index));
+			Bitmap bm = BitmapTool.decodeSampledBitmapFromFile(f, 65, 65);
+			saveAvatar(bm);
+
+			break;
+		default:
+			adapterslist.get(arg0.getId()).changeCursor(arg1);
+		}
+
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		// TODO Auto-generated method stub
+		switch (arg0.getId()) {
+		case GALLERY_URL:
 
-		adapterslist.get(arg0.getId()).swapCursor(null);
+			break;
+		default:
+			adapterslist.get(arg0.getId()).swapCursor(null);
+		}
+
 	}
 
 	@Override
 	public void onBackPressed() {
 		moveTaskToBack(true);
 	}
-	
+
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		// ping to server
+		Ping pingIQ = new Ping();
+		MXMPPConnection.sendPacket(this, pingIQ);
+	}
+
+	/**
+	 * 出现选择用户头像的获取方式的对话框
+	 * 
+	 * @author hankwing
+	 * 
+	 */
+	public static class SelectAvatarDialog extends DialogFragment {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			// Use the Builder class for convenient dialog construction
+			final CharSequence[] items = { "Take Photo", "Choose from Library",
+					"Cancel" };
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setItems(items, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int item) {
+					if (items[item].equals("Take Photo")) {
+						Intent intent = new Intent(
+								MediaStore.ACTION_IMAGE_CAPTURE);
+						File f = new File(android.os.Environment
+								.getExternalStorageDirectory(), "temp.jpg");
+						intent.putExtra(MediaStore.EXTRA_OUTPUT,
+								Uri.fromFile(f));
+						getActivity().startActivityForResult(intent,
+								CAPTURE_PICTURE);
+					} else if (items[item].equals("Choose from Library")) {
+						Intent intent = new Intent(
+								Intent.ACTION_PICK,
+								android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+						intent.setType("image/*");
+						getActivity().startActivityForResult(
+								Intent.createChooser(intent, "Select File"),
+								CHOOSE_FROM_GALLERY);
+					} else if (items[item].equals("Cancel")) {
+						dialog.dismiss();
+					}
+				}
+			});
+			Dialog dialog = builder.create();
+			dialog.setCanceledOnTouchOutside(true); // 设置点击屏幕其他部分消失
+			return dialog;
+		}
+
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == RESULT_OK) {
+			if (requestCode == CAPTURE_PICTURE) {
+				// 拍照返回
+				File f = new File(Environment.getExternalStorageDirectory()
+						.toString());
+				for (File temp : f.listFiles()) {
+					if (temp.getName().equals("temp.jpg")) {
+						f = temp;
+						break;
+					}
+				}
+				try {
+
+					Bitmap bm = BitmapTool.decodeSampledBitmapFromFile(f, 65,
+							65);
+					// 存储到VCard中 并且加载在界面上
+					saveAvatar(bm);
+					// 保存到外存上
+					String path = android.os.Environment
+							.getExternalStorageDirectory()
+							+ File.separator
+							+ "Avatar" + File.separator + "default";
+					f.delete();
+					OutputStream fOut = null;
+					File file = new File(path, String.valueOf(System
+							.currentTimeMillis()) + ".jpg");
+					try {
+						fOut = new FileOutputStream(file);
+						bm.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+						fOut.flush();
+						fOut.close();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (requestCode == CHOOSE_FROM_GALLERY) {
+				// 从相册返回
+				Uri url = data.getData();
+				Bundle bundle = new Bundle();
+				bundle.putString("uri", url.toString());
+				if (getLoaderManager().getLoader(GALLERY_URL) != null) {
+					getLoaderManager().restartLoader(GALLERY_URL, bundle, this)
+							.forceLoad();
+				} else {
+					getLoaderManager().initLoader(GALLERY_URL, bundle, this)
+							.forceLoad();
+				}
+
+			}
+		}
+	}
+
+	/**
+	 * 存储用户头像到VCard 返回值代表修改成功与否
+	 */
+	public boolean saveAvatar(Bitmap avatar) {
+		XMPPTCPConnection connection = MXMPPConnection.getInstance();
+		if (connection != null) {
+			// 连接正常
+			VCard mVCard = new VCard();
+			try {
+				mVCard.load(connection);
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				avatar.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+				mVCard.setAvatar(stream.toByteArray());
+				mVCard.save(connection);
+				// 加载头像到界面上并缓存
+				avatarCache.loadAvatarBitmap(
+						accountInfo.getString("account", null), mVCard,
+						drawerAvatar, true);
+			} catch (NoResponseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (XMPPErrorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotConnectedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true;
+		} else {
+			Toast.makeText(this,
+					getResources().getString(R.string.avatar_failure),
+					Toast.LENGTH_SHORT).show();
+			return false;
+		}
+	}
+
+	/**
+	 * 登出线程
+	 * 
+	 * @author hankwing
+	 * 
+	 */
+	public class LogOut extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			final XMPPTCPConnection mXmppConnection = MXMPPConnection
+					.getInstance();
+			if (mXmppConnection != null && mXmppConnection.isConnected()) {
+				try {
+					mXmppConnection.disconnect();
+				} catch (NotConnectedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // 断开连接
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			MainActivity.this.finish();
+		}
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		clearReferences();
+		new LogOut().execute(); // 断开连接后退出应用
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		clearReferences();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		CurrentActivity.setCurrentActivity(this);
+		
+	}
+
+	/**
+	 * 清除当前界面标记
+	 */
+	private void clearReferences() {
+		Activity currActivity = CurrentActivity.getCurrentActivity();
+		if (currActivity != null && currActivity.equals(this))
+			CurrentActivity.setCurrentActivity(null);
+	}
+
 }

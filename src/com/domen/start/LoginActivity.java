@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -192,13 +193,16 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 			try {
 				try {
-					mXmppConnection.login(params[0], params[1]);
+					mXmppConnection.login(params[0], params[1], params[2]);
 					// 保存用户资料到preference
+					String userFullJID = mXmppConnection.getUser();
+					String userBareJID = userFullJID.substring(0, userFullJID.indexOf("/"));
 					account.edit().putString("account", params[0]).commit();
 					account.edit().putString("password", params[1]).commit();
 					account.edit()
 							.putString("userFullId", mXmppConnection.getUser())
 							.commit();
+					account.edit().putString("userBareJID", userBareJID).commit();
 					UserInfo.setAccountName(params[0]); // 存入UserInfo账号信息
 					UserInfo.setPassword(params[1]); // 方便其他地方饮用
 				} catch (SaslException e) {
@@ -212,7 +216,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					return -1; // 登录失败
+					return 0; // 登录失败 网络问题
 				}
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
@@ -229,7 +233,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			// TODO Auto-generated method stub
 			loginDialog.dismiss(); // 进度条消失
 			if (result == 1) {
-				// 登录成功
+				// 登录成功 发送presence
 				Intent mainActivity = new Intent(LoginActivity.this,
 						MainActivity.class);
 				startActivity(mainActivity);
@@ -272,7 +276,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			loginThread = new Login();
 			String account = edt_username.getText().toString();
 			String password = edt_password.getText().toString();
-			loginThread.execute(account, password);
+			loginThread.execute(account, password, Build.MODEL);
 
 			break;
 		case R.id.registBtn:

@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 public class MsgEntity {
 	
 	private String content;
+	private String userJID;				//用户的JID
 	private String date;
 	private Boolean isLeft;
 	private Boolean isText;
@@ -140,6 +141,14 @@ public class MsgEntity {
 	 */
 	public void setIsText(Boolean isText) {
 		this.isText = isText;
+	}
+	
+	public void setUserJID( String userJID) {
+		this.userJID = userJID;
+	}
+	
+	public String getUserJID() {
+		return userJID;
 	}
 	
 }

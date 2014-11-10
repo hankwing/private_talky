@@ -35,6 +35,7 @@ import com.domen.entity.UserInfo;
 import com.domen.openfire.RequestATeam;
 import com.domen.openfire.RequestTopicInfo;
 import com.domen.tools.BitmapSingleton;
+import com.domen.tools.CurrentActivity;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
 import com.wxl.lettalk.R;
@@ -82,7 +83,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_decide);
 		Intent intent = this.getIntent();
 		fromBundle = intent.getExtras();
-
+		CurrentActivity.setCurrentActivity(this);
 		// 获得该话题的名称
 		topicName = fromBundle
 				.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
@@ -115,7 +116,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
 		svContentView.setVisibility(View.GONE); // 内容界面先隐藏
 		mShortAnimationDuration = getResources().getInteger(
-				android.R.integer.config_shortAnimTime);
+				android.R.integer.config_shortAnimTime); 
 
 		mImageLoader = BitmapSingleton.getInstance(this).getImageLoader();
 		topicPic = (NetworkImageView) findViewById(R.id.imgv_dec_image);
@@ -138,6 +139,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		Bundle bundle = new Bundle();
 		switch (v.getId()) {
 		case R.id.btn_negative:
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // 带上选择话题的ID
 			bundle.putInt("side", -1);				//-1代表反方
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
 					topicName);
@@ -169,6 +171,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 			});
 			break;
 		case R.id.btn_positive:
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // 带上选择话题的ID
 			bundle.putInt("side", 1);				//1代表正方
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
 					topicName);
@@ -230,6 +233,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		// ProviderManager.getInstance().removeIQProvider("success",
 		// "com:talky:asRequestATeamIQ");
+		clearReferences();
 		super.onDestroy();
 	}
 
@@ -297,6 +301,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 							registerDialog.dismiss();
 							Toast.makeText(DecideActivity.this, "匹配成功",
 									Toast.LENGTH_SHORT).show();
+							intentIT.putExtra("roomJID", roomJID);				//加入房间JID
 							DecideActivity.this.startActivity(intentIT);
 							DecideActivity.this.finish();
 						} catch (XMPPException e) {
@@ -429,6 +434,29 @@ public class DecideActivity extends Activity implements OnClickListener {
 			return result;
 		}
 
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		clearReferences();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		CurrentActivity.setCurrentActivity(this);
+	}
+
+	/**
+	 * 清除当前界面标记
+	 */
+	private void clearReferences() {
+		Activity currActivity = CurrentActivity.getCurrentActivity();
+		if (currActivity != null && currActivity.equals(this))
+			CurrentActivity.setCurrentActivity(null);
 	}
 
 }

@@ -58,5 +58,8 @@
     <string name="dialog_negative">取消</string>
     <string name="no_memeber">退出房间</string>
     <string name="no_data">暂无数据</string>
+    <string name="agree">赞</string>
+    <string name="shit">屎</string>
+    <string name="avatar_failure">头像设置失败 请检查网络</string>
 
 </resources>

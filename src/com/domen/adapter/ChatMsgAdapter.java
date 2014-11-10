@@ -1,13 +1,17 @@
 package com.domen.adapter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import android.app.ActionBar.LayoutParams;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
@@ -16,7 +20,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.domen.activities.ChatActivity;
 import com.domen.entity.MsgEntity;
+import com.domen.tools.BitmapMemAndDiskCache;
 import com.wxl.lettalk.R;
 
 /**
@@ -27,10 +33,15 @@ import com.wxl.lettalk.R;
 public class ChatMsgAdapter extends BaseAdapter {
 
 	private LayoutInflater chat_inflater;
-	private List<MsgEntity> chat_list;
+	private List<MsgEntity> chat_list;				//聊天内容表
 	private Context context;
 	private ImageButton ibtn_like;
 	private ImageButton ibtn_shit;
+	private PopupWindow popuoWindow;
+	private int choosenPosition;				//点赞和点屎的message的position
+	private boolean isSpectator;
+	private BitmapMemAndDiskCache avatarCache;
+	private Map<String,VCard> vcardList;				//保存房间成员的VCard
 
 //	private int[] expressionImages;
 //	//private String[] expressionImageNames;
@@ -39,7 +50,6 @@ public class ChatMsgAdapter extends BaseAdapter {
 //	private int[] expressionImages2;
 //	//private String[] expressionImageNames2;
 	//private Bitmap face;
-
 	static class ViewHolder{
 		public ImageView ivHead;
 		public TextView tvContent;
@@ -49,11 +59,13 @@ public class ChatMsgAdapter extends BaseAdapter {
 	}
 
 
-	public ChatMsgAdapter(Context context,List<MsgEntity> chat_list){
+	public ChatMsgAdapter(Context context,List<MsgEntity> chat_list, boolean isSpectator){
 		this.context = context;
 		this.chat_list = chat_list;
+		this.isSpectator = isSpectator;
 		chat_inflater = LayoutInflater.from(context);
-		
+		vcardList = new HashMap<String, VCard>();
+		avatarCache = BitmapMemAndDiskCache.getInstance(context);
 //		expressionImages = Expressions.expressionImgs;
 //		//expressionImageNames = Expressions.expressionImgNames;
 //		expressionImages1 = Expressions.expressionImgs1;
@@ -81,7 +93,7 @@ public class ChatMsgAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int arg0, View arg1, ViewGroup arg2) {
+	public View getView(final int arg0, View arg1, ViewGroup arg2) {
 		MsgEntity msgEnitiy = chat_list.get(arg0);
 		ViewHolder viewHolder= new ViewHolder();
 
@@ -108,8 +120,14 @@ public class ChatMsgAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) arg1.getTag();
 		}
 
-		BitmapDrawable bd = (BitmapDrawable) msgEnitiy.getHead();
-		viewHolder.ivHead.setImageBitmap(bd.getBitmap());
+		//BitmapDrawable bd = (BitmapDrawable) msgEnitiy.getHead();
+		//viewHolder.ivHead.setImageBitmap(bd.getBitmap());
+		String nickName = msgEnitiy.getName();
+		if( vcardList.containsKey(msgEnitiy.getName())) {
+			//显示头像
+			avatarCache.loadAvatarBitmap(nickName, vcardList.get(nickName), 
+					viewHolder.ivHead, false);
+		}
 		viewHolder.ivHead.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -134,17 +152,23 @@ public class ChatMsgAdapter extends BaseAdapter {
 //			viewHolder.tvContent.setVisibility(View.GONE);
 //
 //		}
-//		viewHolder.tvContent.setOnLongClickListener(new OnLongClickListener() {
-//
-//			@Override
-//			public boolean onLongClick(View v) {
-//				// TODO Auto-generated method stub
-//				//显示点赞点屎界面
-//				PopupWindow popupWindow = conPopupWindow(context);
-//				popupWindow.showAsDropDown(v, 0, 0);
-//				return false;
-//			}
-//		});
+		if( isSpectator ) {
+			//如果是观众的话 那么长按消息框出现点赞画面
+			viewHolder.tvContent.setOnLongClickListener(new OnLongClickListener() {
+	
+				@Override
+				public boolean onLongClick(View v) {
+					// TODO Auto-generated method stub
+					//显示点赞点屎界面
+					choosenPosition = arg0;				//设置选择的message的位置
+					if( popuoWindow == null) {
+						conPopupWindow(context);
+					}
+					popuoWindow.showAsDropDown(v);
+					return false;
+				}
+			});
+		}
 
 //		viewHolder.ivPicture.setOnLongClickListener(new OnLongClickListener() {
 //
@@ -160,22 +184,29 @@ public class ChatMsgAdapter extends BaseAdapter {
 	}
 
 	//点赞点屎界面
-	PopupWindow conPopupWindow(Context context){
+	private PopupWindow conPopupWindow(Context context){
 
-		PopupWindow conWindow = new PopupWindow(context);
+		popuoWindow = new PopupWindow(context);
+		//conWindow.setBackgroundDrawable(new BitmapDrawable(context.getResources(), (Bitmap)null));
+		//conWindow.setOutsideTouchable(true);
+		popuoWindow.setFocusable(true);
 		View contentView = LayoutInflater.from(context).inflate(R.layout.con_comment_layout, null);
-		conWindow.setContentView(contentView);
+		popuoWindow.setContentView(contentView);
 
-		conWindow.setWidth(LayoutParams.WRAP_CONTENT);
-		conWindow.setHeight(LayoutParams.WRAP_CONTENT);
+		popuoWindow.setWidth(LayoutParams.WRAP_CONTENT);
+		popuoWindow.setHeight(LayoutParams.WRAP_CONTENT);
 		ibtn_like = (ImageButton) contentView.findViewById(R.id.ibtn_like);
 		ibtn_shit = (ImageButton) contentView.findViewById(R.id.ibtn_shit);
+		
+		
 		ibtn_like.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
+				//点赞
+				MsgEntity msgEnitiy = chat_list.get(choosenPosition);
+				ChatActivity.addUserAgree(msgEnitiy.getUserJID());
 			}
 		});
 		ibtn_shit.setOnClickListener(new OnClickListener() {
@@ -183,11 +214,13 @@ public class ChatMsgAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
+				//点屎
+				MsgEntity msgEnitiy = chat_list.get(choosenPosition);
+				ChatActivity.addUserShit(msgEnitiy.getUserJID());
 			}
 		});
 
-		return conWindow;
+		return popuoWindow;
 	}
 
 	@Override
@@ -252,5 +285,9 @@ public class ChatMsgAdapter extends BaseAdapter {
 //		}
 //		return spString;
 //	}
+	
+	public Map<String,VCard> getVcardList() {
+		return vcardList;
+	}
 
 }

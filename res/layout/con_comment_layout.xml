@@ -28,11 +28,4 @@
             android:background="@drawable/icon_shit" />
     </RelativeLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="2dp"
-        android:text="show 态度"
-        android:textSize="14dp" />
-
 </LinearLayout>
