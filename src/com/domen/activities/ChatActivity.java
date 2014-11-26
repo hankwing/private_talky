@@ -99,7 +99,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private static String roomJID = null;
 	private Map<String, VCard> vcardList = null;
 	private String nickName = MainActivity.accountInfo.getString("account", null);
-
+dfdsafdsafas
 	/*
 	 * (non-Javadoc)
 	 * 
