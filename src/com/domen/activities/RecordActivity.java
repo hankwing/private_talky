@@ -17,7 +17,7 @@ import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.widget.Button;
 
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class RecordActivity extends Activity {
 

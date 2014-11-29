@@ -37,7 +37,7 @@ import com.domen.tools.JsonUtil;
 import com.domen.tools.LoadAvatarManager;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class RoomListActivity extends ListActivity implements OnClickListener {
 

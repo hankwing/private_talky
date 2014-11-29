@@ -40,7 +40,7 @@ import com.domen.tools.BitmapSingleton;
 import com.domen.tools.CurrentActivity;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 /**
  * 决定选择哪个观点

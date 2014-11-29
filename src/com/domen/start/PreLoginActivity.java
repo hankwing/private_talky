@@ -1,15 +1,15 @@
 package com.domen.start;
 
-import com.domen.activities.RegisterActivity;
-import com.wxl.lettalk.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.domen.activities.RegisterActivity;
 
 /**
  * 初始化界面 可选择登录和注册
@@ -29,7 +29,7 @@ public class PreLoginActivity extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_pre_login);
-		
+		Toast.makeText(this, "preLogin", Toast.LENGTH_SHORT).show();
 		tvLogin = (TextView) findViewById(R.id.btn_login);
 		tvLogin.setOnClickListener(this);
 		tvRegister = (TextView) findViewById(R.id.btn_register);

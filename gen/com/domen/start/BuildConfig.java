@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.wxl.lettalk;
+package com.domen.start;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;

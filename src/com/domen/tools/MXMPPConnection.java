@@ -35,7 +35,7 @@ import android.widget.Toast;
 import com.domen.activities.ChatActivity;
 import com.domen.openfire.MultipleLoginPresenceListener;
 import com.domen.openfire.MultipleLoginPresenceListener.MultiLoginDialog;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class MXMPPConnection {
 

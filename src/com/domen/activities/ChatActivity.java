@@ -46,11 +46,11 @@ import android.widget.Toast;
 import com.domen.adapter.ChatMsgAdapter;
 import com.domen.entity.MsgEntity;
 import com.domen.openfire.SyncAgreeAndShit;
+import com.domen.start.R;
 import com.domen.tools.CurrentActivity;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.MXMPPConnection.Login;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.wxl.lettalk.R;
 
 /**
  * 聊天窗口 重要

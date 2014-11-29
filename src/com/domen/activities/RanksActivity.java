@@ -3,7 +3,7 @@ package com.domen.activities;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class RanksActivity extends Activity {
 

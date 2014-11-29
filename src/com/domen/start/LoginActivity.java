@@ -31,7 +31,7 @@ import android.widget.Toast;
 import com.domen.activities.MainActivity;
 import com.domen.customView.ProgressDialogWithKeyBack;
 import com.domen.tools.MXMPPConnection;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 /**
  * 登录界面
@@ -59,20 +59,20 @@ public class LoginActivity extends Activity implements OnClickListener {
 		Context context = getApplicationContext();
 		account = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
 		SmackAndroid.init(context); // 初始化asmack
-		SharedPreferences settings = getSharedPreferences("runTime", 0);
-		if (settings.getInt("time", 0) == 0) {
-			Intent intent = new Intent(this, GuideActivity.class);
-			startActivity(intent);
-			settings.edit().putInt("time", 1).commit();
-			finish();
-			overridePendingTransition(android.R.anim.fade_in,
-					android.R.anim.fade_out);
-		} else {
+//		SharedPreferences settings = getSharedPreferences("runTime", 0);
+//		if (settings.getInt("time", 0) == 0) {
+//			Intent intent = new Intent(this, GuideActivity.class);
+//			startActivity(intent);
+//			settings.edit().putInt("time", 1).commit();
+//			finish();
+//			overridePendingTransition(android.R.anim.fade_in,
+//					android.R.anim.fade_out);
+//		} else {
 			btn_login = (ImageView) this.findViewById(R.id.loginBtn);
 			edt_password = (EditText) this.findViewById(R.id.passwordEt);
 			edt_username = (EditText) this.findViewById(R.id.userNameEt);
 			btn_login.setOnClickListener(this);
-		}
+//		}
 
 	}
 

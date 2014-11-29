@@ -12,7 +12,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.domen.tools.BitmapSingleton;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 /**
  * 定义了单个话题的界面适配器

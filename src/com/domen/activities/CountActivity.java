@@ -1,5 +1,7 @@
 package com.domen.activities;
 
+import com.domen.start.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -13,7 +15,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.wxl.lettalk.R;
 
 /**
  * 比谁的屎多

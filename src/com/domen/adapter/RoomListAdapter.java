@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.domen.entity.ConstantVariable;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class RoomListAdapter extends BaseAdapter {
 

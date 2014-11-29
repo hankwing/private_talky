@@ -17,7 +17,7 @@ import android.os.Bundle;
 
 import com.domen.start.LoginActivity;
 import com.domen.tools.CurrentActivity;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class MultipleLoginPresenceListener implements RosterListener {
 

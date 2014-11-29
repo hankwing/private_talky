@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.wxl.lettalk;
+package com.domen.start;
 
 public final class R {
     public static final class anim {
@@ -1305,60 +1305,59 @@ containing a value of this type.
         public static final int icon_shit_pressed=0x7f0200cc;
         public static final int icon_theme_list_shadow=0x7f0200cd;
         public static final int icon_theme_person=0x7f0200ce;
-        public static final int launcher=0x7f0200cf;
-        public static final int like_background=0x7f0200d0;
-        public static final int list_background=0x7f0200d1;
-        public static final int list_cache=0x7f0200d2;
-        public static final int login_align=0x7f0200d3;
-        public static final int login_button=0x7f0200d4;
-        public static final int login_button_normal=0x7f0200d5;
-        public static final int login_button_pressed=0x7f0200d6;
-        public static final int login_edit=0x7f0200d7;
-        public static final int login_edit_normal=0x7f0200d8;
-        public static final int login_edit_pressed=0x7f0200d9;
-        public static final int login_input_account_bg=0x7f0200da;
-        public static final int login_input_password_bg=0x7f0200db;
-        public static final int login_input_password_bg_2=0x7f0200dc;
-        public static final int login_login=0x7f0200dd;
-        public static final int login_logo=0x7f0200de;
-        public static final int login_other_account_tips_bg=0x7f0200df;
-        public static final int login_qq_client=0x7f0200e0;
-        public static final int login_qq_client_pressed=0x7f0200e1;
-        public static final int login_qq_weibo=0x7f0200e2;
-        public static final int login_qq_weibo_pressed=0x7f0200e3;
-        public static final int login_sina_weibo=0x7f0200e4;
-        public static final int login_sina_weibo_pressed=0x7f0200e5;
-        public static final int page_focused=0x7f0200e6;
-        public static final int page_indicator=0x7f0200e7;
-        public static final int page_indicator_focused=0x7f0200e8;
-        public static final int page_unfocused=0x7f0200e9;
-        public static final int rank1=0x7f0200ea;
-        public static final int rank10=0x7f0200eb;
-        public static final int rank2=0x7f0200ec;
-        public static final int rank3=0x7f0200ed;
-        public static final int rank4=0x7f0200ee;
-        public static final int rank5=0x7f0200ef;
-        public static final int rank6=0x7f0200f0;
-        public static final int rank7=0x7f0200f1;
-        public static final int rank8=0x7f0200f2;
-        public static final int rank9=0x7f0200f3;
-        public static final int register_button=0x7f0200f4;
-        public static final int register_button_normal=0x7f0200f5;
-        public static final int register_button_pressed=0x7f0200f6;
-        public static final int register_join=0x7f0200f7;
-        public static final int round_image=0x7f0200f8;
-        public static final int send_message=0x7f0200f9;
-        public static final int shit_background=0x7f0200fa;
-        public static final int show_attitude_background=0x7f0200fb;
-        public static final int show_attritude_background=0x7f0200fc;
-        public static final int show_room_list=0x7f0200fd;
-        public static final int start_img=0x7f0200fe;
-        public static final int tab_under_img=0x7f0200ff;
-        public static final int theme_init_view=0x7f020100;
-        public static final int topi_desc_background=0x7f020101;
-        public static final int topic_background=0x7f020102;
-        public static final int topic_cache=0x7f020103;
-        public static final int topics_background=0x7f020104;
+        public static final int like_background=0x7f0200cf;
+        public static final int list_background=0x7f0200d0;
+        public static final int list_cache=0x7f0200d1;
+        public static final int login_align=0x7f0200d2;
+        public static final int login_button=0x7f0200d3;
+        public static final int login_button_normal=0x7f0200d4;
+        public static final int login_button_pressed=0x7f0200d5;
+        public static final int login_edit=0x7f0200d6;
+        public static final int login_edit_normal=0x7f0200d7;
+        public static final int login_edit_pressed=0x7f0200d8;
+        public static final int login_input_account_bg=0x7f0200d9;
+        public static final int login_input_password_bg=0x7f0200da;
+        public static final int login_input_password_bg_2=0x7f0200db;
+        public static final int login_login=0x7f0200dc;
+        public static final int login_logo=0x7f0200dd;
+        public static final int login_other_account_tips_bg=0x7f0200de;
+        public static final int login_qq_client=0x7f0200df;
+        public static final int login_qq_client_pressed=0x7f0200e0;
+        public static final int login_qq_weibo=0x7f0200e1;
+        public static final int login_qq_weibo_pressed=0x7f0200e2;
+        public static final int login_sina_weibo=0x7f0200e3;
+        public static final int login_sina_weibo_pressed=0x7f0200e4;
+        public static final int page_focused=0x7f0200e5;
+        public static final int page_indicator=0x7f0200e6;
+        public static final int page_indicator_focused=0x7f0200e7;
+        public static final int page_unfocused=0x7f0200e8;
+        public static final int rank1=0x7f0200e9;
+        public static final int rank10=0x7f0200ea;
+        public static final int rank2=0x7f0200eb;
+        public static final int rank3=0x7f0200ec;
+        public static final int rank4=0x7f0200ed;
+        public static final int rank5=0x7f0200ee;
+        public static final int rank6=0x7f0200ef;
+        public static final int rank7=0x7f0200f0;
+        public static final int rank8=0x7f0200f1;
+        public static final int rank9=0x7f0200f2;
+        public static final int register_button=0x7f0200f3;
+        public static final int register_button_normal=0x7f0200f4;
+        public static final int register_button_pressed=0x7f0200f5;
+        public static final int register_join=0x7f0200f6;
+        public static final int round_image=0x7f0200f7;
+        public static final int send_message=0x7f0200f8;
+        public static final int shit_background=0x7f0200f9;
+        public static final int show_attitude_background=0x7f0200fa;
+        public static final int show_attritude_background=0x7f0200fb;
+        public static final int show_room_list=0x7f0200fc;
+        public static final int start_img=0x7f0200fd;
+        public static final int tab_under_img=0x7f0200fe;
+        public static final int theme_init_view=0x7f0200ff;
+        public static final int topi_desc_background=0x7f020100;
+        public static final int topic_background=0x7f020101;
+        public static final int topic_cache=0x7f020102;
+        public static final int topics_background=0x7f020103;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f05006b;
@@ -1949,26 +1948,26 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #ActionBar_background com.wxl.lettalk:background}</code></td><td> Specifies a background drawable for the action bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_backgroundSplit com.wxl.lettalk:backgroundSplit}</code></td><td> Specifies a background drawable for the bottom component of a split action bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_backgroundStacked com.wxl.lettalk:backgroundStacked}</code></td><td> Specifies a background drawable for a second stacked row of the action bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_customNavigationLayout com.wxl.lettalk:customNavigationLayout}</code></td><td> Specifies a layout for custom navigation.</td></tr>
-           <tr><td><code>{@link #ActionBar_displayOptions com.wxl.lettalk:displayOptions}</code></td><td> Options affecting how the action bar is displayed.</td></tr>
-           <tr><td><code>{@link #ActionBar_divider com.wxl.lettalk:divider}</code></td><td> Specifies the drawable used for item dividers.</td></tr>
-           <tr><td><code>{@link #ActionBar_height com.wxl.lettalk:height}</code></td><td> Specifies a fixed height.</td></tr>
-           <tr><td><code>{@link #ActionBar_homeLayout com.wxl.lettalk:homeLayout}</code></td><td> Specifies a layout to use for the "home" section of the action bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_icon com.wxl.lettalk:icon}</code></td><td> Specifies the drawable used for the application icon.</td></tr>
-           <tr><td><code>{@link #ActionBar_indeterminateProgressStyle com.wxl.lettalk:indeterminateProgressStyle}</code></td><td> Specifies a style resource to use for an indeterminate progress spinner.</td></tr>
-           <tr><td><code>{@link #ActionBar_itemPadding com.wxl.lettalk:itemPadding}</code></td><td> Specifies padding that should be applied to the left and right sides of
+           <tr><td><code>{@link #ActionBar_background com.domen.start:background}</code></td><td> Specifies a background drawable for the action bar.</td></tr>
+           <tr><td><code>{@link #ActionBar_backgroundSplit com.domen.start:backgroundSplit}</code></td><td> Specifies a background drawable for the bottom component of a split action bar.</td></tr>
+           <tr><td><code>{@link #ActionBar_backgroundStacked com.domen.start:backgroundStacked}</code></td><td> Specifies a background drawable for a second stacked row of the action bar.</td></tr>
+           <tr><td><code>{@link #ActionBar_customNavigationLayout com.domen.start:customNavigationLayout}</code></td><td> Specifies a layout for custom navigation.</td></tr>
+           <tr><td><code>{@link #ActionBar_displayOptions com.domen.start:displayOptions}</code></td><td> Options affecting how the action bar is displayed.</td></tr>
+           <tr><td><code>{@link #ActionBar_divider com.domen.start:divider}</code></td><td> Specifies the drawable used for item dividers.</td></tr>
+           <tr><td><code>{@link #ActionBar_height com.domen.start:height}</code></td><td> Specifies a fixed height.</td></tr>
+           <tr><td><code>{@link #ActionBar_homeLayout com.domen.start:homeLayout}</code></td><td> Specifies a layout to use for the "home" section of the action bar.</td></tr>
+           <tr><td><code>{@link #ActionBar_icon com.domen.start:icon}</code></td><td> Specifies the drawable used for the application icon.</td></tr>
+           <tr><td><code>{@link #ActionBar_indeterminateProgressStyle com.domen.start:indeterminateProgressStyle}</code></td><td> Specifies a style resource to use for an indeterminate progress spinner.</td></tr>
+           <tr><td><code>{@link #ActionBar_itemPadding com.domen.start:itemPadding}</code></td><td> Specifies padding that should be applied to the left and right sides of
              system-provided items in the bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_logo com.wxl.lettalk:logo}</code></td><td> Specifies the drawable used for the application logo.</td></tr>
-           <tr><td><code>{@link #ActionBar_navigationMode com.wxl.lettalk:navigationMode}</code></td><td> The type of navigation to use.</td></tr>
-           <tr><td><code>{@link #ActionBar_progressBarPadding com.wxl.lettalk:progressBarPadding}</code></td><td> Specifies the horizontal padding on either end for an embedded progress bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_progressBarStyle com.wxl.lettalk:progressBarStyle}</code></td><td> Specifies a style resource to use for an embedded progress bar.</td></tr>
-           <tr><td><code>{@link #ActionBar_subtitle com.wxl.lettalk:subtitle}</code></td><td> Specifies subtitle text used for navigationMode="normal" </td></tr>
-           <tr><td><code>{@link #ActionBar_subtitleTextStyle com.wxl.lettalk:subtitleTextStyle}</code></td><td> Specifies a style to use for subtitle text.</td></tr>
-           <tr><td><code>{@link #ActionBar_title com.wxl.lettalk:title}</code></td><td> Specifies title text used for navigationMode="normal" </td></tr>
-           <tr><td><code>{@link #ActionBar_titleTextStyle com.wxl.lettalk:titleTextStyle}</code></td><td> Specifies a style to use for title text.</td></tr>
+           <tr><td><code>{@link #ActionBar_logo com.domen.start:logo}</code></td><td> Specifies the drawable used for the application logo.</td></tr>
+           <tr><td><code>{@link #ActionBar_navigationMode com.domen.start:navigationMode}</code></td><td> The type of navigation to use.</td></tr>
+           <tr><td><code>{@link #ActionBar_progressBarPadding com.domen.start:progressBarPadding}</code></td><td> Specifies the horizontal padding on either end for an embedded progress bar.</td></tr>
+           <tr><td><code>{@link #ActionBar_progressBarStyle com.domen.start:progressBarStyle}</code></td><td> Specifies a style resource to use for an embedded progress bar.</td></tr>
+           <tr><td><code>{@link #ActionBar_subtitle com.domen.start:subtitle}</code></td><td> Specifies subtitle text used for navigationMode="normal" </td></tr>
+           <tr><td><code>{@link #ActionBar_subtitleTextStyle com.domen.start:subtitleTextStyle}</code></td><td> Specifies a style to use for subtitle text.</td></tr>
+           <tr><td><code>{@link #ActionBar_title com.domen.start:title}</code></td><td> Specifies title text used for navigationMode="normal" </td></tr>
+           <tr><td><code>{@link #ActionBar_titleTextStyle com.domen.start:titleTextStyle}</code></td><td> Specifies a style to use for title text.</td></tr>
            </table>
            @see #ActionBar_background
            @see #ActionBar_backgroundSplit
@@ -2006,7 +2005,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:background
+          @attr name com.domen.start:background
         */
         public static final int ActionBar_background = 10;
         /**
@@ -2020,7 +2019,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 <p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
 "<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:backgroundSplit
+          @attr name com.domen.start:backgroundSplit
         */
         public static final int ActionBar_backgroundSplit = 12;
         /**
@@ -2034,7 +2033,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 <p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
 "<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:backgroundStacked
+          @attr name com.domen.start:backgroundStacked
         */
         public static final int ActionBar_backgroundStacked = 11;
         /**
@@ -2046,7 +2045,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:customNavigationLayout
+          @attr name com.domen.start:customNavigationLayout
         */
         public static final int ActionBar_customNavigationLayout = 13;
         /**
@@ -2069,7 +2068,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 <tr><td><code>disableHome</code></td><td>0x20</td><td></td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:displayOptions
+          @attr name com.domen.start:displayOptions
         */
         public static final int ActionBar_displayOptions = 3;
         /**
@@ -2081,7 +2080,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:divider
+          @attr name com.domen.start:divider
         */
         public static final int ActionBar_divider = 9;
         /**
@@ -2099,7 +2098,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:height
+          @attr name com.domen.start:height
         */
         public static final int ActionBar_height = 1;
         /**
@@ -2111,7 +2110,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:homeLayout
+          @attr name com.domen.start:homeLayout
         */
         public static final int ActionBar_homeLayout = 14;
         /**
@@ -2123,7 +2122,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:icon
+          @attr name com.domen.start:icon
         */
         public static final int ActionBar_icon = 7;
         /**
@@ -2135,7 +2134,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:indeterminateProgressStyle
+          @attr name com.domen.start:indeterminateProgressStyle
         */
         public static final int ActionBar_indeterminateProgressStyle = 16;
         /**
@@ -2154,7 +2153,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:itemPadding
+          @attr name com.domen.start:itemPadding
         */
         public static final int ActionBar_itemPadding = 18;
         /**
@@ -2166,7 +2165,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:logo
+          @attr name com.domen.start:logo
         */
         public static final int ActionBar_logo = 8;
         /**
@@ -2186,7 +2185,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 <tr><td><code>tabMode</code></td><td>2</td><td> The action bar will use a series of horizontal tabs for navigation. </td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:navigationMode
+          @attr name com.domen.start:navigationMode
         */
         public static final int ActionBar_navigationMode = 2;
         /**
@@ -2204,7 +2203,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:progressBarPadding
+          @attr name com.domen.start:progressBarPadding
         */
         public static final int ActionBar_progressBarPadding = 17;
         /**
@@ -2216,7 +2215,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:progressBarStyle
+          @attr name com.domen.start:progressBarStyle
         */
         public static final int ActionBar_progressBarStyle = 15;
         /**
@@ -2232,7 +2231,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:subtitle
+          @attr name com.domen.start:subtitle
         */
         public static final int ActionBar_subtitle = 4;
         /**
@@ -2244,7 +2243,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:subtitleTextStyle
+          @attr name com.domen.start:subtitleTextStyle
         */
         public static final int ActionBar_subtitleTextStyle = 6;
         /**
@@ -2260,7 +2259,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:title
+          @attr name com.domen.start:title
         */
         public static final int ActionBar_title = 0;
         /**
@@ -2272,7 +2271,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:titleTextStyle
+          @attr name com.domen.start:titleTextStyle
         */
         public static final int ActionBar_titleTextStyle = 5;
         /**  Valid LayoutParams for views placed in the action bar as custom views. 
@@ -2303,17 +2302,17 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowActionBar com.wxl.lettalk:windowActionBar}</code></td><td></td></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowActionBarOverlay com.wxl.lettalk:windowActionBarOverlay}</code></td><td></td></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowFixedHeightMajor com.wxl.lettalk:windowFixedHeightMajor}</code></td><td> A fixed height for the window along the major axis of the screen,
+           <tr><td><code>{@link #ActionBarWindow_windowActionBar com.domen.start:windowActionBar}</code></td><td></td></tr>
+           <tr><td><code>{@link #ActionBarWindow_windowActionBarOverlay com.domen.start:windowActionBarOverlay}</code></td><td></td></tr>
+           <tr><td><code>{@link #ActionBarWindow_windowFixedHeightMajor com.domen.start:windowFixedHeightMajor}</code></td><td> A fixed height for the window along the major axis of the screen,
              that is, when in portrait.</td></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowFixedHeightMinor com.wxl.lettalk:windowFixedHeightMinor}</code></td><td> A fixed height for the window along the minor axis of the screen,
+           <tr><td><code>{@link #ActionBarWindow_windowFixedHeightMinor com.domen.start:windowFixedHeightMinor}</code></td><td> A fixed height for the window along the minor axis of the screen,
              that is, when in landscape.</td></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowFixedWidthMajor com.wxl.lettalk:windowFixedWidthMajor}</code></td><td> A fixed width for the window along the major axis of the screen,
+           <tr><td><code>{@link #ActionBarWindow_windowFixedWidthMajor com.domen.start:windowFixedWidthMajor}</code></td><td> A fixed width for the window along the major axis of the screen,
              that is, when in landscape.</td></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowFixedWidthMinor com.wxl.lettalk:windowFixedWidthMinor}</code></td><td> A fixed width for the window along the minor axis of the screen,
+           <tr><td><code>{@link #ActionBarWindow_windowFixedWidthMinor com.domen.start:windowFixedWidthMinor}</code></td><td> A fixed width for the window along the minor axis of the screen,
              that is, when in portrait.</td></tr>
-           <tr><td><code>{@link #ActionBarWindow_windowSplitActionBar com.wxl.lettalk:windowSplitActionBar}</code></td><td></td></tr>
+           <tr><td><code>{@link #ActionBarWindow_windowSplitActionBar com.domen.start:windowSplitActionBar}</code></td><td></td></tr>
            </table>
            @see #ActionBarWindow_windowActionBar
            @see #ActionBarWindow_windowActionBarOverlay
@@ -2328,7 +2327,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
             0x7f01000d, 0x7f01000e, 0x7f01000f
         };
         /**
-          <p>This symbol is the offset where the {@link com.wxl.lettalk.R.attr#windowActionBar}
+          <p>This symbol is the offset where the {@link com.domen.start.R.attr#windowActionBar}
           attribute's value can be found in the {@link #ActionBarWindow} array.
 
 
@@ -2338,11 +2337,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.wxl.lettalk:windowActionBar
+          @attr name com.domen.start:windowActionBar
         */
         public static final int ActionBarWindow_windowActionBar = 0;
         /**
-          <p>This symbol is the offset where the {@link com.wxl.lettalk.R.attr#windowActionBarOverlay}
+          <p>This symbol is the offset where the {@link com.domen.start.R.attr#windowActionBarOverlay}
           attribute's value can be found in the {@link #ActionBarWindow} array.
 
 
@@ -2352,7 +2351,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.wxl.lettalk:windowActionBarOverlay
+          @attr name com.domen.start:windowActionBarOverlay
         */
         public static final int ActionBarWindow_windowActionBarOverlay = 1;
         /**
@@ -2375,7 +2374,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:windowFixedHeightMajor
+          @attr name com.domen.start:windowFixedHeightMajor
         */
         public static final int ActionBarWindow_windowFixedHeightMajor = 6;
         /**
@@ -2398,7 +2397,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:windowFixedHeightMinor
+          @attr name com.domen.start:windowFixedHeightMinor
         */
         public static final int ActionBarWindow_windowFixedHeightMinor = 4;
         /**
@@ -2421,7 +2420,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:windowFixedWidthMajor
+          @attr name com.domen.start:windowFixedWidthMajor
         */
         public static final int ActionBarWindow_windowFixedWidthMajor = 3;
         /**
@@ -2444,11 +2443,11 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:windowFixedWidthMinor
+          @attr name com.domen.start:windowFixedWidthMinor
         */
         public static final int ActionBarWindow_windowFixedWidthMinor = 5;
         /**
-          <p>This symbol is the offset where the {@link com.wxl.lettalk.R.attr#windowSplitActionBar}
+          <p>This symbol is the offset where the {@link com.domen.start.R.attr#windowSplitActionBar}
           attribute's value can be found in the {@link #ActionBarWindow} array.
 
 
@@ -2458,7 +2457,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.wxl.lettalk:windowSplitActionBar
+          @attr name com.domen.start:windowSplitActionBar
         */
         public static final int ActionBarWindow_windowSplitActionBar = 2;
         /** Attributes that can be used with a ActionMenuItemView.
@@ -2491,11 +2490,11 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #ActionMode_background com.wxl.lettalk:background}</code></td><td> Specifies a background for the action mode bar.</td></tr>
-           <tr><td><code>{@link #ActionMode_backgroundSplit com.wxl.lettalk:backgroundSplit}</code></td><td> Specifies a background for the split action mode bar.</td></tr>
-           <tr><td><code>{@link #ActionMode_height com.wxl.lettalk:height}</code></td><td> Specifies a fixed height for the action mode bar.</td></tr>
-           <tr><td><code>{@link #ActionMode_subtitleTextStyle com.wxl.lettalk:subtitleTextStyle}</code></td><td> Specifies a style to use for subtitle text.</td></tr>
-           <tr><td><code>{@link #ActionMode_titleTextStyle com.wxl.lettalk:titleTextStyle}</code></td><td> Specifies a style to use for title text.</td></tr>
+           <tr><td><code>{@link #ActionMode_background com.domen.start:background}</code></td><td> Specifies a background for the action mode bar.</td></tr>
+           <tr><td><code>{@link #ActionMode_backgroundSplit com.domen.start:backgroundSplit}</code></td><td> Specifies a background for the split action mode bar.</td></tr>
+           <tr><td><code>{@link #ActionMode_height com.domen.start:height}</code></td><td> Specifies a fixed height for the action mode bar.</td></tr>
+           <tr><td><code>{@link #ActionMode_subtitleTextStyle com.domen.start:subtitleTextStyle}</code></td><td> Specifies a style to use for subtitle text.</td></tr>
+           <tr><td><code>{@link #ActionMode_titleTextStyle com.domen.start:titleTextStyle}</code></td><td> Specifies a style to use for title text.</td></tr>
            </table>
            @see #ActionMode_background
            @see #ActionMode_backgroundSplit
@@ -2516,7 +2515,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:background
+          @attr name com.domen.start:background
         */
         public static final int ActionMode_background = 3;
         /**
@@ -2530,7 +2529,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 <p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
 "<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:backgroundSplit
+          @attr name com.domen.start:backgroundSplit
         */
         public static final int ActionMode_backgroundSplit = 4;
         /**
@@ -2548,7 +2547,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:height
+          @attr name com.domen.start:height
         */
         public static final int ActionMode_height = 0;
         /**
@@ -2560,7 +2559,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:subtitleTextStyle
+          @attr name com.domen.start:subtitleTextStyle
         */
         public static final int ActionMode_subtitleTextStyle = 2;
         /**
@@ -2572,7 +2571,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:titleTextStyle
+          @attr name com.domen.start:titleTextStyle
         */
         public static final int ActionMode_titleTextStyle = 1;
         /**  Attrbitutes for a ActivityChooserView. 
@@ -2581,8 +2580,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #ActivityChooserView_expandActivityOverflowButtonDrawable com.wxl.lettalk:expandActivityOverflowButtonDrawable}</code></td><td> The drawable to show in the button for expanding the activities overflow popup.</td></tr>
-           <tr><td><code>{@link #ActivityChooserView_initialActivityCount com.wxl.lettalk:initialActivityCount}</code></td><td> The maximal number of items initially shown in the activity list.</td></tr>
+           <tr><td><code>{@link #ActivityChooserView_expandActivityOverflowButtonDrawable com.domen.start:expandActivityOverflowButtonDrawable}</code></td><td> The drawable to show in the button for expanding the activities overflow popup.</td></tr>
+           <tr><td><code>{@link #ActivityChooserView_initialActivityCount com.domen.start:initialActivityCount}</code></td><td> The maximal number of items initially shown in the activity list.</td></tr>
            </table>
            @see #ActivityChooserView_expandActivityOverflowButtonDrawable
            @see #ActivityChooserView_initialActivityCount
@@ -2604,7 +2603,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:expandActivityOverflowButtonDrawable
+          @attr name com.domen.start:expandActivityOverflowButtonDrawable
         */
         public static final int ActivityChooserView_expandActivityOverflowButtonDrawable = 1;
         /**
@@ -2620,7 +2619,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:initialActivityCount
+          @attr name com.domen.start:initialActivityCount
         */
         public static final int ActivityChooserView_initialActivityCount = 0;
         /**  CircularImageView for custom shape 
@@ -2629,14 +2628,14 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #CircularImageView_border com.wxl.lettalk:border}</code></td><td> Specifies whether or not to draw a circular border around the image.</td></tr>
-           <tr><td><code>{@link #CircularImageView_border_color com.wxl.lettalk:border_color}</code></td><td> Specifies the color of the border draw around the image.</td></tr>
-           <tr><td><code>{@link #CircularImageView_border_width com.wxl.lettalk:border_width}</code></td><td> Makes the border this pixels wide.</td></tr>
-           <tr><td><code>{@link #CircularImageView_selector com.wxl.lettalk:selector}</code></td><td> Specifies whether or not to draw a selector on this view upon touch events.</td></tr>
-           <tr><td><code>{@link #CircularImageView_selector_color com.wxl.lettalk:selector_color}</code></td><td> Specifies the color of the selector draw on top of the image upon touch events.</td></tr>
-           <tr><td><code>{@link #CircularImageView_selector_stroke_color com.wxl.lettalk:selector_stroke_color}</code></td><td> Specifies the color of the selector stroke drawn around the image upon touch events.</td></tr>
-           <tr><td><code>{@link #CircularImageView_selector_stroke_width com.wxl.lettalk:selector_stroke_width}</code></td><td> Makes the selector stroke drawn around the image upon touch events this pixels wide.</td></tr>
-           <tr><td><code>{@link #CircularImageView_shadow com.wxl.lettalk:shadow}</code></td><td> Specifies whether or not to draw a shadow around your circular image.</td></tr>
+           <tr><td><code>{@link #CircularImageView_border com.domen.start:border}</code></td><td> Specifies whether or not to draw a circular border around the image.</td></tr>
+           <tr><td><code>{@link #CircularImageView_border_color com.domen.start:border_color}</code></td><td> Specifies the color of the border draw around the image.</td></tr>
+           <tr><td><code>{@link #CircularImageView_border_width com.domen.start:border_width}</code></td><td> Makes the border this pixels wide.</td></tr>
+           <tr><td><code>{@link #CircularImageView_selector com.domen.start:selector}</code></td><td> Specifies whether or not to draw a selector on this view upon touch events.</td></tr>
+           <tr><td><code>{@link #CircularImageView_selector_color com.domen.start:selector_color}</code></td><td> Specifies the color of the selector draw on top of the image upon touch events.</td></tr>
+           <tr><td><code>{@link #CircularImageView_selector_stroke_color com.domen.start:selector_stroke_color}</code></td><td> Specifies the color of the selector stroke drawn around the image upon touch events.</td></tr>
+           <tr><td><code>{@link #CircularImageView_selector_stroke_width com.domen.start:selector_stroke_width}</code></td><td> Makes the selector stroke drawn around the image upon touch events this pixels wide.</td></tr>
+           <tr><td><code>{@link #CircularImageView_shadow com.domen.start:shadow}</code></td><td> Specifies whether or not to draw a shadow around your circular image.</td></tr>
            </table>
            @see #CircularImageView_border
            @see #CircularImageView_border_color
@@ -2664,7 +2663,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:border
+          @attr name com.domen.start:border
         */
         public static final int CircularImageView_border = 0;
         /**
@@ -2681,7 +2680,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:border_color
+          @attr name com.domen.start:border_color
         */
         public static final int CircularImageView_border_color = 1;
         /**
@@ -2699,7 +2698,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:border_width
+          @attr name com.domen.start:border_width
         */
         public static final int CircularImageView_border_width = 2;
         /**
@@ -2715,7 +2714,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:selector
+          @attr name com.domen.start:selector
         */
         public static final int CircularImageView_selector = 3;
         /**
@@ -2732,7 +2731,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:selector_color
+          @attr name com.domen.start:selector_color
         */
         public static final int CircularImageView_selector_color = 4;
         /**
@@ -2749,7 +2748,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:selector_stroke_color
+          @attr name com.domen.start:selector_stroke_color
         */
         public static final int CircularImageView_selector_stroke_color = 5;
         /**
@@ -2767,7 +2766,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:selector_stroke_width
+          @attr name com.domen.start:selector_stroke_width
         */
         public static final int CircularImageView_selector_stroke_width = 6;
         /**
@@ -2783,7 +2782,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:shadow
+          @attr name com.domen.start:shadow
         */
         public static final int CircularImageView_shadow = 7;
         /** Attributes that can be used with a CompatTextView.
@@ -2792,7 +2791,7 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #CompatTextView_textAllCaps com.wxl.lettalk:textAllCaps}</code></td><td> Present the text in ALL CAPS.</td></tr>
+           <tr><td><code>{@link #CompatTextView_textAllCaps com.domen.start:textAllCaps}</code></td><td> Present the text in ALL CAPS.</td></tr>
            </table>
            @see #CompatTextView_textAllCaps
          */
@@ -2809,7 +2808,7 @@ containing a value of this type.
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
 <p>May be a boolean value, either "<code>true</code>" or "<code>false</code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:textAllCaps
+          @attr name com.domen.start:textAllCaps
         */
         public static final int CompatTextView_textAllCaps = 0;
         /** Attributes that can be used with a CustomCircularImageViewTheme.
@@ -2818,7 +2817,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #CustomCircularImageViewTheme_circularImageViewStyle com.wxl.lettalk:circularImageViewStyle}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomCircularImageViewTheme_circularImageViewStyle com.domen.start:circularImageViewStyle}</code></td><td></td></tr>
            </table>
            @see #CustomCircularImageViewTheme_circularImageViewStyle
          */
@@ -2826,13 +2825,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
             0x7f010008
         };
         /**
-          <p>This symbol is the offset where the {@link com.wxl.lettalk.R.attr#circularImageViewStyle}
+          <p>This symbol is the offset where the {@link com.domen.start.R.attr#circularImageViewStyle}
           attribute's value can be found in the {@link #CustomCircularImageViewTheme} array.
 
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name com.wxl.lettalk:circularImageViewStyle
+          @attr name com.domen.start:circularImageViewStyle
         */
         public static final int CustomCircularImageViewTheme_circularImageViewStyle = 0;
         /** Attributes that can be used with a LinearLayoutICS.
@@ -2841,9 +2840,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #LinearLayoutICS_divider com.wxl.lettalk:divider}</code></td><td> Drawable to use as a vertical divider between buttons.</td></tr>
-           <tr><td><code>{@link #LinearLayoutICS_dividerPadding com.wxl.lettalk:dividerPadding}</code></td><td> Size of padding on either end of a divider.</td></tr>
-           <tr><td><code>{@link #LinearLayoutICS_showDividers com.wxl.lettalk:showDividers}</code></td><td> Setting for which dividers to show.</td></tr>
+           <tr><td><code>{@link #LinearLayoutICS_divider com.domen.start:divider}</code></td><td> Drawable to use as a vertical divider between buttons.</td></tr>
+           <tr><td><code>{@link #LinearLayoutICS_dividerPadding com.domen.start:dividerPadding}</code></td><td> Size of padding on either end of a divider.</td></tr>
+           <tr><td><code>{@link #LinearLayoutICS_showDividers com.domen.start:showDividers}</code></td><td> Setting for which dividers to show.</td></tr>
            </table>
            @see #LinearLayoutICS_divider
            @see #LinearLayoutICS_dividerPadding
@@ -2861,7 +2860,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:divider
+          @attr name com.domen.start:divider
         */
         public static final int LinearLayoutICS_divider = 0;
         /**
@@ -2879,7 +2878,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:dividerPadding
+          @attr name com.domen.start:dividerPadding
         */
         public static final int LinearLayoutICS_dividerPadding = 2;
         /**
@@ -2900,7 +2899,7 @@ containing a value of this type.
 <tr><td><code>end</code></td><td>4</td><td></td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:showDividers
+          @attr name com.domen.start:showDividers
         */
         public static final int LinearLayoutICS_showDividers = 1;
         /**  Base attributes that are available to all groups. 
@@ -2989,10 +2988,10 @@ containing a value of this type.
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #MenuItem_actionLayout com.wxl.lettalk:actionLayout}</code></td><td> An optional layout to be used as an action view.</td></tr>
-           <tr><td><code>{@link #MenuItem_actionProviderClass com.wxl.lettalk:actionProviderClass}</code></td><td> The name of an optional ActionProvider class to instantiate an action view
+           <tr><td><code>{@link #MenuItem_actionLayout com.domen.start:actionLayout}</code></td><td> An optional layout to be used as an action view.</td></tr>
+           <tr><td><code>{@link #MenuItem_actionProviderClass com.domen.start:actionProviderClass}</code></td><td> The name of an optional ActionProvider class to instantiate an action view
              and perform operations such as default action for that menu item.</td></tr>
-           <tr><td><code>{@link #MenuItem_actionViewClass com.wxl.lettalk:actionViewClass}</code></td><td> The name of an optional View class to instantiate and use as an
+           <tr><td><code>{@link #MenuItem_actionViewClass com.domen.start:actionViewClass}</code></td><td> The name of an optional View class to instantiate and use as an
              action view.</td></tr>
            <tr><td><code>{@link #MenuItem_android_alphabeticShortcut android:alphabeticShortcut}</code></td><td> The alphabetic shortcut key.</td></tr>
            <tr><td><code>{@link #MenuItem_android_checkable android:checkable}</code></td><td> Whether the item is capable of displaying a check mark.</td></tr>
@@ -3008,7 +3007,7 @@ containing a value of this type.
            <tr><td><code>{@link #MenuItem_android_title android:title}</code></td><td> The title associated with the item.</td></tr>
            <tr><td><code>{@link #MenuItem_android_titleCondensed android:titleCondensed}</code></td><td> The condensed title associated with the item.</td></tr>
            <tr><td><code>{@link #MenuItem_android_visible android:visible}</code></td><td> Whether the item is shown/visible.</td></tr>
-           <tr><td><code>{@link #MenuItem_showAsAction com.wxl.lettalk:showAsAction}</code></td><td> How this item should display in the Action Bar, if present.</td></tr>
+           <tr><td><code>{@link #MenuItem_showAsAction com.domen.start:showAsAction}</code></td><td> How this item should display in the Action Bar, if present.</td></tr>
            </table>
            @see #MenuItem_actionLayout
            @see #MenuItem_actionProviderClass
@@ -3046,7 +3045,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:actionLayout
+          @attr name com.domen.start:actionLayout
         */
         public static final int MenuItem_actionLayout = 14;
         /**
@@ -3065,7 +3064,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:actionProviderClass
+          @attr name com.domen.start:actionProviderClass
         */
         public static final int MenuItem_actionProviderClass = 16;
         /**
@@ -3083,7 +3082,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:actionViewClass
+          @attr name com.domen.start:actionViewClass
         */
         public static final int MenuItem_actionViewClass = 15;
         /**
@@ -3239,7 +3238,7 @@ containing a value of this type.
                  larger segment of its container. </td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:showAsAction
+          @attr name com.domen.start:showAsAction
         */
         public static final int MenuItem_showAsAction = 13;
         /** Attributes that can be used with a MenuView.
@@ -3350,8 +3349,8 @@ containing a value of this type.
            <tr><td><code>{@link #SearchView_android_imeOptions android:imeOptions}</code></td><td> The IME options to set on the query text field.</td></tr>
            <tr><td><code>{@link #SearchView_android_inputType android:inputType}</code></td><td> The input type to set on the query text field.</td></tr>
            <tr><td><code>{@link #SearchView_android_maxWidth android:maxWidth}</code></td><td> An optional maximum width of the SearchView.</td></tr>
-           <tr><td><code>{@link #SearchView_iconifiedByDefault com.wxl.lettalk:iconifiedByDefault}</code></td><td> The default state of the SearchView.</td></tr>
-           <tr><td><code>{@link #SearchView_queryHint com.wxl.lettalk:queryHint}</code></td><td> An optional query hint string to be displayed in the empty query field.</td></tr>
+           <tr><td><code>{@link #SearchView_iconifiedByDefault com.domen.start:iconifiedByDefault}</code></td><td> The default state of the SearchView.</td></tr>
+           <tr><td><code>{@link #SearchView_queryHint com.domen.start:queryHint}</code></td><td> An optional query hint string to be displayed in the empty query field.</td></tr>
            </table>
            @see #SearchView_android_imeOptions
            @see #SearchView_android_inputType
@@ -3404,7 +3403,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:iconifiedByDefault
+          @attr name com.domen.start:iconifiedByDefault
         */
         public static final int SearchView_iconifiedByDefault = 3;
         /**
@@ -3420,7 +3419,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:queryHint
+          @attr name com.domen.start:queryHint
         */
         public static final int SearchView_queryHint = 4;
         /** Attributes that can be used with a Spinner.
@@ -3437,12 +3436,12 @@ containing a value of this type.
            <tr><td><code>{@link #Spinner_android_dropDownWidth android:dropDownWidth}</code></td><td> Width of the dropdown in spinnerMode="dropdown".</td></tr>
            <tr><td><code>{@link #Spinner_android_gravity android:gravity}</code></td><td> Gravity setting for positioning the currently selected item.</td></tr>
            <tr><td><code>{@link #Spinner_android_popupBackground android:popupBackground}</code></td><td> Background drawable to use for the dropdown in spinnerMode="dropdown".</td></tr>
-           <tr><td><code>{@link #Spinner_disableChildrenWhenDisabled com.wxl.lettalk:disableChildrenWhenDisabled}</code></td><td> Whether this spinner should mark child views as enabled/disabled when
+           <tr><td><code>{@link #Spinner_disableChildrenWhenDisabled com.domen.start:disableChildrenWhenDisabled}</code></td><td> Whether this spinner should mark child views as enabled/disabled when
              the spinner itself is enabled/disabled.</td></tr>
-           <tr><td><code>{@link #Spinner_popupPromptView com.wxl.lettalk:popupPromptView}</code></td><td> Reference to a layout to use for displaying a prompt in the dropdown for
+           <tr><td><code>{@link #Spinner_popupPromptView com.domen.start:popupPromptView}</code></td><td> Reference to a layout to use for displaying a prompt in the dropdown for
              spinnerMode="dropdown".</td></tr>
-           <tr><td><code>{@link #Spinner_prompt com.wxl.lettalk:prompt}</code></td><td> The prompt to display when the spinner's dialog is shown.</td></tr>
-           <tr><td><code>{@link #Spinner_spinnerMode com.wxl.lettalk:spinnerMode}</code></td><td> Display mode for spinner options.</td></tr>
+           <tr><td><code>{@link #Spinner_prompt com.domen.start:prompt}</code></td><td> The prompt to display when the spinner's dialog is shown.</td></tr>
+           <tr><td><code>{@link #Spinner_spinnerMode com.domen.start:spinnerMode}</code></td><td> Display mode for spinner options.</td></tr>
            </table>
            @see #Spinner_android_dropDownHorizontalOffset
            @see #Spinner_android_dropDownSelector
@@ -3530,7 +3529,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:disableChildrenWhenDisabled
+          @attr name com.domen.start:disableChildrenWhenDisabled
         */
         public static final int Spinner_disableChildrenWhenDisabled = 9;
         /**
@@ -3544,7 +3543,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:popupPromptView
+          @attr name com.domen.start:popupPromptView
         */
         public static final int Spinner_popupPromptView = 8;
         /**
@@ -3556,7 +3555,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:prompt
+          @attr name com.domen.start:prompt
         */
         public static final int Spinner_prompt = 6;
         /**
@@ -3576,7 +3575,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
                  anchored to the spinner widget itself. </td></tr>
 </table>
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:spinnerMode
+          @attr name com.domen.start:spinnerMode
         */
         public static final int Spinner_spinnerMode = 7;
         /**  These are the standard attributes that make up a complete theme. 
@@ -3585,12 +3584,12 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #Theme_actionDropDownStyle com.wxl.lettalk:actionDropDownStyle}</code></td><td> Default ActionBar dropdown style.</td></tr>
-           <tr><td><code>{@link #Theme_dropdownListPreferredItemHeight com.wxl.lettalk:dropdownListPreferredItemHeight}</code></td><td> The preferred item height for dropdown lists.</td></tr>
-           <tr><td><code>{@link #Theme_listChoiceBackgroundIndicator com.wxl.lettalk:listChoiceBackgroundIndicator}</code></td><td> Drawable used as a background for selected list items.</td></tr>
-           <tr><td><code>{@link #Theme_panelMenuListTheme com.wxl.lettalk:panelMenuListTheme}</code></td><td> Default Panel Menu style.</td></tr>
-           <tr><td><code>{@link #Theme_panelMenuListWidth com.wxl.lettalk:panelMenuListWidth}</code></td><td> Default Panel Menu width.</td></tr>
-           <tr><td><code>{@link #Theme_popupMenuStyle com.wxl.lettalk:popupMenuStyle}</code></td><td> Default PopupMenu style.</td></tr>
+           <tr><td><code>{@link #Theme_actionDropDownStyle com.domen.start:actionDropDownStyle}</code></td><td> Default ActionBar dropdown style.</td></tr>
+           <tr><td><code>{@link #Theme_dropdownListPreferredItemHeight com.domen.start:dropdownListPreferredItemHeight}</code></td><td> The preferred item height for dropdown lists.</td></tr>
+           <tr><td><code>{@link #Theme_listChoiceBackgroundIndicator com.domen.start:listChoiceBackgroundIndicator}</code></td><td> Drawable used as a background for selected list items.</td></tr>
+           <tr><td><code>{@link #Theme_panelMenuListTheme com.domen.start:panelMenuListTheme}</code></td><td> Default Panel Menu style.</td></tr>
+           <tr><td><code>{@link #Theme_panelMenuListWidth com.domen.start:panelMenuListWidth}</code></td><td> Default Panel Menu width.</td></tr>
+           <tr><td><code>{@link #Theme_popupMenuStyle com.domen.start:popupMenuStyle}</code></td><td> Default PopupMenu style.</td></tr>
            </table>
            @see #Theme_actionDropDownStyle
            @see #Theme_dropdownListPreferredItemHeight
@@ -3612,7 +3611,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:actionDropDownStyle
+          @attr name com.domen.start:actionDropDownStyle
         */
         public static final int Theme_actionDropDownStyle = 0;
         /**
@@ -3630,7 +3629,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:dropdownListPreferredItemHeight
+          @attr name com.domen.start:dropdownListPreferredItemHeight
         */
         public static final int Theme_dropdownListPreferredItemHeight = 1;
         /**
@@ -3642,7 +3641,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:listChoiceBackgroundIndicator
+          @attr name com.domen.start:listChoiceBackgroundIndicator
         */
         public static final int Theme_listChoiceBackgroundIndicator = 5;
         /**
@@ -3654,7 +3653,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:panelMenuListTheme
+          @attr name com.domen.start:panelMenuListTheme
         */
         public static final int Theme_panelMenuListTheme = 4;
         /**
@@ -3672,7 +3671,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:panelMenuListWidth
+          @attr name com.domen.start:panelMenuListWidth
         */
         public static final int Theme_panelMenuListWidth = 3;
         /**
@@ -3684,7 +3683,7 @@ containing a value of this type.
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:popupMenuStyle
+          @attr name com.domen.start:popupMenuStyle
         */
         public static final int Theme_popupMenuStyle = 2;
         /** Attributes that can be used with a View.
@@ -3694,8 +3693,8 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
            <colgroup align="left" />
            <tr><th>Attribute</th><th>Description</th></tr>
            <tr><td><code>{@link #View_android_focusable android:focusable}</code></td><td> Boolean that controls whether a view can take focus.</td></tr>
-           <tr><td><code>{@link #View_paddingEnd com.wxl.lettalk:paddingEnd}</code></td><td> Sets the padding, in pixels, of the end edge; see {@link android.R.attr#padding}.</td></tr>
-           <tr><td><code>{@link #View_paddingStart com.wxl.lettalk:paddingStart}</code></td><td> Sets the padding, in pixels, of the start edge; see {@link android.R.attr#padding}.</td></tr>
+           <tr><td><code>{@link #View_paddingEnd com.domen.start:paddingEnd}</code></td><td> Sets the padding, in pixels, of the end edge; see {@link android.R.attr#padding}.</td></tr>
+           <tr><td><code>{@link #View_paddingStart com.domen.start:paddingStart}</code></td><td> Sets the padding, in pixels, of the start edge; see {@link android.R.attr#padding}.</td></tr>
            </table>
            @see #View_android_focusable
            @see #View_paddingEnd
@@ -3733,7 +3732,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:paddingEnd
+          @attr name com.domen.start:paddingEnd
         */
         public static final int View_paddingEnd = 2;
         /**
@@ -3751,7 +3750,7 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
           <p>This is a private symbol.
-          @attr name com.wxl.lettalk:paddingStart
+          @attr name com.domen.start:paddingStart
         */
         public static final int View_paddingStart = 1;
     };

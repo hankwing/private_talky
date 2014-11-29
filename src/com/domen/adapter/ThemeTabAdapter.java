@@ -22,7 +22,7 @@ import com.domen.activities.DecideActivity;
 import com.domen.activities.MainActivity;
 import com.domen.openfire.RequestSync;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class ThemeTabAdapter extends FragmentStatePagerAdapter {
 

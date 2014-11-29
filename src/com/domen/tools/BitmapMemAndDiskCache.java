@@ -20,8 +20,8 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
-import com.wxl.lettalk.BuildConfig;
-import com.wxl.lettalk.R;
+import com.domen.start.BuildConfig;
+import com.domen.start.R;
 
 /**
  * 加载VCard的头像数据并缓存

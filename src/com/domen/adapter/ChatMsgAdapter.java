@@ -24,7 +24,7 @@ import com.domen.activities.ChatActivity;
 import com.domen.customView.CustomPopupWindow;
 import com.domen.entity.MsgEntity;
 import com.domen.tools.BitmapMemAndDiskCache;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 /**
  * 聊天记录listview的adapter

@@ -1,6 +1,6 @@
 package com.domen.tools;
 
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 /**
  * 表情

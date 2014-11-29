@@ -1,6 +1,6 @@
 package com.domen.customView;
 
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 import android.content.Context;
 import android.view.Gravity;

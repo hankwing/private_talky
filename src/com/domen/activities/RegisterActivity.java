@@ -41,7 +41,7 @@ import com.domen.customView.ProgressDialogWithKeyBack;
 import com.domen.entity.ConstantVariable;
 import com.domen.openfire.RequestSaveUserInfo;
 import com.domen.tools.MXMPPConnection;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 public class RegisterActivity extends Activity implements OnClickListener {
 

@@ -72,7 +72,7 @@ import com.domen.tools.CurrentActivity;
 import com.domen.tools.JsonUtil;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
-import com.wxl.lettalk.R;
+import com.domen.start.R;
 
 /**
  * 主界面
