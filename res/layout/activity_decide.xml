@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:id="@+id/ll_content_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <com.android.volley.toolbox.NetworkImageView
+                    android:id="@+id/imgv_dec_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:layout_alignParentTop="true"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/topic_background"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:id="@+id/topicDes"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_below="@+id/imgv_dec_image"
+                    android:padding="10dp" />
+
+                <TextView
+                    android:id="@+id/tv_positive"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/topicDes"
+                    android:gravity="center|left"
+                    android:background="@drawable/cat_desc" />
+
+                <TextView
+                    android:id="@+id/tv_negative"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_positive"
+                    android:gravity="center|left"
+                    android:background="@drawable/dog_desc" />
+
+                <ImageView
+                    android:id="@+id/btn_discuss_home"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_negative"
+                    android:background="@drawable/topi_desc_background"
+                    android:layout_marginTop="10dp" />
+                
+            </RelativeLayout>
+
+            <ProgressBar
+                android:id="@+id/loading_spinner"
+                style="?android:progressBarStyleLarge"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,57 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="MyDialogTheme" parent="android:Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="chat_content_style">
+        <item name="android:minHeight">50dp</item>
+        <item name="android:gravity">left|center</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">#bfbfbf</item>
+    </style>
+
+    <style name="chat_image_style">
+        <item name="android:gravity">left|center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="login_button">
+        <item name="android:background">@drawable/login_button</item>
+    </style>
+
+    <style name="register_button">
+        <item name="android:background">@drawable/register_button</item>
+    </style>
+
+    <style name="CustomActionBarTheme" parent="@android:style/Theme.Holo">
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+    </style>
+
+    <style name="MyActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@color/talky_symbol</item>
+        <item name="android:titleTextStyle">@style/myTheme.ActionBar.Text</item>
+    </style>
+
+    <style name="myTheme.ActionBar.Text" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="PagerTitleStrip">
+        <item name="android:textAppearance">@style/PagerTitleStripTextAppearance</item>
+    </style>
+
+    <style name="PagerTitleStripTextAppearance">
+        <item name="android:textColor">@color/talky_symbol</item>
+    </style>
+
+</resources>

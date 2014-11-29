@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="80dp"
+    android:orientation="horizontal" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_marginRight="70dp"
+        android:layout_height="wrap_content" >
+
+        <com.pkmmte.circularimageview.CircularImageView
+            android:id="@+id/chat_msg_left_name"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/default_avatar"
+            app:border_color="#EEEEEE"
+            app:border_width="4dp"
+            app:shadow="true" />
+
+        <RelativeLayout
+            android:id="@+id/chat_content_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/chat_msg_left_name"
+             >
+
+            <ImageView
+                android:id="@+id/chat_msg_left_image"
+                style="@style/chat_image_style"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"  />
+
+            <TextView
+                android:id="@+id/chat_msg_left_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:gravity="center"
+                android:background="@drawable/chatfrom_background"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:textColor="#000000" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

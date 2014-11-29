@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/talky_symbol" >
+    
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center"
+        android:src="@drawable/login_logo" />
+    
+    <TextView
+        android:id="@+id/btn_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/login_with_talky"
+        android:textColor="@android:color/white" />
+    
+    <TextView 
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_margin="10dp"
+        android:background="#44ffffff" />
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/login_weibo_talky"
+        android:textColor="@android:color/white" />
+    
+    <TextView 
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_margin="10dp"
+        android:background="#44ffffff" />
+    
+    <TextView
+        android:id="@+id/btn_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/login_join_talky"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
