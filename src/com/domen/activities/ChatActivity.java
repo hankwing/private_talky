@@ -30,7 +30,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,7 +48,9 @@ import com.domen.adapter.ChatMsgAdapter;
 import com.domen.entity.MsgEntity;
 import com.domen.openfire.SyncAgreeAndShit;
 import com.domen.start.R;
+import com.domen.tools.BitmapMemAndDiskCache;
 import com.domen.tools.CurrentActivity;
+import com.domen.tools.MUserChatManager;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.MXMPPConnection.Login;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
@@ -61,7 +64,7 @@ import com.domen.tools.TopicsContract.TopicsEntryContract;
 public class ChatActivity extends Activity implements OnClickListener {
 
 	// private Chat chat;
-	public static MultiUserChat chat = null;
+	public MultiUserChat chat = null;
 	private RelativeLayout bottomBar;
 	private static int side; // 0-观众 1-正方 -1-反方
 	// static MultiUserChat chat2 = null;
@@ -106,7 +109,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private Map<String, VCard> vcardList = null;
 	private SharedPreferences accountInfo;
 	private String nickName;
-	
 
 	/*
 	 * (non-Javadoc)
@@ -124,32 +126,34 @@ public class ChatActivity extends Activity implements OnClickListener {
 		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE);
 		UserFullId = accountInfo.getString("userFullId", null);
 		nickName = accountInfo.getString("account", null);
-		
-		if( savedInstanceState == null) {
+		if (savedInstanceState == null) {
 			Bundle bundle = new Bundle();
 			Intent intent = this.getIntent();
 			bundle = intent.getExtras();
-			topicName = bundle.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
+			topicName = bundle
+					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
 			side = bundle.getInt("side");
 			topicID = Integer.valueOf(bundle
 					.getString(TopicsEntryContract.COLUMN_NAME_OF_ID));
 			roomJID = bundle.getString("roomJID");
-			new JoinRoomAndAddListener().execute(0);				//do not need join room
-		}else {
-			//rebuild activity
-			topicName = savedInstanceState.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
+			new JoinRoomAndAddListener().execute(0); // do not need join room
+		} else {
+			// rebuild activity
+			topicName = savedInstanceState
+					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
 			side = savedInstanceState.getInt("side");
-			topicID = savedInstanceState.getInt(TopicsEntryContract.COLUMN_NAME_OF_ID);
+			topicID = savedInstanceState
+					.getInt(TopicsEntryContract.COLUMN_NAME_OF_ID);
 			roomJID = savedInstanceState.getString("roomJID");
-			//login 
+			// login
 			new Login().execute(accountInfo.getString("account", null),
-					accountInfo.getString("password", null), Build.MODEL, roomJID);
-			new JoinRoomAndAddListener().execute(1);				//need join room
-			
+					accountInfo.getString("password", null), Build.MODEL);
+			new JoinRoomAndAddListener().execute(1); // need join room
+
 		}
-		
-		getActionBar().setTitle( topicName); // 显示话题名称
-		
+
+		getActionBar().setTitle(topicName); // 显示话题名称
+
 		imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		bottomBar = (RelativeLayout) this
 				.findViewById(R.id.activity_chat_bottom);
@@ -165,23 +169,24 @@ public class ChatActivity extends Activity implements OnClickListener {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
 				// TODO Auto-generated method stub
-				Log.i("message", "click!");
-				chatMsgAdapter.setSelectedPosition(arg2);		//set position	
+				// Log.i("message", "click!");
+				chatMsgAdapter.setSelectedPosition(arg2); // set position
 
 			}
-			
+
 		});
+
 		// initViewPager(); //初始化表情选择界面
 		imm.hideSoftInputFromWindow(edt_message.getWindowToken(), 0);
 		vcardList = chatMsgAdapter.getVcardList();
-		
+
 		if (side == 0) {
 			// 旁观者 不能发言
 			bottomBar.setVisibility(View.GONE);
-			showMessageHistory();				//显示聊天历史记录
+			showMessageHistory(); // 显示聊天历史记录
 		}
 
 	}
@@ -230,10 +235,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		case R.id.btn_send:
 			// 发送消息
 			String messageString = edt_message.getText().toString();
-			if( messageString == null || messageString.equals("")) {
+			if (messageString == null || messageString.equals("")) {
 				break;
 			}
-			updateMesList(MXMPPConnection.getInstance().getUser(), nickName, messageString, false); // 自己发出的信息右侧
+			updateMesList(MXMPPConnection.getInstance().getUser(), nickName,
+					messageString, false); // 自己发出的信息右侧
 			// 下面向服务器发送信息
 			try {
 				Message message = chat.createMessage();
@@ -286,18 +292,20 @@ public class ChatActivity extends Activity implements OnClickListener {
 		}
 	}
 
-	public void updateMesList(String userJID,String nickName, String content, boolean isLeft) {
+	public void updateMesList(String userJID, String nickName, String content,
+			boolean isLeft) {
 
 		MsgEntity msgEnitiy = new MsgEntity();
 		msgEnitiy.setContent(content);
-		msgEnitiy.setName(nickName);				//设置nickName
+		msgEnitiy.setName(nickName); // 设置nickName
 		msgEnitiy.setUserJID(userJID);
 		// Toast.makeText(getApplicationContext(), content,
 		// Toast.LENGTH_SHORT).show();
 		msgEnitiy.setDate(getTime());
 		// msgEnitiy.setName(MXMPPConnection.getInstance().getUser());
-		//Drawable head = getResources().getDrawable(R.drawable.default_avatar);
-		//msgEnitiy.setHead(head);
+		// Drawable head =
+		// getResources().getDrawable(R.drawable.default_avatar);
+		// msgEnitiy.setHead(head);
 		msgEnitiy.setIsLeft(isLeft);
 		msgList.add(msgEnitiy);
 		chatMsgAdapter.notifyDataSetChanged(); // 通知适配器界面刷新
@@ -328,6 +336,17 @@ public class ChatActivity extends Activity implements OnClickListener {
 			new ConfirmQuitDialogFragment().show(getFragmentManager(),
 					"ConfirmQuitDialogFragment");
 			return true;
+		case R.id.action_show_occupants:
+			// perform showing pccupants
+			MUserChatManager.setChat(chat);
+			Intent intent = new Intent(this, ShowOccupantsActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString("roomJID", roomJID);
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, ""
+					+ topicID);
+			intent.putExtras(bundle);
+			startActivity(intent);
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -605,10 +624,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 	//
 	// }
 
-	public static MultiUserChat getUserChat() {
-		return chat;
-	}
-
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
@@ -630,25 +645,18 @@ public class ChatActivity extends Activity implements OnClickListener {
 								public void onClick(DialogInterface dialog,
 										int id) {
 									// FIRE ZE MISSILES!
-									try {
 
-										if (side == 0) {
-											// 发送用户点赞和点屎的数据
-											SyncAgreeAndShit sync = new SyncAgreeAndShit(
-													topicID, roomJID, userList,
-													userAgreeCache,
-													userShitCache);
-											sync.setType(IQ.Type.GET);
-											MXMPPConnection.sendPacket(
-													getActivity(), sync);
-										}
-										chat.leave();
-										getActivity().finish();
-									} catch (NotConnectedException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-										getActivity().finish();
+									if (side == 0) {
+										// 发送用户点赞和点屎的数据
+										SyncAgreeAndShit sync = new SyncAgreeAndShit(
+												topicID, roomJID, userList,
+												userAgreeCache, userShitCache);
+										sync.setType(IQ.Type.GET);
+										MXMPPConnection.sendPacket(
+												getActivity(), sync);
 									}
+
+									getActivity().finish();
 
 								}
 							})
@@ -696,14 +704,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 		before++;
 		userShitCache.put(jid, before);
 	}
-	
+
 	public class LoadAvatar extends AsyncTask<String, Void, Void> {
 
 		@Override
 		protected Void doInBackground(String... params) {
 			// TODO Auto-generated method stub
 			VCard vcard = new VCard();
-			
+
 			try {
 				vcard.load(MXMPPConnection.getInstance(), params[0]);
 			} catch (NoResponseException e) {
@@ -726,14 +734,21 @@ public class ChatActivity extends Activity implements OnClickListener {
 			chatMsgAdapter.notifyDataSetChanged(); // 通知适配器界面刷新
 			super.onPostExecute(result);
 		}
-		
+
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		clearReferences();
+		try {
+			chat.leave();
+		} catch (NotConnectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -758,7 +773,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		if (currActivity != null && currActivity.equals(this))
 			CurrentActivity.setCurrentActivity(null);
 	}
-	
+
 	/**
 	 * 销毁activity时保存状态
 	 */
@@ -766,38 +781,42 @@ public class ChatActivity extends Activity implements OnClickListener {
 	protected void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 
-		outState.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME, topicName);
+		outState.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
+				topicName);
 		outState.putInt(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID);
 		outState.putString("roomJID", roomJID);
 		outState.putInt("side", side);
 		super.onSaveInstanceState(outState);
-		
+
 	}
-	
+
 	/**
 	 * join and add listener
+	 * 
 	 * @author hankwing
-	 *
+	 * 
 	 */
-	public class JoinRoomAndAddListener extends AsyncTask<Integer, Void, Integer> {
+	public class JoinRoomAndAddListener extends
+			AsyncTask<Integer, Void, Integer> {
 
 		@Override
 		protected Integer doInBackground(Integer... params) {
 			// TODO Auto-generated method stub
-			if( params[0] == 1) {
-				
-				//wait for logging
+			if (params[0] == 1) {
+
+				// wait for logging
 				synchronized (MXMPPConnection.loginLock) {
-			        // Wait while logging
-			        while (!MXMPPConnection.isLogin) {
-			            try {
-			                MXMPPConnection.loginLock.wait();
-			            } catch (InterruptedException e) {}
-			        }
-			    }
-				
+					// Wait while logging
+					while (!MXMPPConnection.isLogin) {
+						try {
+							MXMPPConnection.loginLock.wait();
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+
 			}
-			
+
 			return null;
 		}
 
@@ -805,8 +824,22 @@ public class ChatActivity extends Activity implements OnClickListener {
 		protected void onPostExecute(Integer result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-			if( chat!= null && chat.isJoined()) {
-				//添加监听器
+			chat = new MultiUserChat(MXMPPConnection.getInstance(), roomJID);
+			try {
+				chat.join(MXMPPConnection.getInstance().getUser());
+			} catch (NoResponseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (XMPPErrorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotConnectedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (chat != null && chat.isJoined()) {
+				// 添加监听器
 				// 监听房间内成员的状态
 				chat.addParticipantStatusListener(new ParticipantStatusListener() {
 
@@ -849,14 +882,17 @@ public class ChatActivity extends Activity implements OnClickListener {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								String userJID = arg0.substring( arg0.indexOf("/")+ 1);
-								String userName = userJID.substring(0, userJID.indexOf("@"));
-								Toast.makeText(ChatActivity.this, "用户 " + userName + " 离开房间了",
+								String userJID = arg0.substring(arg0
+										.indexOf("/") + 1);
+								String userName = userJID.substring(0,
+										userJID.indexOf("@"));
+								Toast.makeText(ChatActivity.this,
+										"用户 " + userName + " 离开房间了",
 										Toast.LENGTH_SHORT).show();
 							}
-							
+
 						});
-						
+
 						// if (arg0.equals(UserInfo.roomJID + "/" +
 						// UserInfo.fullUserJID)) {
 						// // 自己退出
@@ -952,12 +988,18 @@ public class ChatActivity extends Activity implements OnClickListener {
 							final Message msg = (Message) arg0;
 							final String messageJID = msg.getFrom().substring(
 									msg.getFrom().indexOf("/") + 1);
-							String bareJID = messageJID.substring(0, messageJID.indexOf("/"));
-							
-							final String messageNickName = messageJID.substring(0,messageJID.indexOf("@"));
-							if ( !vcardList.containsKey(messageNickName )) {
-								//加入vcardList
+							String bareJID = messageJID.substring(0,
+									messageJID.indexOf("/"));
+
+							final String messageNickName = messageJID
+									.substring(0, messageJID.indexOf("@"));
+							if (!vcardList.containsKey(messageNickName)) {
+								// 加入vcardList
 								LoadAvatar loadVCard = new LoadAvatar();
+								// 清理sd卡上的avatar缓存
+								BitmapMemAndDiskCache.getInstance(
+										ChatActivity.this)
+										.removeBitmapFromCache(messageNickName);
 								loadVCard.execute(bareJID, messageNickName);
 							}
 							ChatActivity.this.runOnUiThread(new Runnable() {
@@ -973,8 +1015,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 									// Log.i("message", "side: " + isLeft);
 
 									// 房间内其他成员发来的信息 应该更新界面
-									updateMesList(messageJID,messageNickName,
-											msg.getBody(), isLeft == 1 ? true : false);
+									updateMesList(messageJID, messageNickName,
+											msg.getBody(), isLeft == 1 ? true
+													: false);
 
 								}
 
@@ -987,18 +1030,23 @@ public class ChatActivity extends Activity implements OnClickListener {
 					chat.addMessageListener(new PacketListener() {
 
 						@Override
-						public void processPacket( Packet arg0) {
+						public void processPacket(Packet arg0) {
 							// TODO Auto-generated method stub
 							// 接收到消息 应该更新界面
 							final Message msg = (Message) arg0;
 							final String messageJID = msg.getFrom().substring(
 									msg.getFrom().indexOf("/") + 1);
-							//Log.i("message", "JID：" + messageJID);
-							String bareJID = messageJID.substring(0, messageJID.indexOf("/"));
-							final String messageNickName = messageJID.substring(0,messageJID.indexOf("@"));
-							if ( !vcardList.containsKey(messageNickName)) {
-								//加入vcardList
+							// Log.i("message", "JID：" + messageJID);
+							String bareJID = messageJID.substring(0,
+									messageJID.indexOf("/"));
+							final String messageNickName = messageJID
+									.substring(0, messageJID.indexOf("@"));
+							if (!vcardList.containsKey(messageNickName)) {
+								// 加入vcardList
 								LoadAvatar loadVCard = new LoadAvatar();
+								BitmapMemAndDiskCache.getInstance(
+										ChatActivity.this)
+										.removeBitmapFromCache(messageNickName);
 								loadVCard.execute(bareJID, messageNickName);
 							}
 							ChatActivity.this.runOnUiThread(new Runnable() {
@@ -1009,10 +1057,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 									if (!msg.getFrom().equals(
 											roomJID + "/" + UserFullId)) {
-										
+
 										// 房间内其他成员发来的信息 应该更新界面
-										updateMesList(messageJID,messageNickName,
-												msg.getBody(), true); // 收到消息更新界面
+										updateMesList(messageJID,
+												messageNickName, msg.getBody(),
+												true); // 收到消息更新界面
 
 									}
 
@@ -1023,50 +1072,57 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 					});
 				}
-				
+
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * 旁观者显示聊天历史记录
 	 */
 	public void showMessageHistory() {
 		Message msg = null;
 		msg = chat.pollMessage();
-		while( msg != null) {
-			//show in activity
+		while (msg != null) {
+			// show in activity
 			final String messageJID = msg.getFrom().substring(
 					msg.getFrom().indexOf("/") + 1);
 			String bareJID = messageJID.substring(0, messageJID.indexOf("/"));
-			final String messageNickName = messageJID.substring(0,messageJID.indexOf("@"));
-			if ( !vcardList.containsKey(messageNickName )) {
-				//加入vcardList
+			final String messageNickName = messageJID.substring(0,
+					messageJID.indexOf("@"));
+			if (!vcardList.containsKey(messageNickName)) {
+				// 加入vcardList
 				LoadAvatar loadVCard = new LoadAvatar();
 				loadVCard.execute(bareJID, messageNickName);
 			}
-			final DefaultPacketExtension extension = msg
-					.getExtension("message",
-							"com:talky:message");
+			final DefaultPacketExtension extension = msg.getExtension(
+					"message", "com:talky:message");
 			final String body = msg.getBody();
 			ChatActivity.this.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub	
-					int isLeft = Integer.valueOf(extension
-							.getValue("side"));
+					// TODO Auto-generated method stub
+					int isLeft = Integer.valueOf(extension.getValue("side"));
 					// Log.i("message", "side: " + isLeft);
 
 					// 房间内其他成员发来的信息 应该更新界面
-					updateMesList(messageJID,messageNickName,
-							body, isLeft == 1 ? true : false);
+					updateMesList(messageJID, messageNickName, body,
+							isLeft == 1 ? true : false);
 
 				}
 
 			});
 			msg = chat.pollMessage();
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu items for use in the action bar
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.chat_activity_menu, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 }

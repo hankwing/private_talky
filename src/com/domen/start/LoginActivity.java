@@ -48,7 +48,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public XMPPTCPConnection mXmppConnection = null;
 	// public static XMPPConnection mXmppConnection2 = null;
 	private ProgressDialog loginDialog = null;
-
+	
 	private SharedPreferences account = null;
 
 	@Override
@@ -239,15 +239,15 @@ public class LoginActivity extends Activity implements OnClickListener {
 	 * 
 	 * @param mXmppConnection
 	 */
-	public class DisConnection extends AsyncTask<XMPPTCPConnection, Void, Void> {
+	public static class DisConnection extends AsyncTask<XMPPTCPConnection, Void, Void> {
 
 		@Override
 		protected Void doInBackground(XMPPTCPConnection... params) {
 			// TODO Auto-generated method stub
-			if (mXmppConnection != null && mXmppConnection.isConnected()) {
+			if (params[0] != null && params[0].isConnected()) {
 
 				try {
-					mXmppConnection.disconnect();
+					params[0].disconnect();
 				} catch (NotConnectedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

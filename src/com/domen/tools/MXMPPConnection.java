@@ -29,7 +29,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.domen.activities.ChatActivity;
@@ -241,13 +240,7 @@ public class MXMPPConnection {
 				return 0; // 登录失败
 			}
 			// mXmppConnection2.login("wengjia999", "123456");
-			if( params.length < 4) {
-				return 1;
-			}
-			else {
-				//join room after logging in
-				return 2;
-			}
+			return 1;
 
 		}
 
@@ -265,23 +258,6 @@ public class MXMPPConnection {
 					Roster mRoster = mXmppConnection.getRoster();
 					mRoster.addRosterListener(new MultipleLoginPresenceListener());
 					
-				} catch (NotConnectedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			else if( result == 2) {
-				//join room
-
-				ChatActivity.chat = new MultiUserChat(mXmppConnection, param[3]);
-				try {
-					ChatActivity.chat.join(mXmppConnection.getUser());
-				} catch (NoResponseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (XMPPErrorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (NotConnectedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

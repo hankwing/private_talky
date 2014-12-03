@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.domen.activities.RegisterActivity;
 
@@ -29,7 +28,7 @@ public class PreLoginActivity extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_pre_login);
-		Toast.makeText(this, "preLogin", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "preLogin", Toast.LENGTH_SHORT).show();
 		tvLogin = (TextView) findViewById(R.id.btn_login);
 		tvLogin.setOnClickListener(this);
 		tvRegister = (TextView) findViewById(R.id.btn_register);

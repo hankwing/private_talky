@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/occupants_list_roomlist_return"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="15dp"
+        android:src="@drawable/cross" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <ImageView 
+            android:layout_height="70dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="1.0"
+            android:src="@drawable/cat_avatar"
+            />
+        
+        <ImageView 
+            android:layout_height="70dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="1.0"
+            android:src="@drawable/dog_avatar"
+            />
+        
+    </LinearLayout>
+
+    
+    <ProgressBar
+        android:id="@+id/occupants_list_progress_bar"
+        style="?android:progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:paddingTop="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    
+    <TextView
+        android:id="@+id/occupants_list_empty_hint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/talky_symbol"
+        android:text="@string/no_data"
+        android:visibility="gone" />
+    
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:listSelector="@android:color/transparent"
+        android:divider="@color/talky_symbol_transform"
+        android:layout_marginTop="20dp"
+        android:dividerHeight="1dp" >
+    </ListView>
+    
+    <ImageView
+        android:layout_marginTop="5dp"
+        android:layout_height="1dp"
+        android:layout_width="fill_parent"
+        android:src="@color/talky_symbol_transform" />
+    
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/occupants"
+        android:textColor="@android:color/white"
+        android:layout_gravity="center"/>
+    
+    <GridView
+	    android:id="@+id/avatar_gridview"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="20dp"
+	    android:numColumns="3"
+	    android:listSelector="@android:color/transparent"
+	    android:verticalSpacing="10dp"
+	    android:horizontalSpacing="10dp"
+	    android:stretchMode="columnWidth"
+	    android:gravity="center"
+	/>
+
+</LinearLayout>

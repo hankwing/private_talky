@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.util.LruCache;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.domen.start.BuildConfig;
@@ -43,6 +45,7 @@ public class BitmapMemAndDiskCache {
 
 	private CompressFormat mCompressFormat = CompressFormat.JPEG;
 	private int mCompressQuality = 100;
+	private ProgressDialog mDialog = null;
 
 	public BitmapMemAndDiskCache(Context context) {
 
@@ -101,18 +104,18 @@ public class BitmapMemAndDiskCache {
 	        mMemoryCache.put(key, bitmap);
 	    }
 
-	    // Also add to disk cache
-	    synchronized (mDiskCacheLock) {
-	        // Wait while disk cache is started from background thread
-	        while (mDiskCacheStarting) {
-	            try {
-	                mDiskCacheLock.wait();
-	            } catch (InterruptedException e) {}
-	        }
-	        if (mDiskLruCache != null) {
-            	put(key, bitmap);
-	        }
-	    }
+//	    // Also add to disk cache
+//	    synchronized (mDiskCacheLock) {
+//	        // Wait while disk cache is started from background thread
+//	        while (mDiskCacheStarting) {
+//	            try {
+//	                mDiskCacheLock.wait();
+//	            } catch (InterruptedException e) {}
+//	        }
+//	        if (mDiskLruCache != null) {
+//            	put(key, bitmap);
+//	        }
+//	    }
 	}
 
 	public Bitmap getBitmapFromMemCache(String key) {
@@ -140,7 +143,8 @@ public class BitmapMemAndDiskCache {
 		protected Bitmap doInBackground(VCard... params) {
 			data = params[0];
 			//Log.i("message", "key : " + data.getNickName());
-			Bitmap bitmap = getBitmapFromDiskCache(data.getNickName());		//先检查在disk上有无缓存
+			//Bitmap bitmap = getBitmapFromDiskCache(data.getNickName());//先检查在disk上有无缓存
+			Bitmap bitmap = null;
 			byte[] avatarByte = data.getAvatar();
 			if (bitmap == null && avatarByte != null) { // Not found in disk cache
 	            // 将byte转为bitmap
@@ -163,6 +167,11 @@ public class BitmapMemAndDiskCache {
 				final ImageView imageView = imageViewReference.get();
 				if (imageView != null) {
 					imageView.setImageBitmap(bitmap);
+					
+				}
+				if( mDialog != null) {
+					mDialog.dismiss();
+					mDialog = null;				//clear the reference
 				}
 			}
 		}
@@ -175,12 +184,15 @@ public class BitmapMemAndDiskCache {
 	 * @param imageView
 	 * @param isReset		是否代表重置该用户的头像
 	 */
-	public void loadAvatarBitmap(String key, VCard vcard, ImageView imageView, boolean isReset) {
+	public void loadAvatarBitmap(String key, VCard vcard, ImageView imageView, 
+			boolean isReset ,ProgressDialog dialog) {
 		//final String imageKey = vcard.getNickName(); // 以VCard用户名作为key
-
+		if( dialog != null) {
+			//need dismiss the dialog after finished
+			mDialog = dialog;
+		}
 		if( isReset) {
-			mMemoryCache.remove(key);				//缓存中移除
-			removeBitmapFromDiskCache(key);			//disk中移除
+			removeBitmapFromCache(key);				//remove cache from mem and disk
 			vcard.setNickName(key);
 			BitmapWorkerTask task = new BitmapWorkerTask(imageView);
 			task.execute(vcard);
@@ -196,6 +208,39 @@ public class BitmapMemAndDiskCache {
 				imageView.setImageResource(R.drawable.default_avatar);
 				BitmapWorkerTask task = new BitmapWorkerTask(imageView);
 				task.execute(vcard);
+			}
+		}
+	}
+	
+	/**
+	 * 加载VCard的头像数据到imageView中 support LoadAvatarManager to load
+	 * @param key
+	 * @param vcard
+	 * @param imageView
+	 * @param isReset		是否代表重置该用户的头像
+	 */
+	public void loadAvatarBitmap(BaseAdapter adapter, ImageView imageView,
+			String key, String bareJID, boolean isReset ) {
+		//final String imageKey = vcard.getNickName(); // 以VCard用户名作为key
+
+		if( isReset) {
+			removeBitmapFromCache(key);				//remove cache from mem and disk
+
+			LoadAvatarManager.startDownloadAvatar(
+					adapter, imageView, key, bareJID, 
+					LoadAvatarManager.REQUESTINACTIVE);
+		}
+		else {
+			final Bitmap bitmap = getBitmapFromMemCache(key);
+			if (bitmap != null) {
+
+				imageView.setImageBitmap(bitmap);
+			} else {
+
+				imageView.setImageResource(R.drawable.default_avatar);
+				LoadAvatarManager.startDownloadAvatar(
+						adapter, imageView, key, bareJID, 
+						LoadAvatarManager.REQUESTINACTIVE);
 			}
 		}
 	}
@@ -357,6 +402,11 @@ public class BitmapMemAndDiskCache {
 	        }
 	    }
 	    
+	}
+	
+	public void removeBitmapFromCache( String key) {
+		mMemoryCache.remove(key);				//缓存中移除
+		removeBitmapFromDiskCache(key);			//disk中移除
 	}
 
 }

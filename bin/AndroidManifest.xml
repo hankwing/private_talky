@@ -91,6 +91,13 @@
             	android:name="android.support.PARENT_ACTIVITY"
             	android:value="com.domen.activities.DecideActivity" />
         </activity>
+        
+        <activity android:name="com.domen.activities.ShowOccupantsActivity" >
+            <meta-data
+            	android:name="android.support.PARENT_ACTIVITY"
+            	android:value="com.domen.activities.ChatActivity" />
+        </activity>
+        
     </application>
 
 </manifest>

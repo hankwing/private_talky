@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarException;
 
+import org.jivesoftware.smack.util.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,6 +89,42 @@ public class JsonUtil {
 			//tempMap.put("positiveMember", value);
 			roomData.add(tempMap);
 		}
+
+	}
+	
+	/**
+	 * analyse occupants list json data
+	 * @param jsonStr
+	 * @param roomData
+	 * @throws JarException
+	 * @throws JSONException
+	 */
+	public static void AnalysisOccupantsList(
+			String jsonStr, Map<String, String> occupantsData) 
+					throws JarException, JSONException {
+		// 返回的为新数据
+		// ArrayList<ArrayList<HashMap<String, Object>>> listWrapper = new
+		// ArrayList<ArrayList<HashMap<String, Object>>>(); //存放3个话题类型的list
+		//ArrayList<HashMap<String, Object>> singleThemeList = new ArrayList<HashMap<String, Object>>();
+		JSONObject object = new JSONObject(jsonStr);
+
+			String cat = object.getString("positive1");
+			
+			String catNickName = StringUtils.parseName(cat);
+			String catBareJID = StringUtils.parseBareAddress(cat);
+			
+			String dog = object.getString("negative1");
+			String dogNickName = StringUtils.parseName(dog);
+			String dogBareJID = StringUtils.parseBareAddress(dog);
+			//room = new MultiUserChat(MXMPPConnection.getInstance(), singleTopics.getString("roomJID"));
+			occupantsData.put("roomJID", object.getString("roomJID"));
+			occupantsData.put("positive1JID", cat);
+			occupantsData.put("positive1NickName", catNickName);
+			occupantsData.put("positive1BAREJID", catBareJID);
+			occupantsData.put("negative1JID", dog);
+			occupantsData.put("negative1NickName", dogNickName);
+			occupantsData.put("negative1BAREJID", dogBareJID);
+			//tempMap.put("positiveMember", value);
 
 	}
 	

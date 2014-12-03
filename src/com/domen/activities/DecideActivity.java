@@ -2,13 +2,9 @@ package com.domen.activities;
 
 import java.io.IOException;
 
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -36,11 +32,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.domen.openfire.RequestATeam;
 import com.domen.openfire.RequestTopicInfo;
+import com.domen.start.R;
 import com.domen.tools.BitmapSingleton;
 import com.domen.tools.CurrentActivity;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.domen.start.R;
 
 /**
  * 决定选择哪个观点
@@ -300,32 +296,14 @@ public class DecideActivity extends Activity implements OnClickListener {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						ChatActivity.chat = new MultiUserChat(MXMPPConnection.getInstance(),
-								roomJID);
-						// ChatActivity.chat2 = new
-						// MultiUserChat(LoginActivity.mXmppConnection2,
-						// roomJID);
-						try {
-							ChatActivity.chat.join(MXMPPConnection.getInstance().getUser());
-
-							// ChatActivity.chat2.join(LoginActivity.mXmppConnection2.getUser());
-							// 匹配成功 进入chatActitity
-							registerDialog.dismiss();
-							Toast.makeText(DecideActivity.this, "匹配成功",
-									Toast.LENGTH_SHORT).show();
-							intentIT.putExtra("roomJID", roomJID);				//加入房间JID
-							DecideActivity.this.startActivity(intentIT);
-							DecideActivity.this.finish();
-						} catch (XMPPException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NoResponseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NotConnectedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						// ChatActivity.chat2.join(LoginActivity.mXmppConnection2.getUser());
+						// 匹配成功 进入chatActitity
+						registerDialog.dismiss();
+						Toast.makeText(DecideActivity.this, "匹配成功",
+								Toast.LENGTH_SHORT).show();
+						intentIT.putExtra("roomJID", roomJID);				//加入房间JID
+						DecideActivity.this.startActivity(intentIT);
+						DecideActivity.this.finish();
 
 					}
 				});

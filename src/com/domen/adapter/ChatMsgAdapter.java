@@ -141,7 +141,7 @@ public class ChatMsgAdapter extends BaseAdapter {
 		if (vcardList.containsKey(msgEnitiy.getName())) {
 			// 显示头像
 			avatarCache.loadAvatarBitmap(nickName, vcardList.get(nickName),
-					viewHolder.ivHead, false);
+					viewHolder.ivHead, false, null);
 		}
 		viewHolder.ivHead.setOnClickListener(new OnClickListener() {
 

@@ -4,14 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -32,12 +28,12 @@ import android.widget.Toast;
 
 import com.domen.adapter.RoomListAdapter;
 import com.domen.openfire.RequestExistingRoom;
+import com.domen.start.R;
 import com.domen.tools.CurrentActivity;
 import com.domen.tools.JsonUtil;
 import com.domen.tools.LoadAvatarManager;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
-import com.domen.start.R;
 
 public class RoomListActivity extends ListActivity implements OnClickListener {
 
@@ -79,7 +75,7 @@ public class RoomListActivity extends ListActivity implements OnClickListener {
 		}
 		
 		roomData = new ArrayList<Map<String, String>>();
-		LoadAvatarManager.getInstance().setData(roomData);				//set data
+		LoadAvatarManager.getInstance().setRoomListData(roomData);				//set data
 		//发送请求获得已有话题的IQ包
 		RequestExistingRoom rs = new RequestExistingRoom(topicOfId);
 		rs.setType(IQ.Type.GET);
@@ -127,32 +123,18 @@ public class RoomListActivity extends ListActivity implements OnClickListener {
 			userList.add(choosenRoom.get("positive1JID"));
 			userList.add(choosenRoom.get("negative1JID"));
 			ChatActivity.initUserCache(userList);
-			
-			ChatActivity.chat = new MultiUserChat(mXmppConnection,
-					roomData.get(position).get("roomJID"));
-			
-			try {
-				ChatActivity.chat.join(mXmppConnection.getUser());
-				Intent intentIT = new Intent(getApplicationContext(), ChatActivity.class);
-				Bundle bundle = new Bundle();
-				bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicOfId); // 带上选择话题的ID
-				bundle.putInt("side", 0);				//0代表观众
-				bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
-						topicName);
-				bundle.putString("roomJID", roomData.get(position).get("roomJID"));
-				intentIT.putExtras(bundle);
-				startActivity(intentIT);				//打开聊天窗口
-				finish();
-			} catch (NoResponseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (XMPPErrorException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NotConnectedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			Intent intentIT = new Intent(getApplicationContext(), ChatActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicOfId); // 带上选择话题的ID
+			bundle.putInt("side", 0);				//0代表观众
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
+					topicName);
+			bundle.putString("roomJID", roomData.get(position).get("roomJID"));
+			intentIT.putExtras(bundle);
+			startActivity(intentIT);				//打开聊天窗口
+			finish();
+
 		}
 		else {
 			Toast.makeText(this, getResources().getString(R.string.internet_failure), 
@@ -199,9 +181,11 @@ public class RoomListActivity extends ListActivity implements OnClickListener {
 					
 					for( int i = 0; i < roomData.size(); i++) {
 						LoadAvatarManager.startDownload(adapter, roomData, 
-								roomData.get(i).get("negative1BAREJID"), i, "negative1");
+								roomData.get(i).get("negative1BAREJID"), 
+								i, "negative1", LoadAvatarManager.REQUESTFROMROOMLISTACTIVITY);
 						LoadAvatarManager.startDownload(adapter, roomData, 
-								roomData.get(i).get("positive1BAREJID"), i, "positive1");
+								roomData.get(i).get("positive1BAREJID"), 
+								i, "positive1", LoadAvatarManager.REQUESTFROMROOMLISTACTIVITY);
 					}
 				}
 				

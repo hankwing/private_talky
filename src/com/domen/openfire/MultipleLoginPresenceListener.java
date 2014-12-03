@@ -17,6 +17,7 @@ import android.os.Bundle;
 
 import com.domen.start.LoginActivity;
 import com.domen.tools.CurrentActivity;
+import com.domen.tools.MXMPPConnection;
 import com.domen.start.R;
 
 public class MultipleLoginPresenceListener implements RosterListener {
@@ -83,6 +84,8 @@ public class MultipleLoginPresenceListener implements RosterListener {
 										int which) {
 									// TODO Auto-generated method stub
 									// 进入login界面 同时主界面消失
+									new LoginActivity.DisConnection().execute(
+											MXMPPConnection.getInstance());		
 									Context context = getActivity();
 									Intent intent = new Intent(context,
 											LoginActivity.class);

@@ -68,5 +68,8 @@
     <string name="login_with_talky">说\u0020\u0020之\u0020\u0020帐\u0020\u0020号\u0020\u0020登\u0020\u0020录</string>
     <string name="login_weibo_talky">新\u0020\u0020浪\u0020\u0020微\u0020\u0020博\u0020\u0020登\u0020\u0020录</string>
     <string name="login_join_talky">加\u0020\u0020入\u0020\u0020说\u0020\u0020之</string>
+    <string name="uploading_avatar">正在上传头像</string>
+    <string name="show_occupants">查看房间成员</string>
+    <string name="occupants">旁观</string>
 
 </resources>

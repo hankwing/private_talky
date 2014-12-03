@@ -2,10 +2,6 @@ package com.domen.activities;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +24,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -40,7 +37,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
@@ -66,13 +62,13 @@ import com.domen.openfire.MultipleLoginPresenceListener;
 import com.domen.openfire.RequestSync;
 import com.domen.openfire.RequestSyncTopicOccuCount;
 import com.domen.openfire.RequestSyncUserInfo;
+import com.domen.start.R;
 import com.domen.tools.BitmapMemAndDiskCache;
 import com.domen.tools.BitmapTool;
 import com.domen.tools.CurrentActivity;
 import com.domen.tools.JsonUtil;
 import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
-import com.domen.start.R;
 
 /**
  * 主界面
@@ -113,6 +109,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	private BitmapMemAndDiskCache avatarCache = null;
 	private VCard mVCard;
 	private int topicOccuNumber[] = new int[80];
+	private ProgressDialog uploadAvatarDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -246,7 +243,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		}
 
 		avatarCache.loadAvatarBitmap(accountInfo.getString("account", null),
-				mVCard, drawerAvatar, true);
+				mVCard, drawerAvatar, true, null);
 
 		// 添加打开关闭drawer的监听器
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -719,12 +716,11 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 					if (items[item].equals("拍照")) {
 						Intent intent = new Intent(
 								MediaStore.ACTION_IMAGE_CAPTURE);
-						File f = new File(android.os.Environment
-								.getExternalStorageDirectory(), "temp.jpg");
-						intent.putExtra(MediaStore.EXTRA_OUTPUT,
-								Uri.fromFile(f));
-						getActivity().startActivityForResult(intent,
-								CAPTURE_PICTURE);
+						if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+							getActivity().startActivityForResult(intent,
+									CAPTURE_PICTURE);
+						}
+						
 					} else if (items[item].equals("相册")) {
 						Intent intent = new Intent(
 								Intent.ACTION_PICK,
@@ -752,46 +748,34 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		if (resultCode == RESULT_OK) {
 			if (requestCode == CAPTURE_PICTURE) {
 				// 拍照返回
-				File f = new File(Environment.getExternalStorageDirectory()
-						.toString());
-				for (File temp : f.listFiles()) {
-					if (temp.getName().equals("temp.jpg")) {
-						f = temp;
-						break;
-					}
-				}
+				//show progress dialog
+				uploadAvatarDialog = new ProgressDialog(this);	
+				uploadAvatarDialog.setCanceledOnTouchOutside(false);
+				uploadAvatarDialog.setMessage(getResources().
+						getString(R.string.uploading_avatar));
+				uploadAvatarDialog.show();
+				
+				
 				try {
+					// get thumbnail image
+					Bundle extras = data.getExtras();
+			        Bitmap imageBitmap = (Bitmap) extras.get("data");
+			        Bitmap.createScaledBitmap(imageBitmap, 65, 65, false);			//scaled
+					// 存储到VCard中 并且加载在界面上	
+					saveAvatar(imageBitmap);
 
-					Bitmap bm = BitmapTool.decodeSampledBitmapFromFile(f, 65,
-							65);
-					// 存储到VCard中 并且加载在界面上
-					saveAvatar(bm);
-					// 保存到外存上
-					String path = android.os.Environment
-							.getExternalStorageDirectory()
-							+ File.separator
-							+ "Avatar" + File.separator + "default";
-					f.delete();
-					OutputStream fOut = null;
-					File file = new File(path, String.valueOf(System
-							.currentTimeMillis()) + ".jpg");
-					try {
-						fOut = new FileOutputStream(file);
-						bm.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
-						fOut.flush();
-						fOut.close();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else if (requestCode == CHOOSE_FROM_GALLERY) {
 				// 从相册返回
+				//show progress dialog
+				uploadAvatarDialog = new ProgressDialog(this);	
+				uploadAvatarDialog.setCanceledOnTouchOutside(false);
+				uploadAvatarDialog.setMessage(getResources().
+						getString(R.string.uploading_avatar));
+				uploadAvatarDialog.show();
+				
 				Uri url = data.getData();
 				Bundle bundle = new Bundle();
 				bundle.putString("uri", url.toString());
@@ -816,6 +800,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			// 连接正常
 			VCard mVCard = new VCard();
 			try {
+				
 				mVCard.load(connection);
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				avatar.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -824,7 +809,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 				// 加载头像到界面上并缓存
 				avatarCache.loadAvatarBitmap(
 						accountInfo.getString("account", null), mVCard,
-						drawerAvatar, true);
+						drawerAvatar, true, uploadAvatarDialog);
 			} catch (NoResponseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -919,5 +904,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 			return null;
 		}
 	}
+	
+	
 
 }
