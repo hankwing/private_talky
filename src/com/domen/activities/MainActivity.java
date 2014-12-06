@@ -46,6 +46,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,7 +72,7 @@ import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicDatabaseOpenHelper;
 
 /**
- * 主界面
+ * main activity
  * 
  * @author hankwing
  * 
@@ -82,8 +83,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	public static final int CAPTURE_PICTURE = 1;
 	public static final int CHOOSE_FROM_GALLERY = 2;
 	public static final int GALLERY_URL = 10; // query code
+	public static float dpWidth;
 	public static final String LOG_TAG = "mainActivity";
-	private static ViewPager themeViewPager; // 话题选择page
+	private static ViewPager themeViewPager; // topic choose page
 	private ThemeTabAdapter themeTabAdapter;
 	private static List<ThemeListAdapter> adapterslist; // 配合ViewPager的adapter
 	private DrawerLayout mDrawerLayout; // 左侧滑动栏
@@ -120,7 +122,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		forceShowActionBarOverflowMenu(); // 强制显示overFlowButton
 		sharedPref = getPreferences(Context.MODE_PRIVATE); // 保存刷新时间 用户账号信息等
 		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
-
+		// get widht in dp
+		DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+		Width = displayMetrics.widthPixels;
+		Height = displayMetrics.heightPixels;
 		dbOpenHelper = TopicDatabaseOpenHelper.getInstance(this); // 获得数据库helper
 		if (savedInstanceState != null) {
 			// 应用被销毁并重建时ping主机
@@ -153,10 +158,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		ProviderManager.addIQProvider("topicOccuCountJson",
 				"com:talky:requestTopicOccuCount", new HandleTopicOccuCount());
 
-		DisplayMetrics Win = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(Win);
-		Width = Win.widthPixels; // 获得屏幕宽度像素数
-		Height = Win.heightPixels; // 获得屏幕高度像素数
 		// showView = new ShowView(getApplicationContext(), this.Width,
 		// this.Height);
 		// initSelfMenu(); // 初始化侧边滑动菜单 定义一系列事件
@@ -554,6 +555,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 		}
 		switch (item.getItemId()) {
 		case R.id.action_quit:
+			MXMPPConnection.destroyConnection();				// clear the connection
 			finish();
 			break;
 		}
@@ -832,7 +834,6 @@ public class MainActivity extends FragmentActivity implements OnClickListener,
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		MXMPPConnection.destroyConnection();
 		super.onDestroy();
 		
 		clearReferences();

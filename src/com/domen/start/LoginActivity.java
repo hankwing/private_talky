@@ -8,6 +8,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,7 +32,6 @@ import android.widget.Toast;
 import com.domen.activities.MainActivity;
 import com.domen.customView.ProgressDialogWithKeyBack;
 import com.domen.tools.MXMPPConnection;
-import com.domen.start.R;
 
 /**
  * 登录界面
@@ -113,6 +113,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 			}
 			try {
 				mXmppConnection.login(params[0], params[1], params[2]);
+				DeliveryReceiptManager.getInstanceFor(mXmppConnection).enableAutoReceipts();
+				
 				// 保存用户资料到preference
 				String userFullJID = mXmppConnection.getUser();
 				String userBareJID = userFullJID.substring(0,

@@ -71,5 +71,6 @@
     <string name="uploading_avatar">正在上传头像</string>
     <string name="show_occupants">查看房间成员</string>
     <string name="occupants">旁观</string>
+    <string name="background_seek">暂未发现对手 是否进入后台匹配</string>
 
 </resources>

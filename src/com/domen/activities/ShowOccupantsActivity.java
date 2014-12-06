@@ -74,8 +74,11 @@ public class ShowOccupantsActivity extends ListActivity implements
 		Bundle bundle = getIntent().getExtras();
 		roomJID = bundle.getString("roomJID");
 		topicID = bundle.getString(TopicsEntryContract.COLUMN_NAME_OF_ID);
+		//get object from intent activity
+		MUserChatManager occupantsList = (MUserChatManager) getIntent().
+				getSerializableExtra("occupantsList");
 		
-		allOccupantsData = MUserChatManager.getChat().getOccupants(); // get full occupants list
+		allOccupantsData = occupantsList.getListData(); // get full occupants list
 		for( String temp : allOccupantsData ) {
 			String fullJID = StringUtils.parseResource(temp);
 			allOccupantsJID.add(fullJID);

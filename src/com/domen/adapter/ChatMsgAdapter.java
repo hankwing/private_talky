@@ -17,14 +17,15 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.domen.activities.ChatActivity;
+import com.domen.activities.MainActivity;
 import com.domen.customView.CustomPopupWindow;
 import com.domen.entity.MsgEntity;
-import com.domen.tools.BitmapMemAndDiskCache;
 import com.domen.start.R;
+import com.domen.tools.BitmapMemAndDiskCache;
 
 /**
  * 聊天记录listview的adapter
@@ -44,6 +45,9 @@ public class ChatMsgAdapter extends BaseAdapter {
 	private BitmapMemAndDiskCache avatarCache;
 	private Map<String, VCard> vcardList; // 保存房间成员的VCard
 	private int mSelectedPosition; // 点赞和点屎的message的position
+	private List<String> notSureMessgeIDs = null;
+	private List<String> failedMessageIDs = null;
+	private int messageMaxWidth = (int) (MainActivity.Width * 0.65);
 
 	// private int[] expressionImages;
 	// //private String[] expressionImageNames;
@@ -53,22 +57,26 @@ public class ChatMsgAdapter extends BaseAdapter {
 	// //private String[] expressionImageNames2;
 	// private Bitmap face;
 	static class ViewHolder {
-		public RelativeLayout contentLayout;
+
 		public ImageView ivHead;
 		public TextView tvContent;
 		public TextView tvTime;
-		public ImageView ivPicture;
+		//public ImageView ivPicture;
 		public Boolean isComMsg;
+		public ProgressBar progress;
+		public ImageView failedMask;
 	}
 
 	public ChatMsgAdapter(Context context, List<MsgEntity> chat_list,
-			boolean isSpectator) {
+			boolean isSpectator, List<String> notSureMessage,List<String> failedMessages ) {
 		this.context = context;
 		this.chat_list = chat_list;
 		this.isSpectator = isSpectator;
 		chat_inflater = LayoutInflater.from(context);
 		vcardList = new HashMap<String, VCard>();
 		avatarCache = BitmapMemAndDiskCache.getInstance(context);
+		notSureMessgeIDs = notSureMessage;
+		failedMessageIDs = failedMessages;
 		// expressionImages = Expressions.expressionImgs;
 		// //expressionImageNames = Expressions.expressionImgNames;
 		// expressionImages1 = Expressions.expressionImgs1;
@@ -105,28 +113,26 @@ public class ChatMsgAdapter extends BaseAdapter {
 				arg1 = chat_inflater.inflate(R.layout.chat_msg_left, null); // 在左边显示
 				viewHolder.tvContent = (TextView) arg1
 						.findViewById(R.id.chat_msg_left_content);
+				viewHolder.tvContent.setMaxWidth((int)messageMaxWidth );
 				viewHolder.ivHead = (ImageView) arg1
 						.findViewById(R.id.chat_msg_left_name);
 				// viewHolder.tvTime = (TextView)
 				// arg1.findViewById(R.id.chat_msg_right_time);
-				viewHolder.ivPicture = (ImageView) arg1
-						.findViewById(R.id.chat_msg_left_image);
-				viewHolder.contentLayout = (RelativeLayout) arg1
-						.findViewById(R.id.chat_content_left);
+				
 			} else {
 				arg1 = chat_inflater.inflate(R.layout.chat_msg_right, null);
 
 				viewHolder.tvContent = (TextView) arg1
 						.findViewById(R.id.chat_msg_right_content);
+				viewHolder.tvContent.setMaxWidth((int)messageMaxWidth );
 				viewHolder.ivHead = (ImageView) arg1
 						.findViewById(R.id.chat_msg_right_name);
 				// viewHolder.tvTime = (TextView)
 				// arg1.findViewById(R.id.chat_msg_left_time);
-				viewHolder.ivPicture = (ImageView) arg1
-						.findViewById(R.id.chat_msg_right_image);
-				viewHolder.contentLayout = (RelativeLayout) arg1
-						.findViewById(R.id.chat_content_right);
-
+				viewHolder.progress = 
+						(ProgressBar) arg1.findViewById(R.id.right_message_progress_bar);
+				viewHolder.failedMask = (ImageView) arg1.
+						findViewById(R.id.right_message_failed_mask);
 			}
 
 			arg1.setTag(viewHolder);
@@ -135,6 +141,29 @@ public class ChatMsgAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) arg1.getTag();
 		}
 
+		if( !msgEnitiy.getIsLeft() ) {
+			//right message
+
+			if( msgEnitiy.getMessageId() == null || 
+					!notSureMessgeIDs.contains(msgEnitiy.getMessageId())) {
+				 
+				if( msgEnitiy.getMessageId() != null &&
+						failedMessageIDs.contains(msgEnitiy.getMessageId())) {
+					//falied
+					viewHolder.progress.setVisibility(View.GONE);
+					viewHolder.failedMask.setVisibility(View.VISIBLE);
+				}
+				else {
+					viewHolder.failedMask.setVisibility(View.GONE);
+					viewHolder.progress.setVisibility(View.GONE);
+				}
+			}
+			else {
+				viewHolder.failedMask.setVisibility(View.GONE);
+				viewHolder.progress.setVisibility(View.VISIBLE);
+			}
+
+		}
 		// BitmapDrawable bd = (BitmapDrawable) msgEnitiy.getHead();
 		// viewHolder.ivHead.setImageBitmap(bd.getBitmap());
 		String nickName = msgEnitiy.getName();
@@ -160,8 +189,8 @@ public class ChatMsgAdapter extends BaseAdapter {
 		viewHolder.tvContent.setText(msgEnitiy.getContent());
 		viewHolder.tvContent.setVisibility(View.VISIBLE);
 		viewHolder.tvContent.setFocusable(true);
-		viewHolder.ivPicture.setVisibility(View.GONE);
-
+		//viewHolder.ivPicture.setVisibility(View.GONE);
+		
 		// }else {
 		//
 		// viewHolder.ivPicture.setVisibility(View.VISIBLE);

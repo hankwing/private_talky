@@ -1,5 +1,7 @@
 package com.domen.entity;
 
+import org.jivesoftware.smack.packet.Message;
+
 import android.graphics.drawable.Drawable;
 
 /**
@@ -9,6 +11,7 @@ import android.graphics.drawable.Drawable;
  */
 public class MsgEntity {
 	
+	private Message message;
 	private String content;
 	private String userJID;				//用户的JID
 	private String date;
@@ -17,6 +20,7 @@ public class MsgEntity {
 	private String name;
 	private Drawable head;
 	private Drawable image;				//聊天图片
+	private String messageID;			//control progressbar and message confrim
 
 	public MsgEntity(){
 		content = null;
@@ -26,11 +30,12 @@ public class MsgEntity {
 		isText=true;
 	}
 
-	public MsgEntity(String content,String date,String name,Boolean isLeft){
+	public MsgEntity(String content,String date,String name,Boolean isLeft, String messageID){
 		this.content = content;
 		this.date = date;
 		this.name = name;
 		this.isLeft = isLeft;
+		this.messageID = messageID;
 		
 	}
 
@@ -150,5 +155,22 @@ public class MsgEntity {
 	public String getUserJID() {
 		return userJID;
 	}
+	
+	public void setMessageID(String messageID) {
+		this.messageID = messageID;
+	}
+	
+	public String getMessageId() {
+		return messageID;
+	}
+	
+	public void setMessage( Message message ) {
+		this.message = message;
+	}
+	
+	public Message getMessage() {
+		return message;
+	}
+	
 	
 }

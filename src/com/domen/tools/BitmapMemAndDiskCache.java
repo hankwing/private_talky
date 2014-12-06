@@ -8,6 +8,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import android.app.ProgressDialog;
@@ -74,7 +80,7 @@ public class BitmapMemAndDiskCache {
 				try {
 					mDiskLruCache = DiskLruCache.open(cacheDir, 1, 1,
 							DISK_CACHE_SIZE);
-					
+
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -95,27 +101,28 @@ public class BitmapMemAndDiskCache {
 
 	/**
 	 * 放入内存以及disk缓存
+	 * 
 	 * @param key
 	 * @param bitmap
 	 */
 	public void addBitmapToCache(String key, Bitmap bitmap) {
-	    // Add to memory cache as before
-	    if (getBitmapFromMemCache(key) == null) {
-	        mMemoryCache.put(key, bitmap);
-	    }
+		// Add to memory cache as before
+		if (getBitmapFromMemCache(key) == null) {
+			mMemoryCache.put(key, bitmap);
+		}
 
-//	    // Also add to disk cache
-//	    synchronized (mDiskCacheLock) {
-//	        // Wait while disk cache is started from background thread
-//	        while (mDiskCacheStarting) {
-//	            try {
-//	                mDiskCacheLock.wait();
-//	            } catch (InterruptedException e) {}
-//	        }
-//	        if (mDiskLruCache != null) {
-//            	put(key, bitmap);
-//	        }
-//	    }
+		// // Also add to disk cache
+		// synchronized (mDiskCacheLock) {
+		// // Wait while disk cache is started from background thread
+		// while (mDiskCacheStarting) {
+		// try {
+		// mDiskCacheLock.wait();
+		// } catch (InterruptedException e) {}
+		// }
+		// if (mDiskLruCache != null) {
+		// put(key, bitmap);
+		// }
+		// }
 	}
 
 	public Bitmap getBitmapFromMemCache(String key) {
@@ -142,20 +149,22 @@ public class BitmapMemAndDiskCache {
 		@Override
 		protected Bitmap doInBackground(VCard... params) {
 			data = params[0];
-			//Log.i("message", "key : " + data.getNickName());
-			//Bitmap bitmap = getBitmapFromDiskCache(data.getNickName());//先检查在disk上有无缓存
+			// Log.i("message", "key : " + data.getNickName());
+			// Bitmap bitmap =
+			// getBitmapFromDiskCache(data.getNickName());//先检查在disk上有无缓存
 			Bitmap bitmap = null;
 			byte[] avatarByte = data.getAvatar();
-			if (bitmap == null && avatarByte != null) { // Not found in disk cache
-	            // 将byte转为bitmap
-				//Log.i("message", "disk non");
-	            bitmap = BitmapFactory.decodeByteArray(
-						avatarByte, 0, avatarByte.length);
-	        }
-			if( bitmap != null) {
+			if (bitmap == null && avatarByte != null) { // Not found in disk
+														// cache
+				// 将byte转为bitmap
+				// Log.i("message", "disk non");
+				bitmap = BitmapFactory.decodeByteArray(avatarByte, 0,
+						avatarByte.length);
+			}
+			if (bitmap != null) {
 				// 利用VCard获得图像数据并放入内存和disk缓存中
 				addBitmapToCache(data.getNickName(), bitmap);
-				//Log.i("message", "disk not non");
+				// Log.i("message", "disk not non");
 			}
 			return bitmap;
 		}
@@ -167,11 +176,11 @@ public class BitmapMemAndDiskCache {
 				final ImageView imageView = imageViewReference.get();
 				if (imageView != null) {
 					imageView.setImageBitmap(bitmap);
-					
+
 				}
-				if( mDialog != null) {
+				if (mDialog != null) {
 					mDialog.dismiss();
-					mDialog = null;				//clear the reference
+					mDialog = null; // clear the reference
 				}
 			}
 		}
@@ -179,68 +188,69 @@ public class BitmapMemAndDiskCache {
 
 	/**
 	 * 加载VCard的头像数据到imageView中 供外部类使用的方法
+	 * 
 	 * @param key
 	 * @param vcard
 	 * @param imageView
-	 * @param isReset		是否代表重置该用户的头像
+	 * @param isReset
+	 *            是否代表重置该用户的头像
 	 */
-	public void loadAvatarBitmap(String key, VCard vcard, ImageView imageView, 
-			boolean isReset ,ProgressDialog dialog) {
-		//final String imageKey = vcard.getNickName(); // 以VCard用户名作为key
-		if( dialog != null) {
-			//need dismiss the dialog after finished
+	public void loadAvatarBitmap(String key, VCard vcard, ImageView imageView,
+			boolean isReset, ProgressDialog dialog) {
+		// final String imageKey = vcard.getNickName(); // 以VCard用户名作为key
+
+		if (dialog != null) {
+			// need dismiss the dialog after finished
 			mDialog = dialog;
 		}
-		if( isReset) {
-			removeBitmapFromCache(key);				//remove cache from mem and disk
+		if (isReset) {
+			removeBitmapFromCache(key); // remove cache from mem and disk
 			vcard.setNickName(key);
 			BitmapWorkerTask task = new BitmapWorkerTask(imageView);
 			task.execute(vcard);
-		}
-		else {
+		} else {
 			final Bitmap bitmap = getBitmapFromMemCache(key);
 			if (bitmap != null) {
-				//Log.i("message", "mem not non");
+				// Log.i("message", "mem not non");
 				imageView.setImageBitmap(bitmap);
 			} else {
-				//Log.i("message", "mem non");
+				// Log.i("message", "mem non");
 				vcard.setNickName(key);
-				imageView.setImageResource(R.drawable.default_avatar);
+				imageView.setImageResource(R.drawable.default_avatar_dog);
 				BitmapWorkerTask task = new BitmapWorkerTask(imageView);
 				task.execute(vcard);
 			}
 		}
 	}
-	
+
 	/**
 	 * 加载VCard的头像数据到imageView中 support LoadAvatarManager to load
+	 * 
 	 * @param key
 	 * @param vcard
 	 * @param imageView
-	 * @param isReset		是否代表重置该用户的头像
+	 * @param isReset
+	 *            是否代表重置该用户的头像
 	 */
 	public void loadAvatarBitmap(BaseAdapter adapter, ImageView imageView,
-			String key, String bareJID, boolean isReset ) {
-		//final String imageKey = vcard.getNickName(); // 以VCard用户名作为key
+			String key, String bareJID, boolean isReset) {
+		// final String imageKey = vcard.getNickName(); // 以VCard用户名作为key
 
-		if( isReset) {
-			removeBitmapFromCache(key);				//remove cache from mem and disk
+		if (isReset) {
+			removeBitmapFromCache(key); // remove cache from mem and disk
 
-			LoadAvatarManager.startDownloadAvatar(
-					adapter, imageView, key, bareJID, 
-					LoadAvatarManager.REQUESTINACTIVE);
-		}
-		else {
+			LoadAvatarManager.startDownloadAvatar(adapter, imageView, key,
+					bareJID, LoadAvatarManager.REQUESTINACTIVE);
+		} else {
 			final Bitmap bitmap = getBitmapFromMemCache(key);
 			if (bitmap != null) {
 
 				imageView.setImageBitmap(bitmap);
 			} else {
 
-				imageView.setImageResource(R.drawable.default_avatar);
-				LoadAvatarManager.startDownloadAvatar(
-						adapter, imageView, key, bareJID, 
-						LoadAvatarManager.REQUESTINACTIVE);
+				imageView.setImageResource(R.drawable.default_avatar_dog);
+				LoadAvatarManager.startDownloadAvatar(adapter, imageView, key,
+						bareJID, LoadAvatarManager.REQUESTINACTIVE);
 			}
 		}
 	}
@@ -330,7 +340,8 @@ public class BitmapMemAndDiskCache {
 			}
 			final InputStream in = snapshot.getInputStream(0);
 			if (in != null) {
-				//final BufferedInputStream buffIn = new BufferedInputStream(in);
+				// final BufferedInputStream buffIn = new
+				// BufferedInputStream(in);
 				bitmap = BitmapFactory.decodeStream(in);
 			}
 		} catch (IOException e) {
@@ -368,45 +379,73 @@ public class BitmapMemAndDiskCache {
 		return contained;
 
 	}
-	
+
 	public Bitmap getBitmapFromDiskCache(String key) {
-	    synchronized (mDiskCacheLock) {
-	        // Wait while disk cache is started from background thread
-	        while (mDiskCacheStarting) {
-	            try {
-	                mDiskCacheLock.wait();
-	            } catch (InterruptedException e) {}
-	        }
-	        if (mDiskLruCache != null) {
-	            return getBitmap(key);
-	        }
-	    }
-	    return null;
+		synchronized (mDiskCacheLock) {
+			// Wait while disk cache is started from background thread
+			while (mDiskCacheStarting) {
+				try {
+					mDiskCacheLock.wait();
+				} catch (InterruptedException e) {
+				}
+			}
+			if (mDiskLruCache != null) {
+				return getBitmap(key);
+			}
+		}
+		return null;
 	}
-	
+
 	public void removeBitmapFromDiskCache(String key) {
-	    synchronized (mDiskCacheLock) {
-	        // Wait while disk cache is started from background thread
-	        while (mDiskCacheStarting) {
-	            try {
-	                mDiskCacheLock.wait();
-	            } catch (InterruptedException e) {}
-	        }
-	        if (mDiskLruCache != null) {
-	            try {
+		synchronized (mDiskCacheLock) {
+			// Wait while disk cache is started from background thread
+			while (mDiskCacheStarting) {
+				try {
+					mDiskCacheLock.wait();
+				} catch (InterruptedException e) {
+				}
+			}
+			if (mDiskLruCache != null) {
+				try {
 					mDiskLruCache.remove(key);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-	        }
-	    }
-	    
+			}
+		}
+
 	}
-	
-	public void removeBitmapFromCache( String key) {
-		mMemoryCache.remove(key);				//缓存中移除
-		removeBitmapFromDiskCache(key);			//disk中移除
+
+	public void removeBitmapFromCache(String key) {
+		mMemoryCache.remove(key); // 缓存中移除
+		//removeBitmapFromDiskCache(key); // disk中移除
+	}
+
+	/**
+	 * 汉字转拼音的方法
+	 * 
+	 * @param name
+	 *            汉字
+	 * @return 拼音
+	 */
+	public static String HanyuToPinyin(String name) {
+		char[] nameChar = name.toCharArray();
+		String pinyinName = null;
+		HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+		defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+		defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+		for (int i = 0; i < nameChar.length; i++) {
+			if (nameChar[i] > 128) {
+				try {
+					pinyinName += PinyinHelper.toHanyuPinyinStringArray(
+							nameChar[i], defaultFormat)[0];
+				} catch (BadHanyuPinyinOutputFormatCombination e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return pinyinName;
 	}
 
 }

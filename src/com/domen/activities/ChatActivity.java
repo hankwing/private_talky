@@ -15,14 +15,19 @@ import org.jivesoftware.smack.packet.DefaultPacketExtension;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
+import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +35,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,7 +62,8 @@ import com.domen.tools.MXMPPConnection.Login;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
 
 /**
- * 聊天窗口 重要
+ * chat activity. when user leave , active the 
+ * service to listen for new message
  * 
  * @author hankwing
  * 
@@ -66,78 +73,86 @@ public class ChatActivity extends Activity implements OnClickListener {
 	// private Chat chat;
 	public MultiUserChat chat = null;
 	private RelativeLayout bottomBar;
-	private static int side; // 0-观众 1-正方 -1-反方
+	private static int side; // 0-audience 1-positive -1-negative
 	// static MultiUserChat chat2 = null;
-	private ImageView btn_send; // 发送按钮
-	private EditText edt_message; // 用户聊天内容输入框
-	private ListView listView; // 聊天显示listview
-	// private TextView tv_theme; //话题名称
-	// private ImageButton btn_ranks; //显示排名
-	// private Boolean isPositive; //是否是正方观点
-	// private PopupWindow rankWindow;
-	// private ImageButton btn_add_image; //添加图片按钮
-	// private ImageButton btn_add_face; //add facial
-	// private ImageButton btn_add_record; //add sound record
-	// private ImageButton ibtn_back; //return button
+	private ImageView btn_send; // send button
+	private EditText edt_message; // chat content editView
+	private ListView listView; // show chat messages listview
 	private InputMethodManager imm;
-	// private ImageView page0; //表情页下的小点点
-	// private ImageView page1; //2
-	// private ImageView page2; //3
-	// private GridView gView1; //表情页1
-	// private GridView gView2; //2
-	// private GridView gView3; //3
-	// private ArrayList<GridView> grids; //表情页容器
-	// private ViewPager facePager; //表情页的viewPager
-	// private int[] expressionImages;
-	// private String[] expressionImageNames;
-	// private int[] expressionImages1;
-	// private String[] expressionImageNames1;
-	// private int[] expressionImages2;
-	// private String[] expressionImageNames2;
-	// private LinearLayout page_select; //表情页面下小点点的布局
-	// private String faceString;
-	// private boolean isJudge = false; //判断用户是否点击了点赞和点屎 如果没有 避免多余操作
-	private static ArrayList<String> userList = null; // 房间内用户列表
-	private List<MsgEntity> msgList = new ArrayList<MsgEntity>(); // 聊天记录容器
-	private ChatMsgAdapter chatMsgAdapter; // 聊天记录listView的adapter
+	private static ArrayList<String> userList = null; // room active occupants list
+	private List<MsgEntity> msgList = new ArrayList<MsgEntity>(); // list for messages
+	private ChatMsgAdapter chatMsgAdapter; // chat messages list's adapter
 	private String UserFullId;
-	private static Map<String, Integer> userAgreeCache = null; // 缓存用户点赞数据
-	private static Map<String, Integer> userShitCache = null; // 缓存用户点屎数据
+	private static Map<String, Integer> userAgreeCache = null; // cache favour data
+	private static Map<String, Integer> userShitCache = null; // cache shit data
 	private static int topicID;
 	private String topicName;
 	private static String roomJID = null;
 	private Map<String, VCard> vcardList = null;
 	private SharedPreferences accountInfo;
 	private String nickName;
+	private List<String> notSuerMessageIDs = null;		//message id waiting for confirm
+	private List<String> failedMessages = null;
+	private Handler failedMessageHandler = null;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
+	@SuppressLint("HandlerLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		CurrentActivity.setCurrentActivity(this);
-		getActionBar().setDisplayHomeAsUpEnabled(true); // 显示返回上级的按钮
+		getActionBar().setDisplayHomeAsUpEnabled(true); // show return to home button in actionbar
 		getActionBar().setDisplayShowTitleEnabled(true);
 		setContentView(R.layout.activity_chat);
 		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE);
 		UserFullId = accountInfo.getString("userFullId", null);
 		nickName = accountInfo.getString("account", null);
-		if (savedInstanceState == null) {
-			Bundle bundle = new Bundle();
+		notSuerMessageIDs = new ArrayList<String>();
+		failedMessages = new ArrayList<String>();
+		//control failed message
+		failedMessageHandler = new Handler() {
+
+			@Override
+			public void handleMessage(android.os.Message msg) {
+				// TODO Auto-generated method stub
+				super.handleMessage(msg);
+				//Log.i("message", "message failed");
+				String messageID = (String) msg.obj;
+				if( notSuerMessageIDs.remove(messageID) ) {
+					failedMessages.add(messageID);
+					chatMsgAdapter.notifyDataSetChanged();
+				}
+				
+			}
+			
+		};
+		boolean isFromNotify = getIntent().getExtras().getBoolean("returnFromNotification");
+		if( isFromNotify ) {
+			// return from background
+			NotificationManager mNotificationManager = 
+					(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			mNotificationManager.cancel(1);				//hide the notification
 			Intent intent = this.getIntent();
-			bundle = intent.getExtras();
+			Bundle bundle = intent.getExtras();
 			topicName = bundle
 					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
 			side = bundle.getInt("side");
 			topicID = Integer.valueOf(bundle
 					.getString(TopicsEntryContract.COLUMN_NAME_OF_ID));
 			roomJID = bundle.getString("roomJID");
-			new JoinRoomAndAddListener().execute(0); // do not need join room
-		} else {
+
+			if( MXMPPConnection.getInstance() == null || 
+					MXMPPConnection.getInstance().getUser() == null) {
+				new Login().execute(accountInfo.getString("account", null),
+						accountInfo.getString("password", null), Build.MODEL);
+				new JoinRoomAndAddListener().execute(1); // need join room
+			}
+			else {
+				new JoinRoomAndAddListener().execute(0); // do not need join room
+			}
+			
+		}
+		else if (savedInstanceState != null) {
 			// rebuild activity
 			topicName = savedInstanceState
 					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
@@ -149,10 +164,20 @@ public class ChatActivity extends Activity implements OnClickListener {
 			new Login().execute(accountInfo.getString("account", null),
 					accountInfo.getString("password", null), Build.MODEL);
 			new JoinRoomAndAddListener().execute(1); // need join room
+		} else {
+			Intent intent = this.getIntent();
+			Bundle bundle = intent.getExtras();
+			topicName = bundle
+					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
+			side = bundle.getInt("side");
+			topicID = Integer.valueOf(bundle
+					.getString(TopicsEntryContract.COLUMN_NAME_OF_ID));
+			roomJID = bundle.getString("roomJID");
+			new JoinRoomAndAddListener().execute(0); // do not need join room
 
 		}
 
-		getActionBar().setTitle(topicName); // 显示话题名称
+		getActionBar().setTitle(topicName); // show topic's title
 
 		imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		bottomBar = (RelativeLayout) this
@@ -163,8 +188,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 		btn_send = (ImageView) this.findViewById(R.id.btn_send);
 		btn_send.setOnClickListener(this);
 		chatMsgAdapter = new ChatMsgAdapter(getApplicationContext(), msgList,
-				side == 0 ? true : false);
-		listView.setAdapter(chatMsgAdapter); // 定义适配器
+				side == 0 ? true : false, notSuerMessageIDs, failedMessages);
+		listView.setAdapter(chatMsgAdapter);
 		listView.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -179,15 +204,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		});
 
-		// initViewPager(); //初始化表情选择界面
+		if (side == 0) {
+			// the thrid party , do not have speak right
+			bottomBar.setVisibility(View.GONE);
+			
+		}
+		// initViewPager(); // init emoji choose window
 		imm.hideSoftInputFromWindow(edt_message.getWindowToken(), 0);
 		vcardList = chatMsgAdapter.getVcardList();
-
-		if (side == 0) {
-			// 旁观者 不能发言
-			bottomBar.setVisibility(View.GONE);
-			showMessageHistory(); // 显示聊天历史记录
-		}
 
 	}
 
@@ -195,109 +219,61 @@ public class ChatActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-		// case R.id.btn_add_record:
-		// //进入录音界面
-		// Intent intent = new Intent(ChatActivity.this,RecordActivity.class);
-		// startActivityForResult(intent, 28);
-		// break;
-		// case R.id.btn_add_face:
-		// //打开表情选择窗口
-		// facePager.setVisibility(View.VISIBLE);
-		// page_select.setVisibility(View.VISIBLE);
-		// break;
-		// case R.id.ibt_ranks:
-		// Intent ranksIntent = new Intent(ChatActivity.this,
-		// RanksActivity.class);
-		// startActivity(ranksIntent);
-		// break;
-		// case R.id.btn_add_image:
-		// String status = Environment.getExternalStorageState();
-		// if (status.equals(Environment.MEDIA_MOUNTED))
-		// {
-		// Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-		// getIntent.setType("image/*");
-		// if (getIntent != null)
-		// {
-		// startActivityForResult(getIntent, 7);
-		// }
-		// } else
-		// {
-		// Toast.makeText(ChatActivity.this,
-		// getResources().getString(R.string.failed_open_photo),
-		// Toast.LENGTH_SHORT).show();
-		// }
-		// break;
-		// case R.id.chat_message:
-		// //控制表情界面的消失与显示
-		// facePager.setVisibility(View.GONE);
-		// page_select.setVisibility(View.GONE);
-		// break;
 		case R.id.btn_send:
-			// 发送消息
+			// send message
 			String messageString = edt_message.getText().toString();
 			if (messageString == null || messageString.equals("")) {
 				break;
-			}
-			updateMesList(MXMPPConnection.getInstance().getUser(), nickName,
-					messageString, false); // 自己发出的信息右侧
-			// 下面向服务器发送信息
+			}	
+			// send message to server
 			try {
 				Message message = chat.createMessage();
 				message.setBody(edt_message.getText().toString());
-				// 添加消息包的附加消息
+				// add message extension
 				DefaultPacketExtension extension = new DefaultPacketExtension(
 						"message", "com:talky:message");
 				extension.setValue("side", String.valueOf(side));
+				notSuerMessageIDs.add(message.getPacketID());
 				message.addExtension(extension);
+				
+				DeliveryReceiptManager.addDeliveryReceiptRequest(message);
 				chat.sendMessage(message);
+				failedMessageHandler.sendMessageDelayed(
+						failedMessageHandler.obtainMessage(0, message.getPacketID()),
+						10000);
+				updateMesList( UserFullId, nickName,
+						messageString, false, message.getPacketID(), message); // show in the right side
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
+				Toast.makeText(this, getResources().getString(R.string.internet_failure), 
+						Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			} catch (NotConnectedException e) {
 				// TODO Auto-generated catch block
+				Toast.makeText(this, getResources().getString(R.string.internet_failure), 
+						Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
-			edt_message.setText(""); // 清空编辑框
+			edt_message.setText(""); // clear edit view
 			break;
-		// case R.id.ibtn_chat_back:
-		// AlertDialog dialog = new AlertDialog.Builder(
-		// ChatActivity.this)
-		// .setTitle("点屎")
-		// .setMessage("呵呵")
-		// .setPositiveButton("ȷ��", new DialogInterface.OnClickListener()
-		// {
-		//
-		// @Override
-		// public void onClick(DialogInterface dialog, int which)
-		// {
-		// Intent intent = new Intent(getApplicationContext(),
-		// CountActivity.class);
-		// startActivity(intent);
-		// ChatActivity.this.finish();
-		// }
-		// })
-		// .setNegativeButton("�˳�", new DialogInterface.OnClickListener()
-		// {
-		//
-		// @Override
-		// public void onClick(DialogInterface dialog, int which)
-		// {
-		// // TODO Auto-generated method stub
-		// ChatActivity.this.finish();
-		// }
-		// }).create();
-		// dialog.show();
-		// break;
 
 		}
 	}
 
+	/**
+	 * add message to window
+	 * @param userJID
+	 * @param nickName
+	 * @param content
+	 * @param isLeft	is the message should show in the left or not
+	 * @param messageID
+	 */
 	public void updateMesList(String userJID, String nickName, String content,
-			boolean isLeft) {
+			boolean isLeft, String messageID, Message message) {
 
 		MsgEntity msgEnitiy = new MsgEntity();
 		msgEnitiy.setContent(content);
-		msgEnitiy.setName(nickName); // 设置nickName
+		msgEnitiy.setName(nickName); // set nickName
 		msgEnitiy.setUserJID(userJID);
 		// Toast.makeText(getApplicationContext(), content,
 		// Toast.LENGTH_SHORT).show();
@@ -307,13 +283,15 @@ public class ChatActivity extends Activity implements OnClickListener {
 		// getResources().getDrawable(R.drawable.default_avatar);
 		// msgEnitiy.setHead(head);
 		msgEnitiy.setIsLeft(isLeft);
+		msgEnitiy.setMessageID(messageID);
+		msgEnitiy.setMessage(message);
 		msgList.add(msgEnitiy);
-		chatMsgAdapter.notifyDataSetChanged(); // 通知适配器界面刷新
+		chatMsgAdapter.notifyDataSetChanged(); // refresh ui
 
 	}
 
 	/**
-	 * 获得系统时间
+	 * obtain system calendar
 	 * 
 	 * @return
 	 */
@@ -338,9 +316,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 			return true;
 		case R.id.action_show_occupants:
 			// perform showing pccupants
-			MUserChatManager.setChat(chat);
+			MUserChatManager listData = new MUserChatManager();
+			listData.setData(chat.getOccupants());
+			
 			Intent intent = new Intent(this, ShowOccupantsActivity.class);
+			intent.putExtra("occupantsList", listData);
 			Bundle bundle = new Bundle();
+			
 			bundle.putString("roomJID", roomJID);
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, ""
 					+ topicID);
@@ -351,279 +333,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	//
-	// public PopupWindow ranksPopupWindow(Context context){
-	// rankWindow = new PopupWindow(context);
-	// View conterView = LayoutInflater.from(this).inflate(R.layout.rank_layout,
-	// null);
-	// rankWindow.setContentView(conterView);
-	// rankWindow.setWidth(LayoutParams.WRAP_CONTENT);
-	// rankWindow.setHeight(LayoutParams.WRAP_CONTENT);
-	// return rankWindow;
-	// }
-
-	// private void initViewPager() {
-	//
-	// expressionImages = Expressions.expressionImgs;
-	// expressionImageNames = Expressions.expressionImgNames;
-	// expressionImages1 = Expressions.expressionImgs1;
-	// //expressionImageNames1 = Expressions.expressionImgNames1;
-	// expressionImages2 = Expressions.expressionImgs2;
-	// //expressionImageNames2 = Expressions.expressionImgNames2;
-	//
-	// LayoutInflater inflater = LayoutInflater.from(this);
-	// grids = new ArrayList<GridView>();
-	// gView1 = (GridView) inflater.inflate(R.layout.grid1, null);
-	// List<Map<String, Object>> listItems = new ArrayList<Map<String,
-	// Object>>();
-	//
-	// for (int i = 0; i < 24; i++)
-	// {
-	// Map<String, Object> listItem = new HashMap<String, Object>();
-	// listItem.put("image", expressionImages[i]);
-	// listItems.add(listItem);
-	// }
-	//
-	// SimpleAdapter simpleAdapter = new SimpleAdapter(ChatActivity.this,
-	// listItems,
-	// R.layout.face_layout, new String[] { "image" },
-	// new int[] { R.id.faceImage });
-	// gView1.setAdapter(simpleAdapter);
-	// gView1.setOnItemClickListener(new OnItemClickListener() {
-	// @Override
-	// public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-	// long arg3) {
-	// Bitmap bitmap = null;
-	// bitmap = BitmapFactory.decodeResource(getResources(),
-	// expressionImages[arg2 % expressionImages.length]);
-	// ImageSpan imageSpan = new ImageSpan(ChatActivity.this, bitmap,
-	// ImageSpan.ALIGN_BASELINE);
-	//
-	// faceString = "Face:"
-	// + expressionImageNames[arg2].substring(1,
-	// expressionImageNames[arg2].length() - 1);
-	//
-	// SpannableString spannableString = new SpannableString(faceString);
-	//
-	// spannableString.setSpan(imageSpan, 0, faceString.length(),
-	// Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	//
-	// SetCursor(spannableString);
-	//
-	// }
-	// });
-	//
-	// grids.add(gView1);
-	//
-	// gView2 = (GridView) inflater.inflate(R.layout.grid2, null);
-	// grids.add(gView2);
-	//
-	// gView3 = (GridView) inflater.inflate(R.layout.grid3, null);
-	// grids.add(gView3);
-	//
-	// PagerAdapter mPagerAdapter = new PagerAdapter() {
-	// @Override
-	// public boolean isViewFromObject(View arg0, Object arg1) {
-	// return arg0 == arg1;
-	// }
-	//
-	// @Override
-	// public int getCount() {
-	// return grids.size();
-	// }
-	//
-	// @Override
-	// public void destroyItem(View container, int position, Object object) {
-	// ((ViewPager) container).removeView(grids.get(position));
-	// }
-	//
-	// @Override
-	// public Object instantiateItem(View container, int position) {
-	// ((ViewPager) container).addView(grids.get(position));
-	// return grids.get(position);
-	// }
-	// };
-	//
-	// facePager.setAdapter(mPagerAdapter);
-	//
-	// facePager.setOnPageChangeListener(new GuidePageChangeListener());
-	// }
-
-	// class GuidePageChangeListener implements OnPageChangeListener {
-	//
-	// @Override
-	// public void onPageScrollStateChanged(int arg0) {
-	//
-	// }
-	//
-	// @Override
-	// public void onPageScrolled(int arg0, float arg1, int arg2) {
-	// }
-	//
-	// public void onPageSelected(int arg0) {
-	// switch (arg0)
-	// {
-	// case 0:
-	// page0.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_focused));
-	// page1.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_unfocused));
-	// break;
-	// case 1:
-	// page1.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_focused));
-	// page0.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_unfocused));
-	// page2.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_unfocused));
-	// List<Map<String, Object>> listItems = new ArrayList<Map<String,
-	// Object>>();
-	//
-	// for (int i = 0; i < 24; i++)
-	// {
-	// Map<String, Object> listItem = new HashMap<String, Object>();
-	// listItem.put("image", expressionImages1[i]);
-	// listItems.add(listItem);
-	// }
-	//
-	// SimpleAdapter simpleAdapter = new SimpleAdapter(ChatActivity.this,
-	// listItems, R.layout.face_layout,
-	// new String[] { "image" }, new int[] { R.id.faceImage });
-	// gView2.setAdapter(simpleAdapter);
-	// gView2.setOnItemClickListener(new OnItemClickListener() {
-	// @Override
-	// public void onItemClick(AdapterView<?> arg0, View arg1,
-	// int arg2, long arg3) {
-	// Bitmap bitmap = null;
-	// bitmap = BitmapFactory.decodeResource(getResources(),
-	// expressionImages1[arg2
-	// % expressionImages1.length]);
-	// ImageSpan imageSpan = new ImageSpan(ChatActivity.this, bitmap,
-	// ImageSpan.ALIGN_BASELINE);
-	//
-	// faceString = "Face:"
-	// + expressionImageNames[arg2].substring(1,
-	// expressionImageNames[arg2].length() - 1);
-	//
-	// SpannableString spannableString = new SpannableString(faceString);
-	//
-	// spannableString.setSpan(imageSpan, 0, faceString.length(),
-	// Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	//
-	// SetCursor(spannableString);
-	// }
-	// });
-	// break;
-	// case 2:
-	// page2.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_focused));
-	// page1.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_unfocused));
-	// page0.setImageDrawable(getResources().getDrawable(
-	// R.drawable.page_unfocused));
-	// List<Map<String, Object>> listItems1 = new ArrayList<Map<String,
-	// Object>>();
-	//
-	// for (int i = 0; i < 24; i++)
-	// {
-	// Map<String, Object> listItem = new HashMap<String, Object>();
-	// listItem.put("image", expressionImages2[i]);
-	// listItems1.add(listItem);
-	// }
-	//
-	// SimpleAdapter simpleAdapter1 = new SimpleAdapter(ChatActivity.this,
-	// listItems1, R.layout.face_layout,
-	// new String[] { "image" }, new int[] { R.id.faceImage });
-	// gView3.setAdapter(simpleAdapter1);
-	// gView3.setOnItemClickListener(new OnItemClickListener() {
-	// @Override
-	// public void onItemClick(AdapterView<?> arg0, View arg1,
-	// int arg2, long arg3) {
-	// Bitmap bitmap = null;
-	// bitmap = BitmapFactory.decodeResource(getResources(),
-	// expressionImages2[arg2
-	// % expressionImages2.length]);
-	//
-	// ImageSpan imageSpan = new ImageSpan(ChatActivity.this, bitmap,
-	// ImageSpan.ALIGN_BASELINE);
-	// faceString = "Face:"
-	// + expressionImageNames[arg2].substring(1,
-	// expressionImageNames[arg2].length() - 1);
-	//
-	// SpannableString spannableString = new SpannableString(faceString);
-	//
-	// spannableString.setSpan(imageSpan, 0, faceString.length(),
-	// Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	//
-	// SetCursor(spannableString);
-	// }
-	// });
-	// break;
-	//
-	// }
-	// }
-	// }
-
-	// /* (non-Javadoc)
-	// * @see android.app.Activity#onActivityResult(int, int,
-	// android.content.Intent)
-	// */
-	// @Override
-	// protected void onActivityResult(int requestCode, int resultCode, Intent
-	// data) {
-	// // TODO Auto-generated method stub
-	// super.onActivityResult(requestCode, resultCode, data);
-	// if(requestCode == 7 && resultCode != RESULT_CANCELED){
-	//
-	// Uri pictureUri = data.getData();
-	// String[] proj = { MediaStore.Images.Media.DATA };
-	// CursorLoader cl = new CursorLoader(this, pictureUri,
-	// proj,null,null,null);
-	// Cursor cursor = cl.loadInBackground();
-	// cursor.moveToFirst();
-	// Bitmap tmp = ShowView.readBitmapAutoSize(cursor.getString(cursor
-	// .getColumnIndex(MediaStore.Images.Media.DATA)).toString()
-	// ,MainActivity.Width,MainActivity.Height);
-	//
-	// @SuppressWarnings("deprecation")
-	// Drawable image = new BitmapDrawable(tmp);
-	// MsgEntity msgEnitiy = new MsgEntity();
-	// msgEnitiy.setDate(getTime());
-	// msgEnitiy.setName(LoginActivity.mXmppConnection.getUser());
-	// Drawable head = getResources().getDrawable(R.drawable.icon_temp_head);
-	// msgEnitiy.setHead(head);
-	// msgEnitiy.setIsText(false);
-	// msgEnitiy.setIsPositive(isPositive);
-	// msgEnitiy.setImage(image);
-	// msgList.add(msgEnitiy);
-	// chatMsgAdapter.notifyDataSetChanged();
-	// edt_message.setText("");
-	// listView.setSelection(listView.getCount() - 1);
-	//
-	// }
-	// if(requestCode == 28 && resultCode != RESULT_CANCELED){
-	// Toast.makeText(getApplicationContext(), "cancle",
-	// Toast.LENGTH_SHORT).show();
-	// }
-	// }
-
-	// /* (non-Javadoc)
-	// * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
-	// */
-	// @Override
-	// public boolean onTouchEvent(MotionEvent event) {
-	// page_select.setVisibility(View.GONE);
-	// facePager.setVisibility(View.GONE);
-	// return super.onTouchEvent(event);
-	// }
-
-	// public void SetCursor(SpannableString span) {
-	// int start = edt_message.getSelectionStart();
-	// Editable mbody = edt_message.getText();
-	// mbody.insert(start, span);
-	//
-	// }
-
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
@@ -633,6 +342,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	}
 
+	/**
+	 * confirm to quit and send data to server
+	 * @author hankwing
+	 *
+	 */
 	public static class ConfirmQuitDialogFragment extends DialogFragment {
 
 		@Override
@@ -644,10 +358,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									// FIRE ZE MISSILES!
 
 									if (side == 0) {
-										// 发送用户点赞和点屎的数据
+										// send the audience favours and shit data
 										SyncAgreeAndShit sync = new SyncAgreeAndShit(
 												topicID, roomJID, userList,
 												userAgreeCache, userShitCache);
@@ -674,7 +387,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 初始化用户点赞和点屎缓存
+	 * init favour and shit data list
 	 */
 	public static void initUserCache(ArrayList<String> userlist) {
 		userList = userlist;
@@ -688,7 +401,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 往用户jid上增加点赞次数
+	 * add favour to some user
 	 * 
 	 * @param jid
 	 */
@@ -731,7 +444,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 		@Override
 		protected void onPostExecute(Void result) {
 			// TODO Auto-generated method stub
-			chatMsgAdapter.notifyDataSetChanged(); // 通知适配器界面刷新
+			chatMsgAdapter.notifyDataSetChanged(); // refresh ui
 			super.onPostExecute(result);
 		}
 
@@ -766,7 +479,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 清除当前界面标记
+	 * clear mark
 	 */
 	private void clearReferences() {
 		Activity currActivity = CurrentActivity.getCurrentActivity();
@@ -775,7 +488,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 销毁activity时保存状态
+	 * save state when destroyed
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -839,8 +552,38 @@ public class ChatActivity extends Activity implements OnClickListener {
 			}
 
 			if (chat != null && chat.isJoined()) {
-				// 添加监听器
-				// 监听房间内成员的状态
+				// add listener for occupants state and message listener
+
+				showMessageHistory(); // show history message
+				//enable delivery manager
+				DeliveryReceiptManager.getInstanceFor(MXMPPConnection.getInstance()).
+				addReceiptReceivedListener(new ReceiptReceivedListener()
+				{
+
+					@Override
+					public void onReceiptReceived(String fromJid, String toJid,
+							String receiptId) {
+						// TODO Auto-generated method stub
+						if( !StringUtils.parseResource(fromJid).equals(UserFullId)) {
+							//confirm
+							if(notSuerMessageIDs.remove(receiptId)) {
+								//modify succeed
+								ChatActivity.this.runOnUiThread(new Runnable() {
+
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										chatMsgAdapter.notifyDataSetChanged();
+									}
+									
+								});
+							}	
+							
+						}
+					}
+				        
+				});
+				
 				chat.addParticipantStatusListener(new ParticipantStatusListener() {
 
 					@Override
@@ -876,7 +619,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 					@Override
 					public void left(final String arg0) {
 						// TODO Auto-generated method stub
-						// 成员离开时 如果自己或者房间内无成员 就退出聊天
 						ChatActivity.this.runOnUiThread(new Runnable() {
 
 							@Override
@@ -892,32 +634,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 							}
 
 						});
-
-						// if (arg0.equals(UserInfo.roomJID + "/" +
-						// UserInfo.fullUserJID)) {
-						// // 自己退出
-						// finish();
-						// } else if (chat.getOccupantsCount() == 1) {
-						// // 房间内无成员
-						// try {
-						// chat.leave();
-						// } catch (NotConnectedException e) {
-						// // TODO Auto-generated catch block
-						// e.printStackTrace();
-						// }
-						// Toast.makeText(ChatActivity.this,
-						// getResources().getString(R.string.no_memeber),
-						// Toast.LENGTH_SHORT).show();
-						// finish();
-						// }
-						// try {
-						// Log.i("message", "occupation left!");
-						// chat.leave();
-						// finish();
-						// } catch (NotConnectedException e) {
-						// // TODO Auto-generated catch block
-						// e.printStackTrace();
-						// }
 
 					}
 
@@ -978,13 +694,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 				});
 
 				if (side == 0) {
-					// 旁观者的消息监听器
+					// message listener set for audiences
 					chat.addMessageListener(new PacketListener() {
 
 						@Override
 						public void processPacket(final Packet arg0) {
 							// TODO Auto-generated method stub
-							// 接收到消息 应该更新界面
+							// receive messages
 							final Message msg = (Message) arg0;
 							final String messageJID = msg.getFrom().substring(
 									msg.getFrom().indexOf("/") + 1);
@@ -994,9 +710,9 @@ public class ChatActivity extends Activity implements OnClickListener {
 							final String messageNickName = messageJID
 									.substring(0, messageJID.indexOf("@"));
 							if (!vcardList.containsKey(messageNickName)) {
-								// 加入vcardList
+								// add to vcardList
 								LoadAvatar loadVCard = new LoadAvatar();
-								// 清理sd卡上的avatar缓存
+								// clear avatar data in sdcard
 								BitmapMemAndDiskCache.getInstance(
 										ChatActivity.this)
 										.removeBitmapFromCache(messageNickName);
@@ -1014,10 +730,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 											.getValue("side"));
 									// Log.i("message", "side: " + isLeft);
 
-									// 房间内其他成员发来的信息 应该更新界面
+									// other occupants messages, should show in the ui
 									updateMesList(messageJID, messageNickName,
 											msg.getBody(), isLeft == 1 ? true
-													: false);
+													: false, null, null);
 
 								}
 
@@ -1026,13 +742,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 					});
 				} else {
-					// 参与者的消息监听器
+					// listener for the occupants
 					chat.addMessageListener(new PacketListener() {
 
 						@Override
 						public void processPacket(Packet arg0) {
 							// TODO Auto-generated method stub
-							// 接收到消息 应该更新界面
+							
 							final Message msg = (Message) arg0;
 							final String messageJID = msg.getFrom().substring(
 									msg.getFrom().indexOf("/") + 1);
@@ -1058,10 +774,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 									if (!msg.getFrom().equals(
 											roomJID + "/" + UserFullId)) {
 
-										// 房间内其他成员发来的信息 应该更新界面
 										updateMesList(messageJID,
 												messageNickName, msg.getBody(),
-												true); // 收到消息更新界面
+												true, msg.getPacketID(), null);
+										
 
 									}
 
@@ -1079,7 +795,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 旁观者显示聊天历史记录
+	 * show history messages
 	 */
 	public void showMessageHistory() {
 		Message msg = null;
@@ -1092,7 +808,7 @@ public class ChatActivity extends Activity implements OnClickListener {
 			final String messageNickName = messageJID.substring(0,
 					messageJID.indexOf("@"));
 			if (!vcardList.containsKey(messageNickName)) {
-				// 加入vcardList
+				// add to vcardList
 				LoadAvatar loadVCard = new LoadAvatar();
 				loadVCard.execute(bareJID, messageNickName);
 			}
@@ -1106,9 +822,8 @@ public class ChatActivity extends Activity implements OnClickListener {
 					int isLeft = Integer.valueOf(extension.getValue("side"));
 					// Log.i("message", "side: " + isLeft);
 
-					// 房间内其他成员发来的信息 应该更新界面
 					updateMesList(messageJID, messageNickName, body,
-							isLeft == 1 ? true : false);
+							isLeft == 1 ? true : false, null, null);
 
 				}
 

@@ -13,16 +13,14 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.ping.PingManager;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,7 +29,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.widget.Toast;
 
-import com.domen.activities.ChatActivity;
 import com.domen.openfire.MultipleLoginPresenceListener;
 import com.domen.openfire.MultipleLoginPresenceListener.MultiLoginDialog;
 import com.domen.start.R;
@@ -220,7 +217,8 @@ public class MXMPPConnection {
 				try {
 					mXmppConnection.login(params[0], params[1],params[2]);
 					// 保存用户资料到preference
-					
+					//enable delivery manager
+					DeliveryReceiptManager.getInstanceFor(mXmppConnection).enableAutoReceipts();
 				} catch (SaslException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

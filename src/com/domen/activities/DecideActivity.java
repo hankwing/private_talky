@@ -11,12 +11,16 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +36,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.domen.openfire.RequestATeam;
 import com.domen.openfire.RequestTopicInfo;
+import com.domen.service.BackgroundSeekService;
 import com.domen.start.R;
 import com.domen.tools.BitmapSingleton;
 import com.domen.tools.CurrentActivity;
@@ -39,7 +44,7 @@ import com.domen.tools.MXMPPConnection;
 import com.domen.tools.TopicsContract.TopicsEntryContract;
 
 /**
- * 决定选择哪个观点
+ * show topics information
  * 
  * @author hankwing
  * 
@@ -48,15 +53,15 @@ public class DecideActivity extends Activity implements OnClickListener {
 
 	private ImageView btn_discuss_home;
 	private String topicName;
-	private String topicID;
+	private static String topicID;
 	private String topicURL;
 	private Bundle fromBundle;
 	private String roomJID;
 	private Intent intentIT;
 	private RelativeLayout svContentView;
 	private ProgressBar progressBar;
-	private int mShortAnimationDuration; // 动画时间
-	private NetworkImageView topicPic; // 话题相关图片
+	private int mShortAnimationDuration; // shot duration time
+	private NetworkImageView topicPic; // image related to the topic
 	private ImageLoader mImageLoader;
 	private TextView topicDesc;
 	private TextView positiveView;
@@ -65,15 +70,13 @@ public class DecideActivity extends Activity implements OnClickListener {
 	private String positive = null;
 	private String negative = null;
 	//private XMPPConnection mXmppConnection = null;
-	private ProgressDialog registerDialog;
+	private ProgressDialog seekDialog;
 	private RequestATeam ngRA;
-	private SharedPreferences accountInfo;
+	private static SharedPreferences accountInfo;
+	private Handler seekATeamHandler = null;
+	private AlertDialog backgroundDialog;
+	private String mSide;				//the side is seeking for a team
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -82,8 +85,72 @@ public class DecideActivity extends Activity implements OnClickListener {
 		fromBundle = intent.getExtras();
 		CurrentActivity.setCurrentActivity(this);
 		
-		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE); // 保存用户资料的preference
-		// 获得该话题的名称
+		seekATeamHandler = new Handler(Looper.getMainLooper()) {
+
+			@Override
+			public void handleMessage(final Message msg) {
+				// TODO Auto-generated method stub
+				super.handleMessage(msg);
+				final String side = (String) msg.obj;
+				if( side.equals(mSide) && seekDialog.isShowing() ) {
+					seekDialog.dismiss();
+					//notify user
+					backgroundDialog.show();
+					backgroundDialog.setMessage(getResources().getString(
+							R.string.background_seek));
+					//set button listener
+					Button positive = backgroundDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+					positive.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							ProviderManager.removeIQProvider("success", "com:talky:asRequestATeamIQ");
+							// turn on service
+							Intent intent = new Intent(DecideActivity.this,
+									BackgroundSeekService.class);
+							Bundle bundle = new Bundle();
+							bundle.putString("userFullId", accountInfo.getString(
+									"userFullId", null));
+							bundle.putString("topicID", topicID);
+							bundle.putString("side", side);
+							bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
+									topicName);
+							bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_URL,
+									topicURL);
+							intent.putExtras(bundle);
+							DecideActivity.this.startService(intent);
+							
+							backgroundDialog.dismiss();
+							DecideActivity.this.finish();
+						}
+						
+					});
+					
+					Button negative  = backgroundDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+					negative.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							// cancel request
+							backgroundDialog.setMessage(getResources().getString(
+									R.string.cancel_requestateam_dialog));
+							
+							RequestATeam cancel = new RequestATeam( accountInfo.getString(
+									"userFullId", null), topicID, side, "0");
+							cancel.setType(IQ.Type.GET);
+							MXMPPConnection.sendPacket(DecideActivity.this, cancel);
+						}
+						
+					});
+				}
+			}
+			
+		};
+		 // get user info preference
+		accountInfo = getSharedPreferences("accoutInfo", Context.MODE_PRIVATE);
+		// get topic info
 		if(savedInstanceState == null) {
 			topicName = fromBundle
 					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
@@ -92,7 +159,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_URL);
 		}
 		else {
-			//销毁重建时获取数据
+			// return from destroyed state
 			topicName = savedInstanceState
 					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME);
 			topicID = savedInstanceState.getString(TopicsEntryContract.COLUMN_NAME_OF_ID);
@@ -100,14 +167,11 @@ public class DecideActivity extends Activity implements OnClickListener {
 					.getString(TopicsEntryContract.COLUMN_NAME_TOPIC_URL);
 		}
 		
-		getActionBar().setTitle(topicName); // 显示话题名称
-		// 添加监听请求组队结果IQ包
-		ProviderManager.addIQProvider("success", "com:talky:asRequestATeamIQ",
-				new ResultIQProvider());
-		// 添加话题详情IQ监听器
+		getActionBar().setTitle(topicName); // show topic name
+		// add handler for request topic info
 		ProviderManager.addIQProvider("requestTopicInfo",
 				"com:talky:requestTopicInfo", new ResultTopicInfoProvider());
-		// 发送话题详情请求IQ包
+		// send request for topic info
 		RequestTopicInfo rs = new RequestTopicInfo(topicID);
 		rs.setType(IQ.Type.GET);
 		MXMPPConnection.sendPacket(DecideActivity.this, rs);
@@ -116,28 +180,36 @@ public class DecideActivity extends Activity implements OnClickListener {
 		
 		btn_discuss_home = (ImageView) this.findViewById(R.id.btn_discuss_home);
 		btn_discuss_home.setOnClickListener(this);
-		topicDesc = (TextView) findViewById(R.id.topicDes); // 话题描述
-		positiveView = (TextView) findViewById(R.id.tv_positive); // 正反观点
+		topicDesc = (TextView) findViewById(R.id.topicDes); // topic description
+		positiveView = (TextView) findViewById(R.id.tv_positive); // positive view
 		positiveView.setOnClickListener(this);
-		negativeView = (TextView) findViewById(R.id.tv_negative); // 反方观点
+		negativeView = (TextView) findViewById(R.id.tv_negative); // negative view
 		negativeView.setOnClickListener(this);
 		svContentView = (RelativeLayout) findViewById(R.id.ll_content_view);
 		progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
-		svContentView.setVisibility(View.INVISIBLE); // 内容界面先隐藏
+		svContentView.setVisibility(View.INVISIBLE); // hide content view
 		mShortAnimationDuration = getResources().getInteger(
 				android.R.integer.config_shortAnimTime); 
 
 		mImageLoader = BitmapSingleton.getInstance(this).getImageLoader();
 		topicPic = (NetworkImageView) findViewById(R.id.imgv_dec_image);
 		topicPic.setImageUrl(topicURL, mImageLoader);
-		registerDialog = new ProgressDialog(this);
+		seekDialog = new ProgressDialog(this);
+		//seekDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		// 取消组队逻辑
-		registerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+		seekDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
 				getResources().getString(R.string.cancel_requestateam),
-				(DialogInterface.OnClickListener) null); // 先设置空监听器
-		registerDialog.setCanceledOnTouchOutside(false); // 设置该dialog不可取消
-															// 包括点击屏幕外和按返回键
-
+				(DialogInterface.OnClickListener) null); // set null listener
+		seekDialog.setCanceledOnTouchOutside(false); // dialog can not be canceled
+		// notify the user whether to background seek
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.background_seek).
+		setPositiveButton(R.string.dialog_positive, null)
+				.setNegativeButton(R.string.dialog_negative,
+						null);
+		backgroundDialog = builder.create();
+		backgroundDialog.setCanceledOnTouchOutside(false);
+		
 		super.onCreate(savedInstanceState);
 	}
 
@@ -148,20 +220,23 @@ public class DecideActivity extends Activity implements OnClickListener {
 		Bundle bundle = new Bundle();
 		switch (v.getId()) {
 		case R.id.tv_negative:
-			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // 带上选择话题的ID
-			bundle.putInt("side", -1);				//-1代表反方
+			mSide = "negative";
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // put topic id
+			bundle.putInt("side", -1);				//-1-negative party
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
 					topicName);
 			intentIT.putExtras(bundle);
-			// 请求组队
+			// request a team
 			ngRA = new RequestATeam( accountInfo.getString(
 					"userFullId", null), topicID, "negative", "1");
 			ngRA.setType(IQ.Type.GET);
 			MXMPPConnection.sendPacket(this, ngRA);
-			registerDialog.setMessage(getResources()
+			seekDialog.setMessage(getResources()
 					.getString(R.string.seeking));
-			registerDialog.show();
-			final Button cancelButton = registerDialog
+			seekDialog.show();
+			seekATeamHandler.sendMessageDelayed(seekATeamHandler.obtainMessage(0, "negative"),
+					6000);			//within 10 seconds
+			final Button cancelButton = seekDialog
 					.getButton(DialogInterface.BUTTON_NEGATIVE);
 			cancelButton.setVisibility(View.VISIBLE);
 			cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -169,31 +244,33 @@ public class DecideActivity extends Activity implements OnClickListener {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					registerDialog.setMessage(getResources().getString(
+					seekDialog.setMessage(getResources().getString(
 							R.string.cancel_requestateam_dialog));
 					cancelButton.setVisibility(View.GONE);
-					// 发送取消组队IQ包
-					ngRA.setIsJoin("0"); // 标志为取消组队
+					// cancel a request for forming a team
+					ngRA.setIsJoin("0"); // mark
 					ngRA.setType(IQ.Type.GET);
 					MXMPPConnection.sendPacket(DecideActivity.this, ngRA);
 				}
 			});
 			break;
 		case R.id.tv_positive:
-			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // 带上选择话题的ID
-			bundle.putInt("side", 1);				//1代表正方
+			mSide = "positive";
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); 
+			bundle.putInt("side", 1);
 			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME,
 					topicName);
 			intentIT.putExtras(bundle);
-			// 请求组队
 			ngRA = new RequestATeam( accountInfo.getString(
 					"userFullId", null), topicID, "positive", "1");
 			ngRA.setType(IQ.Type.GET);
 			MXMPPConnection.sendPacket(this, ngRA);
-			registerDialog.setMessage(getResources()
+			seekDialog.setMessage(getResources()
 					.getString(R.string.seeking));
-			registerDialog.show();
-			final Button cancel_button = registerDialog
+			seekDialog.show();
+			seekATeamHandler.sendMessageDelayed(seekATeamHandler.obtainMessage(0, "positive"),
+					6000);			//within 10 seconds
+			final Button cancel_button = seekDialog
 					.getButton(DialogInterface.BUTTON_NEGATIVE);
 			cancel_button.setVisibility(View.VISIBLE);
 			cancel_button.setOnClickListener(new View.OnClickListener() {
@@ -201,19 +278,19 @@ public class DecideActivity extends Activity implements OnClickListener {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					registerDialog.setMessage(getResources().getString(
+					seekDialog.setMessage(getResources().getString(
 							R.string.cancel_requestateam_dialog));
 					cancel_button.setVisibility(View.GONE);
-					// 发送取消组队IQ包
-					ngRA.setIsJoin("0"); // 标志为取消组队
+					// send request for cancel a team
+					ngRA.setIsJoin("0"); 
 					ngRA.setType(IQ.Type.GET);
 					MXMPPConnection.sendPacket(DecideActivity.this, ngRA);
 				}
 			});
 			break;
 		case R.id.btn_discuss_home:
-			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); // 带上选择话题的ID
-			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME, topicName); // 带上选择话题的名字
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_OF_ID, topicID); 
+			bundle.putString(TopicsEntryContract.COLUMN_NAME_TOPIC_NAME, topicName);
 			Intent roomList = new Intent(getApplicationContext(),
 					RoomListActivity.class);
 			roomList.putExtras(bundle); 
@@ -247,7 +324,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 	}
 
 	/**
-	 * 响应服务器发来的房间ID 加入该房间
+	 * respond to the room id from server and join it
 	 * 
 	 * @author hankwing
 	 * 
@@ -265,24 +342,29 @@ public class DecideActivity extends Activity implements OnClickListener {
 				if (eventType == XmlPullParser.START_TAG) {
 					if (arg0.getName().equals("success")) {
 						if (arg0.getAttributeValue(0).equals("1")) {
-							// 是取消组队时服务器返回的结果IQ包
+							
 							DecideActivity.this.runOnUiThread(new Runnable() {
 
 								@Override
 								public void run() {
 									// TODO Auto-generated method stub
 									// dismiss dialog
-									registerDialog.dismiss();
+									if( seekDialog.isShowing()) {
+										seekDialog.dismiss();
+									}
+									else if( backgroundDialog.isShowing() ){
+										backgroundDialog.dismiss();
+									}
 								}
 
 							});
-							isJoin = true; // 避免执行下面的加入房间的代码
+							isJoin = true; // avoid to join the room dumplicated
 							break;
 						}
 					}
 				}
 				if (eventType == XmlPullParser.TEXT) {
-					// 获得roomJID
+					// get roomJID
 					// parser.getText();
 					done = true;
 					roomJID = arg0.getText();
@@ -297,11 +379,11 @@ public class DecideActivity extends Activity implements OnClickListener {
 					public void run() {
 						// TODO Auto-generated method stub
 						// ChatActivity.chat2.join(LoginActivity.mXmppConnection2.getUser());
-						// 匹配成功 进入chatActitity
-						registerDialog.dismiss();
+						// succeed enter chatActitity
+						seekDialog.dismiss();
 						Toast.makeText(DecideActivity.this, "匹配成功",
 								Toast.LENGTH_SHORT).show();
-						intentIT.putExtra("roomJID", roomJID);				//加入房间JID
+						intentIT.putExtra("roomJID", roomJID);				//room JID
 						DecideActivity.this.startActivity(intentIT);
 						DecideActivity.this.finish();
 
@@ -313,12 +395,6 @@ public class DecideActivity extends Activity implements OnClickListener {
 
 	}
 
-	/**
-	 * 响应服务器发来的房间ID 加入该房间
-	 * 
-	 * @author hankwing
-	 * 
-	 */
 	public class ResultTopicInfoProvider implements IQProvider {
 
 		@Override
@@ -348,7 +424,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 					skip(parser);
 				}
 			}
-			// 解析结束 界面操作开始
+			// parse finished
 			DecideActivity.this.runOnUiThread(new Runnable() {
 
 				@Override
@@ -384,7 +460,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		}
 
 		/**
-		 * 跳过一个标签
+		 * skip a tag
 		 * 
 		 * @param parser
 		 * @throws XmlPullParserException
@@ -409,7 +485,7 @@ public class DecideActivity extends Activity implements OnClickListener {
 		}
 
 		/**
-		 * 读取标签下的内容
+		 * read text under a tag
 		 * 
 		 * @param parser
 		 * @return
@@ -439,21 +515,19 @@ public class DecideActivity extends Activity implements OnClickListener {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		ProviderManager.removeIQProvider("success", "com:talky:asRequestATeamIQ");
+		ProviderManager.addIQProvider("success", "com:talky:asRequestATeamIQ",
+				new ResultIQProvider());
 		CurrentActivity.setCurrentActivity(this);
+		
 	}
 
-	/**
-	 * 清除当前界面标记
-	 */
 	private void clearReferences() {
 		Activity currActivity = CurrentActivity.getCurrentActivity();
 		if (currActivity != null && currActivity.equals(this))
 			CurrentActivity.setCurrentActivity(null);
 	}
 
-	/**
-	 * 销毁activity时保存状态
-	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
@@ -464,7 +538,12 @@ public class DecideActivity extends Activity implements OnClickListener {
 		super.onSaveInstanceState(outState);
 		
 	}
-	
-	
 
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+
+	}
+	
 }

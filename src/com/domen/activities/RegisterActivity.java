@@ -17,6 +17,7 @@ import org.jivesoftware.smackx.muc.packet.GroupChatInvitation;
 import org.jivesoftware.smackx.muc.provider.MUCAdminProvider;
 import org.jivesoftware.smackx.muc.provider.MUCOwnerProvider;
 import org.jivesoftware.smackx.muc.provider.MUCUserProvider;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -197,6 +198,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
 			try {
 				mXmppConnection.login(params[0], params[1], params[2]);
+				//enable delivery manager
+				DeliveryReceiptManager.getInstanceFor(mXmppConnection).enableAutoReceipts();
 				configure();
 				// 添加自己为好友
 				Roster mRoster = mXmppConnection.getRoster();

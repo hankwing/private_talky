@@ -21,7 +21,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="20dp"
             android:contentDescription="@string/head_image"
-            android:src="@drawable/default_avatar"
+            android:src="@drawable/default_avatar_dog"
             app:border_color="#EEEEEE"
             app:border_width="4dp"
             app:shadow="true" />

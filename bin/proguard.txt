@@ -60,56 +60,62 @@
 # view res/layout/single_topic_view.xml #generated:6
 -keep class com.android.volley.toolbox.NetworkImageView { <init>(...); }
 
-# view AndroidManifest.xml #generated:41
+# view AndroidManifest.xml #generated:40
 -keep class com.domen.activities.ChatActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:84
+# view AndroidManifest.xml #generated:76
 -keep class com.domen.activities.CountActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:51
+# view AndroidManifest.xml #generated:49
 -keep class com.domen.activities.DecideActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:64
+# view AndroidManifest.xml #generated:60
 -keep class com.domen.activities.GroupActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:61
+# view AndroidManifest.xml #generated:58
 -keep class com.domen.activities.InformaActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:37
+# view AndroidManifest.xml #generated:36
 -keep class com.domen.activities.MainActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:79
+# view AndroidManifest.xml #generated:72
 -keep class com.domen.activities.RanksActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:74
+# view AndroidManifest.xml #generated:68
 -keep class com.domen.activities.RecordActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:70
+# view AndroidManifest.xml #generated:64
 -keep class com.domen.activities.RegisterActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:89
+# view AndroidManifest.xml #generated:80
 -keep class com.domen.activities.RoomListActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:67
+# view AndroidManifest.xml #generated:62
 -keep class com.domen.activities.SettingActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:95
+# view AndroidManifest.xml #generated:85
 -keep class com.domen.activities.ShowOccupantsActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:58
+# view AndroidManifest.xml #generated:91
+-keep class com.domen.service.BackgroundSeekService { <init>(...); }
+
+# view AndroidManifest.xml #generated:95
+-keep class com.domen.service.CancelNoUiActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:56
 -keep class com.domen.start.GuideActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:47
+# view AndroidManifest.xml #generated:45
 -keep class com.domen.start.LoginActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:34
 -keep class com.domen.start.PreLoginActivity { <init>(...); }
 
-# view AndroidManifest.xml #generated:23
+# view AndroidManifest.xml #generated:25
 -keep class com.domen.start.StartupActivity { <init>(...); }
 
 # view res/layout/activity_main.xml #generated:39
-# view res/layout/chat_msg_left.xml #generated:14
+# view res/layout/chat_msg_left.xml #generated:13
 # view res/layout/chat_msg_right.xml #generated:13
 # view res/layout/single_inactive_avatar.xml #generated:8
 # view res/layout/user_info.xml #generated:17

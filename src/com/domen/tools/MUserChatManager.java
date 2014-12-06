@@ -1,24 +1,23 @@
 package com.domen.tools;
 
-import org.jivesoftware.smack.SmackException.NoResponseException;
-import org.jivesoftware.smack.SmackException.NotConnectedException;
-import org.jivesoftware.smack.XMPPException.XMPPErrorException;
-import org.jivesoftware.smackx.muc.MultiUserChat;
+import java.io.Serializable;
+import java.util.List;
 
-import android.util.Log;
-
-public class MUserChatManager {
-	private static MultiUserChat mChat;
+public class MUserChatManager implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	private List<String> occupantsData;
 	
 	public static void joinRoom( String roomJID ) {
 		
 	}
 	
-	public static MultiUserChat getChat( ) {
-		return mChat;
+	public List<String> getListData( ) {
+		return occupantsData;
 	}
 	
-	public static void setChat( MultiUserChat chat) {
-		mChat = chat;
+	public void setData( List<String> data) {
+		occupantsData = data;
 	}
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
-
+    android:layout_height="wrap_content" >
+    
     <RelativeLayout
+        android:id="@+id/content_layout"
         android:layout_width="wrap_content"
-        android:layout_marginLeft="70dp"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" >
 
         <com.pkmmte.circularimageview.CircularImageView
             android:id="@+id/chat_msg_right_name"
@@ -17,39 +17,42 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="10dp"
-            android:src="@drawable/default_avatar"
+            android:src="@drawable/default_avatar_dog"
             app:border_color="#EEEEEE"
             app:border_width="4dp"
             app:shadow="true" />
 
-        <RelativeLayout
-            android:id="@+id/chat_content_right"
+        <TextView
+            android:id="@+id/chat_msg_right_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/chat_msg_right_name"
-            
-             >
+            android:background="@drawable/chatto_background"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="16sp" />
 
-            <ImageView
-                android:id="@+id/chat_msg_right_image"
-                style="@style/chat_image_style"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/chat_msg_right_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:clickable="true"
-                android:gravity="center"
-                android:background="@drawable/chatto_background"
-                android:textSize="16sp"
-                android:textColor="#000000" />
-        </RelativeLayout>
+        <ProgressBar
+            android:id="@+id/right_message_progress_bar"
+            style="?android:progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/chat_msg_right_content" />
+        
+        <ImageView
+            android:id="@+id/right_message_failed_mask"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:paddingRight="3dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_failed_message"
+            android:layout_toLeftOf="@+id/chat_msg_right_content" />
 
     </RelativeLayout>
 
-</LinearLayout>
+    
+
+</RelativeLayout>
